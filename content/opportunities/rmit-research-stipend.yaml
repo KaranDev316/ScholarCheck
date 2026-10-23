@@ -1,0 +1,206 @@
+# RMIT — retrieved 2026-10-23, not yet human-verified (see README.md).
+id: rmit-research-stipend
+scheme_name: RTP Stipend Scholarship (RSS) and RMIT Research Stipend Scholarship (RRSS)
+funder: RMIT University and the Australian Government
+destinations:
+  - AU
+summary: >-
+  Research stipend awards for doctoral candidates at RMIT, awarded through a
+  competitive round. International recipients also receive an international
+  tuition-fee offset. Applications run in two stages: an expression of interest
+  with a confirmed supervisor, then a full application.
+links:
+  summary_url: https://www.rmit.edu.au/scholarships/research/research-stipend
+  requirements_url: https://www.rmit.edu.au/research/research-degrees/terms-and-conditions
+  portal_url: https://www.rmit.edu.au/research/research-degrees/how-to-apply
+programmes:
+  - id: rmit-doctoral-programme
+    name: Doctoral programme (higher degree by research)
+    degree_level: doctoral
+    institution: RMIT University
+    country: AU
+    research_component: true
+rounds:
+  - id: rmit-2027-international
+    label: 2027 scholarship round (international)
+    intake: "2027"
+    route: expression of interest, then full application
+eligibility_rules:
+  - id: rmit-hdr-enrolment
+    requirement: >-
+      Be eligible to enrol, or currently be enrolled, in a higher degree by
+      research programme at RMIT.
+    kind: enrolment_status
+    blocking: true
+    evidence_refs:
+      - ev-rmit-enrolment
+  - id: rmit-english-requirement
+    requirement: >-
+      International applicants must meet the English language requirements by the
+      application closing date.
+    kind: other
+    blocking: true
+    evidence_refs:
+      - ev-rmit-english
+  - id: rmit-supervisor-support
+    requirement: >-
+      Provide evidence from an academic staff member who agrees to supervise the
+      research when submitting the expression of interest.
+    kind: other
+    blocking: true
+    evidence_refs:
+      - ev-rmit-supervisor
+  - id: rmit-no-earlier-doctorate
+    requirement: >-
+      Applicants for a research doctorate must not already hold a research
+      doctorate or an equivalent research qualification.
+    kind: degree_type
+    blocking: true
+    evidence_refs:
+      - ev-rmit-doctorate
+  - id: rmit-academic-priority
+    requirement: >-
+      Priority is given to applicants with a high distinction (80% or higher) in
+      the final two years of the qualifying programme.
+    kind: grade
+    blocking: false
+    evidence_refs:
+      - ev-rmit-priority
+funding_components:
+  - id: rmit-stipend
+    kind: living_support
+    status: specified
+    relationship: grant
+    description: Stipend paid to the candidate for living costs during the research degree.
+    amount: "36245"
+    currency: AUD
+    period: per year, pro rata for part-time study
+    conditions:
+      - Amount is indexed annually.
+      - Paid for three and a half years for a doctoral programme.
+      - The published amount is the 2026 rate; 2027 rates were not yet released.
+    evidence_refs:
+      - ev-rmit-stipend
+      - ev-rmit-duration
+  - id: rmit-international-tuition-offset
+    kind: tuition
+    status: specified
+    relationship: tuition_reduction
+    description: >-
+      An RTP International Tuition Fee Offset Scholarship (RIFOS) or RMIT Research
+      International Tuition Fee Scholarship (RRITFS) is awarded with the stipend
+      to international recipients.
+    period: for the duration of the stipend
+    conditions:
+      - Awarded to international recipients of the stipend.
+    evidence_refs:
+      - ev-rmit-tuition
+  - id: rmit-relocation-allowance
+    kind: travel
+    status: partial
+    relationship: grant
+    description: >-
+      Relocation allowance towards the cost of moving to take up the research
+      programme.
+    amount: "1540"
+    currency: AUD
+    period: one-off
+    conditions:
+      - Up to $515 per adult and $255 per child.
+      - Maximum of $1,540.
+    evidence_refs:
+      - ev-rmit-relocation
+evidence:
+  - id: ev-rmit-stipend
+    url: https://www.rmit.edu.au/scholarships/research/research-stipend
+    passage: >-
+      a stipend of $36,245 per annum pro rata (full-time study). This amount is
+      subject to indexation annually
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-rmit-tuition
+    url: https://www.rmit.edu.au/scholarships/research/research-stipend
+    passage: >-
+      international candidates in receipt of this scholarship are also awarded an
+      RTP International Tuition Fee Offset Scholarship (RIFOS) or an RMIT Research
+      International Tuition Fee Scholarship (RRITFS)
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-rmit-relocation
+    url: https://www.rmit.edu.au/scholarships/research/research-stipend
+    passage: >-
+      a relocation allowance for the cost of relocating in order to take up their
+      postgraduate research program. The amount is up to $515 per adult and $255
+      per child to a maximum of $1,540
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-rmit-duration
+    url: https://www.rmit.edu.au/scholarships/research/research-stipend
+    passage: >-
+      The standard duration of a research doctoral scholarship is three and a
+      half years full-time.
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-rmit-enrolment
+    url: https://www.rmit.edu.au/research/research-degrees/terms-and-conditions
+    passage: >-
+      3.2. To meet the Commonwealth eligibility requirements, an applicant must be
+      eligible to enrol, or currently be enrolled, in an HDR program at RMIT; and
+      not be receiving any other Commonwealth award or scholarship designed to
+      offset HDR tuition fees.
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-rmit-english
+    url: https://www.rmit.edu.au/scholarships/research/research-stipend
+    passage: >-
+      International applicants must meet English language requirements by the
+      application closing date to be considered for a scholarship.
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-rmit-supervisor
+    url: https://www.rmit.edu.au/scholarships/research/research-stipend
+    passage: >-
+      All scholarship applicants must provide evidence from an academic member of
+      staff who agrees to supervise your research when submitting an expression of
+      interest.
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-rmit-doctorate
+    url: https://www.rmit.edu.au/research/research-degrees/terms-and-conditions
+    passage: >-
+      3.3.4. If undertaking a research doctorate, a scholarship applicant must not
+      hold a research doctorate or an equivalent research qualification unless
+      they are an Australian and New Zealand citizen undertaking a second PhD in
+      which case they are eligible for the RTP Fee Offset scholarship only.
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-rmit-priority
+    url: https://www.rmit.edu.au/scholarships/research/research-stipend
+    passage: >-
+      have achieved a high distinction in the final two years of the qualifying
+      program(s). At RMIT, a grade of high distinction represents an academic
+      achievement of 80% or higher
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-rmit-dates
+    url: https://www.rmit.edu.au/research/research-degrees/scholarships
+    passage: >-
+      [International column, transcribed] 2027 scholarship round opens for
+      expressions of interest (EOIs): 1 June 2026. EOI deadline (last day to
+      submit documents for EOI assessment): 30 August 2026. Full application
+      deadline (last day to submit documents for full applications): 30 September
+      2026.
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+last_retrieved_at: 2026-10-23T07:00:00Z
+last_verified_at: null

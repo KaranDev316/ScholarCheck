@@ -1,0 +1,98 @@
+# CGRS D — retrieved 2026-10-23, not yet human-verified (see README.md).
+id: cgsd-doctoral
+scheme_name: Canada Graduate Research Scholarship – Doctoral (CGRS D)
+funder: Government of Canada (CIHR, NSERC and SSHRC)
+destinations:
+  - CA
+summary: >-
+  A federal doctoral award of $40,000 per year for 36 months, held while
+  enrolled in a doctoral programme at an eligible Canadian institution. The
+  programme description is a living-support award and does not mention tuition
+  support.
+links:
+  summary_url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
+  requirements_url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp#eligibility
+  portal_url: https://www.nserc-crsng.gc.ca/OnlineServices-ServicesEnLigne/index_eng.asp
+programmes:
+  - id: cgsd-doctoral-programme
+    name: Doctoral research programme
+    degree_level: doctoral
+    institution: Eligible Canadian degree-granting institution
+    country: CA
+    research_component: true
+rounds:
+  - id: cgsd-direct-route
+    label: Direct-to-agency route (annual deadline 17 October)
+    intake: null
+    route: direct to agency
+eligibility_rules:
+  - id: cgsd-doctoral-enrolment
+    requirement: >-
+      Applicants who are not Canadian citizens, permanent residents or protected
+      persons must be registered in a doctoral programme at an eligible Canadian
+      institution by the application deadline.
+    kind: enrolment_status
+    blocking: true
+    evidence_refs:
+      - ev-cgsd-international
+  - id: cgsd-study-months
+    requirement: >-
+      No more than 36 months of full-time equivalent doctoral study completed by
+      31 December of the calendar year of application.
+    kind: enrolment_status
+    blocking: true
+    evidence_refs:
+      - ev-cgsd-study-months
+funding_components:
+  - id: cgsd-living-support
+    kind: living_support
+    status: specified
+    relationship: grant
+    description: Living allowance paid to the award holder.
+    amount: "40000"
+    currency: CAD
+    period: per year
+    conditions:
+      - Paid for 36 months.
+    evidence_refs:
+      - ev-cgsd-value
+evidence:
+  - id: ev-cgsd-value
+    url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
+    passage: Value $40,000 per year Duration 36 months
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-cgsd-deadline
+    url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
+    passage: >-
+      Application deadline Through a Canadian institution: Contact your
+      institution (often significantly earlier than the agency’s deadline)
+      Directly to the agency: October 17
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-cgsd-international
+    url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
+    passage: >-
+      If you are not a Canadian citizen, permanent resident of Canada or
+      protected person under subsection 95(2) of the Immigration and Refugee
+      Protection Act (Canada), you must be registered in your doctoral program of
+      study at an eligible Canadian institution by the application deadline. Up
+      to 15% of awards will be available to international applicants.
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+  - id: ev-cgsd-study-months
+    url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
+    passage: >-
+      To be eligible to apply to the CGRS D program, you must have completed no
+      more than 36 months of full-time equivalent study in the doctoral program,
+      the PhD portion of the joint professional undergraduate/PhD program or the
+      joint program for which you are requesting funding by December 31 of the
+      calendar year of your application.
+    retrieved_at: 2026-10-23T07:00:00Z
+    verified_at: null
+    verified_by: null
+last_retrieved_at: 2026-10-23T07:00:00Z
+last_verified_at: null
