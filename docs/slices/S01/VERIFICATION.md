@@ -1,72 +1,61 @@
-# S01 VERIFICATION — One Complete Decision
+# S01 verification — Foundation and honest evidence
 
-## 1. Scope and traceability
-- **Slice:** S01. **REQ:** 01, 02, 03, 04, 06, 08.
-- **In scope:** enter profile; open a fixture opportunity; see assessment, funding breakdown, official links, evidence; save with a next action and note.
-- **Excluded:** filters, comparison, tracker/checklist, round-level deadline logic and freshness warnings (S02), admin, accounts.
-- **Assumptions:** A1 profile and saved items live in browser storage (D-04). A2 3-4 fixture records are human-verified against official sources before demo; fixtures cover: an enrolment-only doctoral award, a tuition-exemption scheme, a multi-stage EOI scheme, a stipend-plus-fee scheme. A3 listings show date information as-published but no deadline *status logic* until S02.
-- **Dependencies:** D-02 confirmed; fixtures researched.
+Rebased 23 October 2026 under D-09. The former “one complete decision” UI
+acceptance scenarios AC-01..AC-14 move to S07 and are not S01 exit criteria.
+Their historical notes remain in `EVIDENCE.md` for traceability. S01 does not
+publish automatically; S04 implements that engine.
 
-## 2. Acceptance scenarios
-**AC-01 Valid profile saved.** Actor: student. Pre: none. Action: submit nationality, residence, degree type, duration, status, intended level. Success: profile confirmed on screen and survives reload. Side effects: profile in browser only; no server record. Evidence: UI screenshot, storage inspection.
+## Scope
 
-**AC-02 Profile validation.** Action: submit with a required field empty or an unrecognised country. Result: field-level message; profile not saved; no assessment run. Evidence: UI test, screenshot.
+S01 provides the shared domain, four regression fixtures, PostgreSQL storage,
+an opportunity read endpoint, and explicit source-check/publication contracts.
+It proves that data can be read without falsely claiming human or automated
+assurance. A2 now means **source-backed gate eligibility**, not mandatory human
+approval. The four current fixtures are inputs to the gate, not pre-approved
+records.
 
-**AC-03 Grade keeps original scale.** Action: enter "8" with scale "10-point CGPA". Result: shown exactly as entered; no converted value anywhere. Evidence: UI test, API response inspection.
+## Acceptance scenarios
 
-**AC-04 Open listing.** Pre: fixture exists. Action: open it. Result: scheme, programme, round and funder shown; decision information (requirements blockers, funding) appears before descriptive text; "Read summary", "Official requirements", "Application portal" are distinct actions pointing to official URLs. Evidence: screenshot, link check.
-
-**AC-05 Unknown opportunity.** Action: open a non-existent id. Result: not-found message with route back; no crash. Evidence: UI + API example (error code agreed; see §5).
-
-**AC-06 Enrolment-only blocker visible first.** Pre: profile with no Canadian doctoral enrolment; open the enrolled-applicants-only fixture. Result: blocking condition displayed at the top; outcome is *Does not meet a stated requirement* with that rule named. Evidence: screenshot, automated test.
-
-**AC-07 Unresolved degree recognition stays unknown.** Pre: profile with three-year BCA; fixture whose published requirements do not state whether it qualifies. Result: outcome *Potential fit: confirmation needed*, reason names the degree-recognition rule; never *Meets*. Evidence: automated test, screenshot.
-
-**AC-08 Outcome vocabulary.** For all fixtures and varied profiles, overall outcome is exactly one of the four defined values; no percentage or probability appears. Evidence: automated test over matrix of profiles, UI scan.
-
-**AC-09 No profile.** Action: open listing without a profile. Result: rules listed with "Insufficient information" and a prompt to enter a profile. Evidence: screenshot, test.
-
-**AC-10 Funding by component.** Pre: tuition-exemption fixture. Result: exemption shown under Tuition with amount/currency/period, labelled as a reduction of tuition; Living support shows "Unspecified"; no total, no word "stipend" attached to it. For the stipend fixture: stipend, tuition support and other items appear separately; accommodation not shown as free unless the source says so. Evidence: screenshot, automated data-to-UI test.
-
-**AC-11 Evidence per claim.** Action: open evidence for a funding component, an eligibility rule and a date. Result: source link, supporting passage, retrieved-at and verified-at (labelled separately). A claim without evidence shows "Unverified" and cannot contribute to a "confirmed" label. Evidence: screenshot, test with an evidence-less rule.
-
-**AC-12 Save with next action.** Action: save an opportunity with a next action and note. Result: appears in saved list; persists after reload; saved record stores the opportunity id and round. Evidence: UI test, storage inspection.
-
-**AC-13 Storage unavailable.** Pre: storage blocked. Action: save. Result: clear message that saving is unavailable; profile entry and assessment still usable in-session; no silent loss. Evidence: automated test with storage disabled.
-
-**AC-14 Assessment service failure.** Pre: assessment call fails. Result: listing still renders with static facts; assessment area shows a retryable error; no fabricated outcome. Evidence: test with forced failure, screenshot.
-
-## 3. Business invariants
-1. Unresolved rules never become satisfied. 2. Missing data is shown as unknown/unspecified, never zero or full. 3. No score, percentage or probability. 4. Eligibility, funding and (later) availability are shown separately. 5. Evidence timestamps retrieved vs verified are never merged. 6. No grade conversion. 7. Assessment is a pure function of (profile, opportunity): same inputs, same outputs (idempotent, no server state). 8. No personal profile data persisted server-side.
-
-## 4. Failure and recovery
-Assessment failure → listing remains, assessment retryable, no partial outcome shown. Storage failure → in-session use, visible notice. Content load failure → not-found/error state. Rollback/compensation: **NOT APPLICABLE** (no multi-step write transactions; fixture loading is a build step).
-
-## 5. Interfaces and compatibility
-No external API contracts are approved yet. **Open (not invented):** the exact error status/body for not-found and validation, and the response shape for assessment, must be agreed in T02/T07 and recorded here as an amendment before implementation of T07. Externally visible behavior is as stated in the ACs.
-
-## 6. Nonfunctional acceptance
-- **Privacy:** profile not sent for storage; assessment request not logged with profile contents (verify in logs).
-- **Accessibility:** form operable by keyboard, labelled fields, errors announced, outcomes readable without colour. WCAG target TBD.
-- **Reliability/performance:** TBD, no thresholds set.
-- **Observability:** server logs request id, route, status; no profile data.
-- **Auth:** none in S01 (public read).
-
-## 7. Manual review checklist
-1. Open home; no profile → listing shows prompt (AC-09). 2. Submit empty profile (AC-02). 3. Enter P1: Malawi / India / BCA / 3 years / ongoing / research master's (AC-01, 03). 4. Open each fixture and read top-of-page content (AC-04, 06, 07, 10). 5. Click each evidence control (AC-11). 6. Click all three link types. 7. Save, reload, confirm (AC-12). 8. Block storage and retry (AC-13). 9. Stop the backend and reopen a listing (AC-14). 10. Open bad id (AC-05).
-
-## 8. Proof checklist
-| AC | Automated type | Manual / artifact |
+| ID | Scenario | Evidence required |
 |---|---|---|
-| 01,02,03 | component + API validation tests | screenshots |
-| 04 | component test, link check | screenshot |
-| 05 | API + UI test | screenshot |
-| 06,07,08,09 | unit tests on evaluator matrix; component tests | screenshots |
-| 10 | data-to-UI test | screenshots |
-| 11 | component test | screenshots |
-| 12,13 | UI tests with storage fixtures | storage inspection |
-| 14 | UI test with mocked failure | screenshot |
-Evidence will be recorded in `EVIDENCE.md`; none exists yet.
+| F-01 | Each fixture parses as an `Opportunity`; ids and evidence references resolve; unknown values remain unspecified | Seed tests |
+| F-02 | Loader stores and reads a fixture without merging `retrieved_at`, `source_checked_at` and optional human `verified_at` | Loader/API tests |
+| F-03 | Unknown opportunity id returns the agreed structured not-found response | API test |
+| F-04 | Source-check contract records source/snapshot ids, policy version, per-check results, decision reason and assurance; human fields can only be set by a human workflow | Contract schema and tests |
+| F-05 | Known issues in `FIRST-PASS-REVIEW.md` are represented as failed/uncertain checks and cannot be labelled `source_checked` | Fixture audit tests/report |
+| F-06 | Read responses expose assurance and freshness honestly; an unreviewed YAML record never says “human verified” or “source checked” solely because it parsed | API tests |
+| F-07 | A source failure is represented as unavailable/needs recheck in the contract; it never implies a round closed | Contract tests |
 
-## 9. Definition of Done
-All AC pass; automated checks green; no domain-rule regression; failures handled; changes within S01 scope; fixtures verified against official sources; evidence recorded; independent audit complete.
+The S01 contract may use deterministic fixture checks or a stubbed snapshot.
+Live re-fetch, extraction and publication are S02-S04 work. Passing S01 never
+grants automatic publication assurance to the seed files.
+
+## Invariants
+
+1. Four eligibility outcome values only; no probability or match percentage.
+2. Unresolved degree recognition stays unknown; grades retain original scale.
+3. Funding components remain separate; tuition reduction is not a stipend.
+4. Route, intake, rate year and stage remain distinct; absent facts are unknown.
+5. Retrieval, automated source check and human verification are separate events.
+   Agents and workers never set human verification fields.
+6. Every material published claim must eventually pass
+   `PUBLICATION-POLICY.md`; an HTTP response or schema pass alone is inadequate.
+7. A failed fetch retains prior facts and signals recheck; it never marks a
+   scholarship closed.
+8. Personal profile data is not persisted server-side.
+
+## Interfaces and gates
+
+The existing assessment/error proposal in `PROPOSED-CONTRACTS.md` is deferred
+to S07, except that the error envelope can be reused for the S01 read endpoint.
+Before T05, record the read response and 404 shape. Before T06, define the
+machine assurance and publication decision schemas in a separate operational
+contract; do not add publication fields to all `Opportunity` YAML files merely
+as placeholders. `PUBLICATION-POLICY.md` is the policy source of truth.
+
+## Definition of done
+
+F-01..F-07 have real tests or recorded contract examples; backend suite passes;
+the fixture audit identifies holds for current route/rate/deadline issues;
+`EVIDENCE.md` maps proof to each F criterion. No human approval is required.
+No fixture is called publishable until the S04 gates run and pass.

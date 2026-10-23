@@ -28,6 +28,7 @@ class ErrorCode(StrEnum):
     ASSESSMENT_FAILED = "assessment_failed"
     NOT_FOUND = "not_found"
     INTERNAL_ERROR = "internal_error"
+    SERVICE_UNAVAILABLE = "service_unavailable"
 
 
 class FieldError(DomainModel):

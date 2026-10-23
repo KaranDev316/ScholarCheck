@@ -1,70 +1,59 @@
-# ROADMAP.md — Vertical Slices
+# ROADMAP.md — Autonomous scholarship platform
 
-Inputs: `CONTEXT.md`, `PRP.md`. Greenfield; no implementation yet.
+Inputs: `CONTEXT.md`, `PRP.md`, `PUBLICATION-POLICY.md`. Rebased on owner
+direction D-09, 23 October 2026. The earlier user-journey-first roadmap is
+superseded; existing code and the four YAML fixtures remain useful.
 
-## 1. Feature map and traceability
-| Feature ("User can…") | REQ | Normal journey | Error journey | Slice |
-|---|---|---|---|---|
-| …enter a profile | 01 | Fill form, stored locally | Invalid fields flagged | S01 |
-| …open a structured listing | 02 | View listing, official links | Unknown id → not found | S01 |
-| …see eligibility assessment | 03 | Four outcomes with reasons | Unresolved stays unknown | S01 |
-| …see funding breakdown | 04 | Components shown | Missing = Unspecified | S01 |
-| …see evidence | 06 | Open evidence | Unevidenced = unverified | S01 |
-| …save with next action | 08 | Save, persists | Storage unavailable message | S01 |
-| …see deadlines by round | 05 | Stage/round statuses | Closed/unannounced states | S02 |
-| …see verification freshness | 12 | Verified date shown | Overdue/source-down warning | S02 |
-| …browse and filter | 07 | Filter catalogue | Empty state | S03 |
-| …compare up to three | 09 | Aligned table | Wrong count explained | S04 |
-| …track status and checklist | 10, 11 | Update state, tick items | Changed-since-saved notice | S05 |
-| Maintainer manages content | 13 | Create, verify, log change | Blocked publish | S06 |
-| …sync via account | 14 | Register, sync | Local data kept | Deferred |
-| (release content/readiness) | all | 20-30 records, usability test | — | S07 |
+## Sequence and proof
 
-All Must/Should REQs except REQ-14 map to a slice. Gate passed.
-
-## 2. Ordered slices
-**S01 — One complete decision (NEXT).**
-Objective: prove the central path end to end on a small verified fixture set. Value: a student sees whether they fit, what funding covers, and the evidence, and saves a next action. REQ: 01, 02, 03, 04, 06, 08. Acceptance: unknown degree recognition stays unknown; enrolment-only award shows its blocker first; tuition exemption not labelled stipend; evidence reachable; save persists. Out: catalogue filters, round deadlines logic beyond display, compare, tracker, admin, accounts. Risks: modelling eligibility rules generically; fixture accuracy. Prereqs: D-02 confirmed, 3-4 fixture records researched. Demo: open the app as persona P1, walk four fixtures.
-
-**S02 — Rounds, deadlines, freshness.** REQ 05, 12. Adds Round and Deadline model, stage/category/status display, intake independence, verified/retrieved dates, overdue and source-unavailable warnings. Depends on S01 data model. Risk: time-zone and date-only handling.
-
-**S03 — Browse and filter.** REQ 07. Catalogue page, filters on level, subject, nationality, destination, funding coverage; empty state. Depends on S01-S02. Risk: filter semantics with "unknown" values (must not hide unknowns as matches or non-matches silently).
-
-**S04 — Compare up to three.** REQ 09. Uses saved items. Depends on S01-S03.
-
-**S05 — Tracker and checklist.** REQ 10, 11. User-reported states, derived checklist, changed-since-saved notice (needs a minimal change marker from content).
-
-**S06 — Internal review and recheck.** REQ 13 (+ strengthens 12). Authenticated maintainer tool, evidence entry, verification stamps, change records, publish blocking on unevidenced claims. First point where auth and (optionally) a background worker are decided. Blocking decision: maintainer auth method.
-
-**S07 — Catalogue build and usability test.** Expand to 20-30 verified records, run the 5-8 person study. Content-heavy, no new features.
-
-## 3. NEXT slice and why
-**S01.** It resolves the largest unknowns (rule model, evidence model, funding model) and gives the earliest demonstrable feedback. Everything later builds on its data model.
-
-## 4. S01 atomic tasks
-| ID | Task | Effort |
+| Slice | Deliverable | Proof before moving on |
 |---|---|---|
-| T01 | Scaffold repo layout, backend and frontend skeletons, lint/test runners | 90 min |
-| T02 | Define domain types: Opportunity, Programme, EligibilityRule, FundingComponent, Evidence (and shared enums for four outcomes) | 60 min |
-| T03 | Create seed format in `/content` and 3-4 fixture records with evidence (human-verified before release) | 120 min |
-| T04 | Database schema + loader for fixtures | 90 min |
-| T05 | Read endpoint for one opportunity | 60 min |
-| T06 | Stateless assessment evaluator (profile + opportunity → per-rule results + overall outcome) with unit tests for every domain rule | 120 min |
-| T07 | Assessment endpoint with validation and error shape | 60 min |
-| T08 | Profile form + local persistence | 90 min |
-| T09 | Listing page: blockers first, funding components, official links, evidence panel | 120 min |
-| T10 | Save-with-next-action to local storage incl. unavailable-storage handling | 60 min |
-| T11 | E2E smoke test across the demo path | 60 min |
-Complexity: medium overall; T06 is the highest risk.
+| S01 — Foundation (current) | Domain/evidence model; four regression fixtures; PostgreSQL storage and read API; source-check and publication decision contracts | Fixtures load and expose facts without claiming human verification or automatic assurance; missing/contradictory material claims are identified |
+| S02 — Source monitoring | Source registry, permitted fetches, immutable snapshots, conditional requests where supported, scheduler and retry | Re-fetch four official sources; unchanged content yields no duplicate work; fetch failure retains the previous snapshot |
+| S03 — Candidate extraction | HTML/PDF parsers, optional model-assisted extraction, field-level evidence mapping | Amount, rate year, route, deadline and restrictions are traceable to snapshot passages or table cells; unknowns stay unknown |
+| S04 — Validation and publication | Deterministic gates, hold/reject reasons, duplicate checks, atomic revisions, `source_checked` assurance | Same snapshot gives same decision; known fixture issues hold; fully evidenced candidate publishes without a human click |
+| S05 — Change and freshness | Detect material changes, publish safe revisions, retain last-known-good, warn on source failure | Changed source produces an explained revision or hold; failed fetch never silently closes a scholarship |
+| S06 — Discovery | Find official opportunities, reconcile identities and duplicates, widen source coverage | New source enters through the same gates; duplicate candidates do not create duplicate listings |
+| S07 — Student experience | Search/filter, profile-based eligibility, funding, deadlines, evidence/assurance labels, saving, comparison and notifications | Student sees limitations and source state, can follow the complete decision path; account sync remains deferred |
+| S08 — Operations and release | Monitoring, automatic retries, failure alerts, quality metrics, usability study and 20-30 source-checked records | Pipeline runs unattended in normal cases; unsupported claims and stale records are measured; release criteria in PRP pass |
 
-## 5. Parallelism
-After T02 freezes the types: backend (T04-T07) and frontend shell (T08) can run in parallel. The API response shape for assessment is the **coordination contract**: agree it before T07 and T09. T03 (content) can proceed alongside code.
+SYS-01..SYS-08 span S02-S08. REQ-01..REQ-12 are completed in S07
+(with source freshness foundations in S05); exceptional maintainer
+actions in REQ-13 belong to S08. REQ-14 account sync remains deferred.
 
-## 6. Milestones
-M1 = S01 demo (persona P1 walkthrough). M2 = S02-S04 (deadlines, filter, compare) "usable catalogue". M3 = S05-S06 "maintainable". M4 = S07 usability study, release.
+No slice may publish unsupported facts merely to meet catalogue size or schedule.
+The first milestone is the four-source unattended re-fetch and decision
+demonstration, not a polished user-facing catalogue.
 
-## 7. Deferred
-REQ-14 accounts, community, uploads, auto-submit, probability scores, mobile app, worldwide coverage. No plans produced.
+## S01 remaining work
 
-## 8. Blocking decisions
-Before S01: confirm D-02 (stack). Before S06: maintainer authentication method. Before S07: final destination list and opportunity list.
+| ID | Task | State |
+|---|---|---|
+| T01 | Scaffold frontend/backend and test runners | Complete |
+| T02 | Shared `Opportunity`, `Evidence`, `Profile` and assessment types | Complete as a draft contract |
+| T03 | Four YAML fixtures and seed validation tests | Complete as unverified regression inputs; source review found issues |
+| T04 | PostgreSQL schema and fixture loader/read model | Not started |
+| T05 | Opportunity read endpoint and not-found response | Not started |
+| T06 | Source-check and publication decision **contract** with explicit machine versus human metadata | Not started |
+| T07 | Deterministic fixture audit: known route/rate/deadline discrepancies must be held, not labelled publishable | Not started |
+| T08 | S01 regression and evidence report for storage/read and hold decisions | Not started |
+
+The former T06-T11 evaluator, profile and frontend tasks move to S07. The
+proposed assessment API in `slices/S01/PROPOSED-CONTRACTS.md` is preserved for
+that work; its gate does not block S01 storage/read. S01 has no automatic
+publication engine; that is S04. S01 defines the policy contract and test
+benchmarks it must obey.
+
+## Decisions that remain open
+
+- Source registry allowlist and access rules before S02 fetching.
+- Snapshot storage provider and retention before S02.
+- Whether a model-assisted extractor is needed after deterministic parsers are
+  tried in S03.
+- Authentication for optional maintainer actions; it cannot be a dependency of
+  routine publication.
+- Hosting, operating budget and final source/destination set.
+
+The publication policy itself is settled by D-09: human approval is optional,
+human-verification fields remain human-only, and failed automatic gates hold or
+preserve the last-known-good record.

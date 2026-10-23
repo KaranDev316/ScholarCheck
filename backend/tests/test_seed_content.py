@@ -56,7 +56,7 @@ def _refs(opportunity: Opportunity) -> list[str]:
 
 
 def test_t03_fixture_set_matches_the_planned_register() -> None:
-    """VERIFICATION A2: four fixtures covering the four demo shapes."""
+    """Four regression fixtures cover the four original demo shapes."""
 
     assert {path.stem for path in SEED_FILES} == EXPECTED_IDS
 
@@ -121,7 +121,7 @@ def test_t03_components_with_a_value_are_evidenced(seed_path: Path) -> None:
 
 
 def test_t03_retrieval_and_verification_stay_separate(seed_path: Path) -> None:
-    """A2 is still open: nothing here may claim a human has verified it."""
+    """Agent checks must not claim optional human verification."""
 
     opportunity = _load(seed_path)
     assert opportunity.last_verified_at is None

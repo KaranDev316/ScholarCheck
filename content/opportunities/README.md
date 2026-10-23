@@ -32,11 +32,12 @@ cd backend && .venv/bin/python -m pytest tests/test_seed_content.py
    referenced by a rule or funding component, except the entry that backs a
    published date in a round label (`Round` has no reference field in S01); such
    an entry must quote a deadline.
-6. **Verification is separate from retrieval.** Seeds ship with
-   `verified_at: null`, `verified_by: null` and `last_verified_at: null`. Only a
-   human who has opened the official page sets those, and
-   `VERIFICATION.md` A2 requires that before release. An automatic refresh may
-   change `retrieved_at`; it must never set `verified_at`.
+6. **Human verification is separate from automated source checking.** Seeds
+   ship with `verified_at: null`, `verified_by: null` and
+   `last_verified_at: null`. Only a human who has opened the official page may
+   set them. D-09 removes human approval as a routine release gate; the
+   `PUBLICATION-POLICY.md` gates must pass before a record can be published as
+   `source_checked`. A fetch or this YAML validation test alone is insufficient.
 7. **No invention.** If the source does not state a fact, omit the field. A
    funding component whose value is not stated stays on the record with
    `status: unspecified` and no `amount`/`currency`; it is never shown as zero,
@@ -59,8 +60,10 @@ cd backend && .venv/bin/python -m pytest tests/test_seed_content.py
 
 ## Fixture register
 
-All four were retrieved on 2026-10-23. **None is human-verified yet**
-(`verified_at` is null on every evidence entry), so A2 remains open.
+All four were retrieved on 2026-10-23. **None is human-verified or
+automatically source-checked for publication.** The
+[first-pass review](../../docs/slices/S01/FIRST-PASS-REVIEW.md) found issues
+that must be corrected or held before the automated gate can pass.
 
 | File | Covers | Official sources |
 |---|---|---|
@@ -69,7 +72,7 @@ All four were retrieved on 2026-10-23. **None is human-verified yet**
 | `rmit-research-stipend.yaml` | Multi-stage EOI round, stipend plus international tuition offset | [RMIT scholarships](https://www.rmit.edu.au/research/research-degrees/scholarships), [RMIT stipend](https://www.rmit.edu.au/scholarships/research/research-stipend), [RMIT T&Cs](https://www.rmit.edu.au/research/research-degrees/terms-and-conditions) |
 | `usyd-rtp-stipend.yaml` | Stipend plus fee offset, separate components | [RTP overview](https://www.sydney.edu.au/scholarships/australian-government-research-training-program.html), [RTP international](https://www.sydney.edu.au/scholarships/australian-government-research-training-program/rtp-international.html) |
 
-## Verification checklist for a human reviewer
+## Optional human verification
 
 For each evidence entry: open `url`, confirm `passage` appears on the page (or
 that the table transcription matches cell by cell), then set `verified_at`,

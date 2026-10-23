@@ -1,10 +1,12 @@
-# S01 Proposed API contracts (review copy for the T02/T07 gate)
+# Proposed student assessment API contracts (deferred to S07)
 
-Status: **PROPOSED — not approved.** `VERIFICATION.md` §5 still records that no
-external contract is approved. This file is the review copy so the gate can
-approve one version instead of two; on approval the agreed lines are copied into
-§5, this header is replaced with the approval date, and the "PROPOSED" markers
-come off the code that implements them.
+> D-09 rebase: this is now the proposed **student assessment** contract for
+> S07. Source checking and automatic publication use the separate policy in
+> docs/PUBLICATION-POLICY.md. This draft does not block S01 storage/read work.
+
+Status: **PROPOSED — not approved.** This review copy will be settled with
+S07's student assessment work. Its routes and response shape are not part of
+the autonomous publication decision contract.
 
 Sources of truth (kept in step deliberately):
 
@@ -123,10 +125,10 @@ breaking change. The client already reads `payload.assessment`.
 behaviour, simplest for the TS `ErrorBody` type) versus omitted. A tri-state
 field is the alternative if TypeScript consumers prefer absence.
 
-## On approval
+## When S07 approves this contract
 
 1. Copy the route row, request/response examples and error table into
-   `VERIFICATION.md` §5 as an amendment, with the date.
+   S07's verification contract, with the date.
 2. Replace the "PROPOSED" headers in `backend/app/models/assessment.py`,
    `backend/app/api/errors.py`, `frontend/src/types/api.ts`.
 3. Keep `backend/tests/test_assessment_contract.py` as the executable form of

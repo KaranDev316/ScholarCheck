@@ -3,7 +3,7 @@ import { assessmentOutcomes, outcomeLabels } from '../types/domain'
 
 /**
  * Home page for the S01 scaffold. It states the decision vocabulary the product
- * will use and proves the API is reachable; listings arrive in later steps.
+ * will use and proves the API is reachable; source checking and listings follow.
  */
 export function HomePage() {
   return (
@@ -12,10 +12,10 @@ export function HomePage() {
         <p className="eyebrow">ScholarCheck</p>
         <h1>Know whether a funded degree really fits you</h1>
         <p className="lede">
-          For bachelor&rsquo;s, master&rsquo;s and PhD study: check each stated
-          requirement, see what the funding actually covers, and open the
-          official source behind every claim. No scores and no win
-          probabilities.
+          For bachelor&rsquo;s, master&rsquo;s and PhD study: discover opportunities
+          checked against official sources. See each stated requirement, what
+          the funding covers, and the evidence behind every claim. No scores
+          and no win probabilities.
         </p>
       </header>
 
@@ -37,9 +37,10 @@ export function HomePage() {
       <section className="panel" aria-labelledby="next-heading">
         <h2 id="next-heading">What this build includes</h2>
         <p>
-          Scaffold complete: shared domain types, a health endpoint and this page.
-          Profile entry, listings, evidence panels and saving come next in slice
-          S01.
+          The scaffold and four regression fixtures exist. Source monitoring
+          and automatic publication checks are planned; no opportunity is
+          published from those fixtures yet. Profile entry and listings follow
+          later.
         </p>
       </section>
     </main>

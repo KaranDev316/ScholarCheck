@@ -1,73 +1,83 @@
-# Evidence — S01
+# Evidence — S01 foundation
 
-Status: **in progress.** Step 1 (scaffold) and Step 2 T03 (seed format and
-fixtures) are recorded below; no acceptance criterion is proven yet.
+Status: **in progress under D-09**. The earlier “one complete decision”
+acceptance criteria AC-01..AC-14 moved to S07. Current S01 criteria F-01..F-07
+are in `VERIFICATION.md`. This file preserves completed scaffold and fixture
+checks and records what remains unproven.
 
-Per `VERIFICATION.md` section 8, each acceptance criterion needs an artifact.
-Record them here as the slice progresses:
+## Completed scaffold and fixture checks
 
-- AC-01..AC-03: profile form component tests + screenshots, storage inspection.
-- AC-04: listing component test, link check, screenshot.
-- AC-05: API 404 example (`{code: "opportunity_not_found"}`), UI screenshot.
-- AC-06..AC-09: evaluator matrix test output, UI screenshots.
-- AC-10: data-to-UI test output, screenshot.
-- AC-11: evidence-panel test, screenshot.
-- AC-12, AC-13: storage-fixture tests, storage inspection.
-- AC-14: forced-failure test, screenshot.
-
-Step 1 artifacts (scaffold only). Proposed API shapes awaiting the T02/T07 gate
-are in `PROPOSED-CONTRACTS.md`; they are not part of `VERIFICATION.md` §5 yet.
-
-| Check | Command | Result |
+| Check | Command recorded when run | Result |
 |---|---|---|
-| Backend tests | `cd backend && .venv/bin/python -m pytest` | 27 passed |
-| Frontend tests | `cd frontend && npm run test` | 7 passed |
-| Type check | `cd frontend && npx tsc -b --force` | exit 0 |
-| Lint | `cd frontend && npm run lint` | exit 0 |
-| Production build | `cd frontend && npm run build` | built |
+| Backend scaffold suite | `cd backend && .venv/bin/python -m pytest` | 27 passed at Step 1 |
+| Frontend tests | `cd frontend && npm run test` | 7 passed at Step 1 |
+| Frontend typecheck, lint, build | `npm run typecheck`, `npm run lint`, `npm run build` | Passed at Step 1 |
+| Seed content tests | `cd backend && .venv/bin/python -m pytest tests/test_seed_content.py` | 36 passed at T03 |
+| Full backend suite | `cd backend && .venv/bin/python -m pytest` | 69 passed at T03 |
 
-No acceptance criterion is proven by Step 1: it adds no listing, profile form,
-evidence panel or save behaviour. Fixture data is still unverified against
-official sources and remains a release blocker for S01.
+T03 created four YAML regression fixtures: CGRS D, UdeM doctoral exemption,
+RMIT research stipend, and Sydney RTP stipend. Tests cover model parsing,
+unique ids and evidence references, blocking-rule evidence, funding component
+shape, separate retrieval/human timestamps, and intentionally unspecified
+values. The 2026-10-23 content pass recorded 13/13 source URLs responding,
+19 passages matching after whitespace normalisation, and six table
+transcriptions checked cell by cell. Those checks establish neither complete
+claim coverage nor eligibility for automatic publication.
 
-## Step 2 (T03) — seed format and fixture records, 2026-10-23
+The [first-pass source review](FIRST-PASS-REVIEW.md) compares all 25 evidence
+entries with official pages and records material route, rate-year, deadline and
+wording issues. It is an agent comparison, not human verification and not an
+executed publication gate.
 
-Format v1 is written in `content/opportunities/README.md`: one file per
-opportunity, top-level `Opportunity` object, `snake_case` keys matching
-`backend/app/domain/models.py`, quoted decimal amounts, evidence with separate
-`retrieved_at`/`verified_at`, `unspecified` instead of zero or an estimate.
-`pyyaml` is now declared explicitly in `backend/pyproject.toml` (it was already
-present transitively through `uvicorn[standard]`).
+## Assurance under the revised policy
 
-| Fixture | Demo shape it covers | Official source used |
+Every existing `verified_at`, `verified_by` and `last_verified_at` remains
+`null`: no human verification is claimed. D-09 removes mandatory human
+approval, but no fixture currently has `source_checked` assurance either. The
+snapshot, validation and publication engine does not exist yet. The documented
+issues must be corrected or result in a hold when that engine is built.
+
+## Current F-criterion ledger
+
+| Criterion | State | Evidence or gap |
 |---|---|---|
-| `cgsd-doctoral.yaml` | Enrolment-only doctoral award; living support only, no tuition line | [NSERC CGRS D](https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp) |
-| `udem-exemption-doctoral.yaml` | Tuition exemption: `tuition_reduction` with 24 067,80 CAD/year; living support `unspecified` | [UdeM exemption](https://registraire.umontreal.ca/droits-de-scolarite/bourse-exemption/) |
-| `rmit-research-stipend.yaml` | Two-stage round (EOI, then full application) with stipend, international fee offset and relocation allowance | [RMIT scholarships](https://www.rmit.edu.au/research/research-degrees/scholarships), [RMIT stipend](https://www.rmit.edu.au/scholarships/research/research-stipend), [RMIT T&Cs](https://www.rmit.edu.au/research/research-degrees/terms-and-conditions) |
-| `usyd-rtp-stipend.yaml` | Stipend plus fee offset plus health cover, each a separate component | [RTP international](https://www.sydney.edu.au/scholarships/australian-government-research-training-program/rtp-international.html) |
+| F-01 | Partly proven | 36 seed tests parse and check references; material completeness is not proven |
+| F-02 | Partly proven | Real PostgreSQL round-trip and timestamp separation test; source-check timestamp is absent as expected |
+| F-03 | Proven | API returns structured `opportunity_not_found` 404 |
+| F-04 | Unproven | Operational schemas not built |
+| F-05 | Unproven | First-pass findings documented, not machine-enforced holds |
+| F-06 | Proven for fixture preview | API returns `insufficient_evidence`, null source-check metadata and `isPublished: false`; production hides the fixture |
+| F-07 | Unproven | No source-failure decision contract |
 
-| Check | Command | Result |
-|---|---|---|
-| Seed content tests | `cd backend && .venv/bin/python -m pytest tests/test_seed_content.py` | 36 passed |
-| Full backend suite | `cd backend && .venv/bin/python -m pytest` | 69 passed |
-| Evidence and link check | `curl -L -o /dev/null -w '%{http_code}'` on every `links`/`evidence` URL | 13/13 returned 200 |
-| Passage spot-check | normalise whitespace and search each passage in the retrieved page text | 19 quoted passages matched verbatim; 6 marked table transcriptions checked cell by cell |
+The former student UI screenshots, evaluator matrix, save tests and end-to-end
+walkthrough remain future S07 evidence requirements.
 
-Coverage of the data model by tests: models accept each file; ids unique and
-every evidence reference resolves; every blocking rule is evidenced; any
-component that states a value is evidenced; `unspecified` components carry no
-amount or currency; no `total`/`sum` field exists on `FundingComponent`; rounds
-expose identity only.
+## T04-T05 storage and read check, 2026-10-23
 
-### Fixture verification status (A2 still open)
+`backend/app/storage/schema.sql` creates separate opportunity, programme,
+round, eligibility-rule, funding-component, evidence and publication-state
+tables. The fixture loader validates YAML before import, replaces an unverified
+fixture atomically, skips an unchanged hash and refuses to overwrite a
+source-checked record. It does not grant assurance.
 
-Every `evidence.verified_at`, `verified_by` and `last_verified_at` is `null`:
-the values were retrieved from the official pages on 2026-10-23 by an agent, not
-confirmed by a human. **A2 is therefore not met and the fixture set remains a
-release blocker**, as `PLAN.md` Step 6 requires it to be recorded. A reviewer
-sets those fields after checking each passage (checklist in the content README);
-the tests assert the current, unverified state so a silent claim of verification
-cannot slip in.
+Against a temporary local PostgreSQL 18 instance:
 
-Not part of T03: PostgreSQL schema and loader (T04), the opportunity read
-endpoint with `opportunity_not_found` (T05).
+| Check | Actual result |
+|---|---|
+| First `python -m app.storage.load_seeds` | Loaded 4 fixtures; 4 changed |
+| Second identical run | Loaded 4 fixtures; 0 changed |
+| `pytest tests/test_opportunity_storage.py -q` with `SCHOLARCHECK_TEST_DATABASE_URL` | 4 passed |
+| Full `pytest -q` with `SCHOLARCHECK_TEST_DATABASE_URL` | 73 passed |
+| Backend wheel build | Succeeded; wheel contains `app/storage/schema.sql` |
+
+The read response is `{opportunity, publication, isPublished}`. For a
+development fixture, `publication` has `assurance:
+insufficient_evidence`, null `sourceCheckedAt` and
+`validationPolicyVersion`, and `freshness: not_checked`;
+`isPublished` is false. The same id returns a structured 404 in production
+mode. An unknown id returns `{code: opportunity_not_found, message: ...,
+details: null}`; an unconfigured database returns
+`{code: service_unavailable, message: ..., details: null}` with HTTP 503.
+
+This proves read and storage behaviour, not live source checking or automatic
+publication. The temporary PostgreSQL instance is test infrastructure only.
