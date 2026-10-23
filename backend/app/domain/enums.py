@@ -52,10 +52,16 @@ class EligibilityRuleKind(StrEnum):
 
 
 class DegreeLevel(StrEnum):
-    """Level of a programme (or of the applicant's intended study)."""
+    """Level of a programme, or of the applicant's intended study.
 
-    RESEARCH_MASTER = "research_master"
+    Bachelor's, master's (taught or research) and doctoral study are all in
+    scope (CONTEXT D-08). Levels stay distinct: a rule that names one level is
+    never satisfied by another.
+    """
+
+    BACHELOR = "bachelor"
     TAUGHT_MASTER = "taught_master"
+    RESEARCH_MASTER = "research_master"
     DOCTORAL = "doctoral"
 
 

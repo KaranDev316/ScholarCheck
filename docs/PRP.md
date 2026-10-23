@@ -3,10 +3,10 @@
 Depends on `CONTEXT.md` (decisions D-01..D-07 assumed). Priorities: **Must** = needed to prove the core advantage; **Should** = valuable, deferrable.
 
 ## 1. Product overview
-A scholarship decision tool that tells an international student, with checkable evidence, whether a funded research-master's opportunity fits their profile, what the funding really covers, which deadline applies, and what to do next.
+A scholarship decision tool that tells an international student, with checkable evidence, whether a funded bachelor's, master's or doctoral (PhD) opportunity fits their profile, what the funding really covers, which deadline applies, and what to do next.
 
 ## 2. Users, problem, primary journey
-- **User:** International student seeking a funded research master's; persona P1: Malawian national, living in India, three-year BCA, limited funds.
+- **User:** International student seeking a funded degree at bachelor's, master's or doctoral level; persona P1: Malawian national, living in India, three-year BCA, limited funds.
 - **Problem:** Listings overstate funding, hide blockers and collapse deadlines, forcing manual interpretation.
 - **Main use case:** Enter profile → see matching opportunities → open one → read eligibility assessment and funding breakdown → check official evidence → save a next action.
 
@@ -49,7 +49,7 @@ Community, document upload, automatic submission, probability/match scores, nati
 - Open: destinations, product name, hosting, accounts.
 
 ## 8. MVP acceptance / release criteria
-1. 20-30 verified research-master's records in 3 destinations, each with evidence.
+1. 20-30 verified records covering bachelor's, master's and doctoral study in 3 destinations, each with evidence.
 2. All Must requirements demonstrated; domain rules never violated in tests.
 3. Usability check with 5-8 users: time to a correct shortlist decision, missed blockers and misunderstood funding recorded against an existing site.
 4. Overdue-record count and per-update time tracked.

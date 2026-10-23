@@ -5,7 +5,12 @@ from datetime import UTC, datetime, timedelta
 import pytest
 from pydantic import ValidationError
 
-from app.domain.enums import AssessmentOutcome, EligibilityRuleKind, FundingStatus
+from app.domain.enums import (
+    AssessmentOutcome,
+    DegreeLevel,
+    EligibilityRuleKind,
+    FundingStatus,
+)
 from app.domain.models import (
     AssessmentResult,
     EligibilityRule,
@@ -41,6 +46,39 @@ def test_t02_unknown_outcome_is_rejected() -> None:
             outcome_reason="Looks promising.",
             rules=(),
         )
+
+
+def test_t02_degree_levels_cover_bachelors_masters_and_doctoral() -> None:
+    """D-08: every level the product serves is representable, and distinct."""
+
+    assert [level.value for level in DegreeLevel] == [
+        "bachelor",
+        "taught_master",
+        "research_master",
+        "doctoral",
+    ]
+
+
+@pytest.mark.parametrize("level", list(DegreeLevel))
+def test_t02_profile_accepts_each_degree_level(
+    level: DegreeLevel, profile: Profile
+) -> None:
+    variant = profile.model_copy(update={"intended_level": level})
+
+    assert variant.intended_level is level
+    assert variant.model_dump(mode="json", by_alias=True)["intendedLevel"] == (
+        level.value
+    )
+
+
+def test_t02_unknown_degree_level_is_rejected(profile: Profile) -> None:
+    """Levels are a closed vocabulary; a made-up one must not slip through."""
+
+    payload = profile.model_dump()
+    payload["intended_level"] = "postdoc"
+
+    with pytest.raises(ValidationError):
+        Profile(**payload)
 
 
 def test_t02_grade_is_kept_verbatim(profile: Profile) -> None:

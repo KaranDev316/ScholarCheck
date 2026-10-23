@@ -5,13 +5,13 @@
 ## 1. Project
 - **Name:** NOT DECIDED (working title: "ScholarCheck")
 - **Purpose:** Help students judge which funded scholarships are worth pursuing, with evidence they can check. [SOURCE]
-- **Target user:** International applicants seeking funded **research master's** degrees. First test profile: Malawian national, resident in India, three-year BCA. [SOURCE]
+- **Target user:** International applicants seeking funded **bachelor's, master's or doctoral (PhD)** degrees. First test profile: Malawian national, resident in India, three-year BCA. [ASSUMED D-08; the source audit covered research master's only]
 - **Problem:** Aggregator listings blur funding (tuition exemption shown as "fully funded"), flatten multi-stage deadlines into one date, bury blocking eligibility conditions, and label article links "Apply Now". [SOURCE]
-- **Status:** Concept + audit. No repository exists. Greenfield. [ASSUMED]
+- **Status:** Concept + audit; implementation started (S01 Step 1 scaffold). Greenfield. [ASSUMED]
 - **Nature:** Portfolio project built and maintained by one person, designed so it could become a real product. [ASSUMED D-01]
 
 ## 2. MVP boundary
-20-30 carefully checked research-master's funding opportunities across **Canada, Australia, Germany** [ASSUMED D-03], with structured listings, official evidence, filters, requirement-by-requirement assessment, funding breakdown, intake-aware deadlines, comparison of up to three, a personal checklist/next action, and internal review tools. Detail lives in `PRP.md`.
+20-30 carefully checked funding opportunities at **bachelor's, master's and doctoral** level across **Canada, Australia, Germany** [ASSUMED D-03, D-08], with structured listings, official evidence, filters, requirement-by-requirement assessment, funding breakdown, intake-aware deadlines, comparison of up to three, a personal checklist/next action, and internal review tools. Detail lives in `PRP.md`.
 
 ## 3. Confirmed / assumed stack
 | Layer | Choice | Why | Status |
@@ -74,9 +74,10 @@ Constraint: link to official sources; write own summaries.
 | D-05 | Accounts deferred (Should) | Not needed to prove core advantage | Assumed |
 | D-06 | No AI in MVP | Audit: human approves claims first | Assumed |
 | D-07 | Content seeded via reviewed files, internal review tool in S06 | Maintainable alone | Assumed |
+| D-08 | Degree levels: bachelor's, master's (taught or research) and doctoral (PhD) | Every level the product should serve is in scope; levels stay distinct, so a programme is never matched across levels and a rule that names a level is evaluated only against that level | Owner request, 23 Oct 2026 |
 
 ## 10. Current status / next action
-Planning set drafted: PRP → ROADMAP → S01 VERIFICATION → S01 PLAN. Next action: approve or amend D-01..D-07, then begin S01.
+S01 Step 1 complete: repository scaffold, shared domain types, health endpoint and connectivity page. Committed; the assessment and error shapes are proposed in `docs/slices/S01/PROPOSED-CONTRACTS.md` and still await the T02/T07 gate. Next action: approve those shapes, then S01 Step 2 (T03 seed format and fixtures).
 
 ## 11. Open (nonblocking) questions
 Product name; hosting provider and budget; UI library; test tooling for E2E; which 20-30 opportunities; whether accounts ever ship.

@@ -48,8 +48,9 @@ export const eligibilityRuleKinds = [
 export type EligibilityRuleKind = (typeof eligibilityRuleKinds)[number]
 
 export const degreeLevels = [
-  'research_master',
+  'bachelor',
   'taught_master',
+  'research_master',
   'doctoral',
 ] as const
 

@@ -1,8 +1,9 @@
 # ScholarCheck
 
 A scholarship decision tool: it tells an international applicant, with checkable
-evidence, whether a funded research master's really fits their profile, what the
-funding covers, which deadline applies, and what to do next.
+evidence, whether a funded bachelor's, master's or PhD opportunity really fits
+their profile, what the funding covers, which deadline applies, and what to do
+next.
 
 Planning documents live in [`docs/`](docs); implementation follows slice **S01**
 (`docs/slices/S01/PLAN.md`).
@@ -69,6 +70,8 @@ references (a bare `tsc --noEmit` would check no files).
 ## Current status
 
 S01 Step 1 complete: repository scaffold, shared domain types, health endpoint,
-and a home page that reports API connectivity. Nothing is committed and no
-fixture content exists yet — seed data requires human verification against the
-official sources (S01 T03).
+and a home page that reports API connectivity. The scaffold is committed, and
+the proposed assessment/error shapes are recorded in
+`docs/slices/S01/PROPOSED-CONTRACTS.md` pending the T02/T07 gate. No fixture
+content exists yet — seed data requires human verification against the official
+sources (S01 T03).

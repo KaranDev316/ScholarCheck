@@ -10,10 +10,11 @@ export function HomePage() {
     <main className="page">
       <header className="masthead">
         <p className="eyebrow">ScholarCheck</p>
-        <h1>Know whether a funded master&rsquo;s really fits you</h1>
+        <h1>Know whether a funded degree really fits you</h1>
         <p className="lede">
-          Check each stated requirement, see what the funding actually covers,
-          and open the official source behind every claim. No scores and no win
+          For bachelor&rsquo;s, master&rsquo;s and PhD study: check each stated
+          requirement, see what the funding actually covers, and open the
+          official source behind every claim. No scores and no win
           probabilities.
         </p>
       </header>

@@ -29,8 +29,11 @@ describe('HomePage (T01/T02)', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: /know whether a funded master/i,
+        name: /know whether a funded degree/i,
       }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/bachelor.s, master.s and PhD/i),
     ).toBeInTheDocument()
   })
 
@@ -90,7 +93,7 @@ describe('HomePage (T01/T02)', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: /know whether a funded master/i,
+        name: /know whether a funded degree/i,
       }),
     ).toBeInTheDocument()
   })

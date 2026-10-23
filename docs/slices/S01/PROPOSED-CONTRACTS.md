@@ -52,6 +52,8 @@ own contract note; they are **not** part of this gate.
 ```
 
 - `profile` is evaluated statelessly and never stored (D-04, invariant 8).
+- `intendedLevel` is one of `bachelor`, `taught_master`, `research_master`,
+  `doctoral` (CONTEXT D-08); `degreeStatus` is `ongoing` or `completed`.
 - `roundId` is optional and omitted when the opportunity has a single round; a
   multi-round scheme requires it.
 - `grade` is optional and is echoed, never converted: `value` is a string.
