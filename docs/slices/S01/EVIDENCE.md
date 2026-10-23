@@ -14,7 +14,8 @@ Record them here as the slice progresses:
 - AC-12, AC-13: storage-fixture tests, storage inspection.
 - AC-14: forced-failure test, screenshot.
 
-Step 1 artifacts (scaffold only):
+Step 1 artifacts (scaffold only). Proposed API shapes awaiting the T02/T07 gate
+are in `PROPOSED-CONTRACTS.md`; they are not part of `VERIFICATION.md` §5 yet.
 
 | Check | Command | Result |
 |---|---|---|
