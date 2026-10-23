@@ -1,23 +1,26 @@
 # CONTEXT.md — Autonomous Scholarship Platform
 
-> Direction updated **23 Oct 2026** (D-09). Routine discovery, source checking,
-> publication and maintenance should run without human approval. Other
-> assumptions remain labelled. `PUBLICATION-POLICY.md` defines the release gate.
+> Direction updated **23 Oct 2026** (D-09 and D-10). Publication can be
+> source-backed without routine human approval. The first release is a public
+> four-scholarship website; one-record monitoring follows; discovery follows
+> proven monitoring. `PUBLICATION-POLICY.md` defines the publication gate.
 
 ## 1. Project
 - **Name:** NOT DECIDED (working title: "ScholarCheck")
 - **Purpose:** Continuously discover, validate and maintain scholarship opportunities from official sources, then help students judge them with evidence they can check. [D-09]
 - **Target user:** International applicants seeking funded **bachelor's, master's or doctoral (PhD)** degrees. First test profile: Malawian national, resident in India, three-year BCA. [ASSUMED D-08; the source audit covered research master's only]
 - **Problem:** Aggregator listings blur funding (tuition exemption shown as "fully funded"), flatten multi-stage deadlines into one date, bury blocking eligibility conditions, and label article links "Apply Now". [SOURCE]
-- **Status:** S01 scaffold and four unverified seed fixtures exist; the autonomous pipeline is planned, not implemented.
+- **Status:** S01 scaffold, four unverified seed fixtures, PostgreSQL loader and a development-only read endpoint exist; public publication and monitoring are not implemented.
 - **Nature:** Portfolio project built and maintained by one person, designed so it could become a real product. [ASSUMED D-01]
 
 ## 2. MVP boundary
-First prove safe, unattended re-fetch and publication decisions against the four
-existing fixtures. Then grow to 20-30 source-checked opportunities at
-**bachelor's, master's and doctoral** level across **Canada, Australia,
-Germany** [ASSUMED D-03, D-08]. Student search, assessment and saving remain
-product goals but follow the publication pipeline. Detail lives in `PRP.md`.
+First publish the four existing scholarships through source-backed validation
+and launch a public, no-account site for browsing, search, country/level/funding
+filters, eligibility, deadlines, evidence, official application links and
+sharing. Then monitor one published scholarship until it can safely update or
+hold a meaningful change unattended. Expand monitoring to the other three
+before adding automatic discovery. Profiles, personal assessments and saving
+are later features. Detail lives in `PRP.md` and `ROADMAP.md`. [D-10]
 
 ## 3. Confirmed / assumed stack
 | Layer | Choice | Why | Status |
@@ -36,7 +39,9 @@ product goals but follow the publication pipeline. Detail lives in `PRP.md`.
 - Single application first; no microservices. [SOURCE]
 - **Domain entities:** Opportunity (stable scheme), Round (intake/year/route), Programme (funded degree), EligibilityRule, FundingComponent, Deadline, Evidence, ChangeRecord. Saved-application state belongs to the user. [SOURCE]
 - Opportunity, Round and Programme must stay separate. [SOURCE]
-- **User state (profile, shortlist, checklist) is stored client-side in the MVP** [ASSUMED D-04]; the server evaluates a submitted profile statelessly and stores no personal data. Accounts for cross-device sync are a later `Should`.
+- The first release has no applicant account or profile. Any later profile,
+  shortlist or checklist state may be stored client-side; cross-device sync
+  remains deferred. [D-10; prior D-04 assumption narrowed]
 - The four YAML fixtures are regression benchmarks. Production candidates come
   from registered official sources and pass `PUBLICATION-POLICY.md` before
   publication. PostgreSQL stores current records and revision metadata;
@@ -94,14 +99,14 @@ Constraint: link to official sources; write own summaries.
 | D-07 | Superseded by D-09: reviewed files as production source | Keep YAML as regression fixtures; production uses source snapshots and policy gates | Superseded 23 Oct 2026 |
 | D-08 | Degree levels: bachelor's, master's (taught or research) and doctoral (PhD) | Every level the product should serve is in scope; levels stay distinct, so a programme is never matched across levels and a rule that names a level is evaluated only against that level | Owner request, 23 Oct 2026 |
 | D-09 | Automatic source-backed publication; human review optional | Routine operation cannot require the owner to approve every update. Failed gates hold or reject; fetch failures retain last-known-good. Human verification fields remain human-only. | Owner direction, 23 Oct 2026 |
+| D-10 | Public four-scholarship MVP first, then reliable one-record monitoring, then discovery | Get a useful site running; prove a meaningful change can update or hold safely without intervention before expanding coverage | Owner direction, 23 Oct 2026 |
 
 ## 10. Current status / next action
-S01 scaffold and T03 seed fixtures exist. The fixture review found material
-route, wording and deadline issues; none is yet eligible for automatic
-publication. Next: finish S01 storage/read contracts and the deterministic
-validation contract, then build source monitoring and publication gates.
+S01 scaffold, fixtures, PostgreSQL storage and development read endpoint exist.
+The fixture review found material route, wording and deadline issues; none is
+yet eligible for publication. Next: resolve fixture issues, build source-backed
+publication and public catalogue/detail journeys, then monitor one record.
 
 ## 11. Open (nonblocking) questions
-Product name; hosting and object-storage provider; source access policy;
-monitoring cadence; which 20-30 opportunities; UI library; whether accounts
-ever ship.
+Hosting and snapshot storage provider; source access policy; monitoring
+cadence; UI library; whether accounts ever ship.

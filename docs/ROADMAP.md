@@ -1,59 +1,60 @@
-# ROADMAP.md — Autonomous scholarship platform
+# ROADMAP.md — Scholarship MVP, then reliable monitoring
 
-Inputs: `CONTEXT.md`, `PRP.md`, `PUBLICATION-POLICY.md`. Rebased on owner
-direction D-09, 23 October 2026. The earlier user-journey-first roadmap is
-superseded; existing code and the four YAML fixtures remain useful.
+Inputs: `CONTEXT.md`, `PRP.md`, `PUBLICATION-POLICY.md`. Owner decision D-10
+(23 October 2026) sets the sequence below. The four current fixtures are
+unpublished development data until their material claims pass the publication
+policy.
 
-## Sequence and proof
+## Stage 1 — Make it work (finish S01)
 
-| Slice | Deliverable | Proof before moving on |
+Publish the four existing scholarships with source-backed evidence and a
+usable public website. No account is required.
+
+| Order | Deliverable | Exit proof |
 |---|---|---|
-| S01 — Foundation (current) | Domain/evidence model; four regression fixtures; PostgreSQL storage and read API; source-check and publication decision contracts | Fixtures load and expose facts without claiming human verification or automatic assurance; missing/contradictory material claims are identified |
-| S02 — Source monitoring | Source registry, permitted fetches, immutable snapshots, conditional requests where supported, scheduler and retry | Re-fetch four official sources; unchanged content yields no duplicate work; fetch failure retains the previous snapshot |
-| S03 — Candidate extraction | HTML/PDF parsers, optional model-assisted extraction, field-level evidence mapping | Amount, rate year, route, deadline and restrictions are traceable to snapshot passages or table cells; unknowns stay unknown |
-| S04 — Validation and publication | Deterministic gates, hold/reject reasons, duplicate checks, atomic revisions, `source_checked` assurance | Same snapshot gives same decision; known fixture issues hold; fully evidenced candidate publishes without a human click |
-| S05 — Change and freshness | Detect material changes, publish safe revisions, retain last-known-good, warn on source failure | Changed source produces an explained revision or hold; failed fetch never silently closes a scholarship |
-| S06 — Discovery | Find official opportunities, reconcile identities and duplicates, widen source coverage | New source enters through the same gates; duplicate candidates do not create duplicate listings |
-| S07 — Student experience | Search/filter, profile-based eligibility, funding, deadlines, evidence/assurance labels, saving, comparison and notifications | Student sees limitations and source state, can follow the complete decision path; account sync remains deferred |
-| S08 — Operations and release | Monitoring, automatic retries, failure alerts, quality metrics, usability study and 20-30 source-checked records | Pipeline runs unattended in normal cases; unsupported claims and stale records are measured; release criteria in PRP pass |
+| 1 | Resolve the four fixture issues in `slices/S01/FIRST-PASS-REVIEW.md` and retain the official-source content used for each decision | Every displayed material claim points to a retained passage or table cell; ambiguous or unsupported claims are removed, qualified, or held |
+| 2 | Finish the validation and publication path | All required gates in `PUBLICATION-POLICY.md` pass before a record becomes public; failed records remain private; decisions and revision metadata are stored |
+| 3 | Complete list, search, filter and detail APIs for published opportunities | Only published records appear publicly; country, study level and funding filters work; unknown IDs return the agreed 404 |
+| 4 | Build the public site | Visitors can browse/search, filter, read eligibility, deadlines and evidence, open official application links, and share direct scholarship URLs without signing in |
+| 5 | Run release checks and deploy | Four source-checked records are public, all first-release journeys work at the deployed URL, and provenance and freshness are understandable |
 
-SYS-01..SYS-08 span S02-S08. REQ-01..REQ-12 are completed in S07
-(with source freshness foundations in S05); exceptional maintainer
-actions in REQ-13 belong to S08. REQ-14 account sync remains deferred.
+The four records are a target, not a reason to bypass a failed gate. If a
+source cannot support a material claim, hold that record and report the release
+gap. Human review is optional and cannot be silently represented by an agent.
 
-No slice may publish unsupported facts merely to meet catalogue size or schedule.
-The first milestone is the four-source unattended re-fetch and decision
-demonstration, not a polished user-facing catalogue.
+## Stage 2 — Make it update itself
 
-## S01 remaining work
+Monitor **one** of the published scholarships first. Fetch its registered
+official source on a schedule, retain an immutable snapshot, and compare it to
+the last checked version. Unchanged content does no publication work. A
+meaningful change creates a candidate that runs through the same evidence and
+validation gates as initial publication.
 
-| ID | Task | State |
-|---|---|---|
-| T01 | Scaffold frontend/backend and test runners | Complete |
-| T02 | Shared `Opportunity`, `Evidence`, `Profile` and assessment types | Complete as a draft contract |
-| T03 | Four YAML fixtures and seed validation tests | Complete as unverified regression inputs; source review found issues |
-| T04 | PostgreSQL schema and fixture loader/read model | Not started |
-| T05 | Opportunity read endpoint and not-found response | Not started |
-| T06 | Source-check and publication decision **contract** with explicit machine versus human metadata | Not started |
-| T07 | Deterministic fixture audit: known route/rate/deadline discrepancies must be held, not labelled publishable | Not started |
-| T08 | S01 regression and evidence report for storage/read and hold decisions | Not started |
+The worker either publishes an explained revision or holds it with a reason.
+Fetch failures and uncertain changes keep the last-known-good public record
+and show its recheck state. Retries, duplicate processing and audit history
+must be tested. This stage is complete when a material change is detected,
+validated, and safely updated or held without owner intervention.
 
-The former T06-T11 evaluator, profile and frontend tasks move to S07. The
-proposed assessment API in `slices/S01/PROPOSED-CONTRACTS.md` is preserved for
-that work; its gate does not block S01 storage/read. S01 has no automatic
-publication engine; that is S04. S01 defines the policy contract and test
-benchmarks it must obey.
+After that proof, extend monitoring to the other three published records.
 
-## Decisions that remain open
+## Stage 3 — Make it grow itself
 
-- Source registry allowlist and access rules before S02 fetching.
-- Snapshot storage provider and retention before S02.
-- Whether a model-assisted extractor is needed after deterministic parsers are
-  tried in S03.
-- Authentication for optional maintainer actions; it cannot be a dependency of
-  routine publication.
-- Hosting, operating budget and final source/destination set.
+Add official-source discovery, extraction of new candidates, identity and
+duplicate reconciliation, and automatic publication through the existing
+gates. Expand beyond the four records only after Stage 2 is reliable.
 
-The publication policy itself is settled by D-09: human approval is optional,
-human-verification fields remain human-only, and failed automatic gates hold or
-preserve the last-known-good record.
+## Deferred from the first release
+
+Applicant profiles and personal eligibility assessments, saved items,
+comparison, checklists, notifications, accounts, and catalogue-size targets
+remain later work. The first release displays **stated eligibility**; it does
+not decide whether a particular visitor qualifies. Automatic application
+submission and match probabilities remain out of scope.
+
+## Current implementation
+
+The React/FastAPI scaffold, four YAML fixtures, PostgreSQL loader, and a
+development-only detail read endpoint exist. The publication engine, public
+list/search API, public listing UI and source monitor do not yet exist. The
+S01 evidence ledger records completed checks and outstanding proof.

@@ -1,10 +1,10 @@
-# S01 plan — Foundation for autonomous publication
+# S01 plan — Public four-scholarship MVP
 
-Rebased 23 October 2026 under D-09. Read `CONTEXT.md`,
+Rebased 23 October 2026 under D-09 and D-10. Read `CONTEXT.md`,
 `PUBLICATION-POLICY.md`, `ROADMAP.md` and `VERIFICATION.md` before work.
-The old profile/listing/save implementation steps are now S07 work; the
-existing scaffold is retained. Do not treat a schema pass or a successful HTTP
-fetch as permission to publish.
+The profile/assessment/save steps are deferred; public catalogue and detail
+are part of this slice. Do not treat a schema pass or a successful HTTP fetch
+as permission to publish.
 
 ## Completed
 
@@ -13,7 +13,7 @@ fetch as permission to publish.
 3. Agent first-pass source comparison in `FIRST-PASS-REVIEW.md`. Its findings
    require correction or a hold decision; it did not set human verification.
 
-## Remaining sequence
+## Delivery sequence
 
 ### Step 1 — Read model and storage (T04-T05; implemented, proof in EVIDENCE)
 
@@ -53,14 +53,34 @@ fetch as permission to publish.
 - Run backend tests and relevant frontend scaffold checks.
 - Map F-01..F-07 from `VERIFICATION.md` to tests, API examples and hold
   reports in `EVIDENCE.md`. Mark any criterion unproven honestly.
-- Handoff to S02 with four source URLs and known expected differences.
+- Carry the four source URLs and known expected differences into publication
+  tests and the later S02 monitoring handoff.
+
+### Step 5 — Resolve and publish the four records (T09-T10)
+
+- Correct the fixture route, rate-year, deadline and wording issues from
+  `FIRST-PASS-REVIEW.md`. Obtain retained official-source snapshots and map
+  every material displayed claim to a passage or table cell.
+- Implement the publication policy gates, decision report, immutable revision
+  and atomic publish/hold operation. Keep human verification fields human-only.
+- Publish each of the four records only after its own gate passes. Record
+  specific hold reasons for any candidate that cannot pass.
+
+### Step 6 — Public website (T11-T12)
+
+- Add published-only catalogue/search/filter endpoints for country, study
+  level and funding. Detail responses expose stated eligibility, funding,
+  deadlines, evidence, assurance, freshness and distinct official links.
+- Build browse/search/filter and shareable detail pages without an account.
+  Include empty, loading, error and mobile states and keyboard access.
+- Run backend/frontend tests and a deployed end-to-end smoke check for all
+  first-release journeys; record proof in `EVIDENCE.md`.
 
 ## Boundaries
 
-S01 defines the data and policy contracts; S02 re-fetches official sources,
-S03 extracts candidates, S04 validates and publishes automatically, and S07
-builds the student journey. The proposed assessment API in
-`PROPOSED-CONTRACTS.md` remains a review draft for S07 and does not block
-T04-T06. Current human-only verification fields remain optional.
-
-No automatic publication is enabled merely by completing this plan.
+S01 now includes initial source-backed publication and the public MVP. S02
+monitors one published scholarship and proves safe unattended update/hold;
+S03 adds discovery and growth. The proposed personal assessment API in
+`PROPOSED-CONTRACTS.md` remains a later-work draft. Current human-only
+verification fields remain optional. Completing a contract alone does not
+enable publication; an individual record must pass the implemented gates.

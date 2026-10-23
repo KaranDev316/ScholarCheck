@@ -78,12 +78,15 @@ same snapshot must not create duplicate revisions.
 | `OpportunityRevision` | Immutable published version and change history. |
 | `SourceHealth` | Last success, failures, retries and anomalies. |
 
-## First milestone and current fixtures
+## First publication and monitoring milestone
 
-The first unattended-path demonstration re-fetches the four S01 official
-sources, recognizes unchanged claims, detects a changed claim, and makes a
-deterministic publish/hold/stale decision without a human click. The fixtures
-remain regression inputs, not automatically trusted records.
+Stage 1 validates and publishes the four existing scholarships for a public
+website. Their source-backed publication decisions use the gates above and
+retained official-source content. Scheduled re-fetch is a separate Stage 2
+capability: start with one published scholarship, then prove that an unchanged
+page does no work and that a meaningful change is updated or held safely
+without owner intervention. The fixtures remain regression inputs, not
+automatically trusted records.
 
 The [first-pass review](slices/S01/FIRST-PASS-REVIEW.md) found route, rate-year,
 and deadline issues. Those candidates must stay on hold until corrected and

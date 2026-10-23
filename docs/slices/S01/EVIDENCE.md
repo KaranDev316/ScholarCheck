@@ -1,9 +1,9 @@
 # Evidence — S01 foundation
 
-Status: **in progress under D-09**. The earlier “one complete decision”
-acceptance criteria AC-01..AC-14 moved to S07. Current S01 criteria F-01..F-07
-are in `VERIFICATION.md`. This file preserves completed scaffold and fixture
-checks and records what remains unproven.
+Status: **in progress under D-09 and D-10**. Personal assessment criteria
+AC-01..AC-14 are deferred. Current S01 criteria F-01..F-10 are in
+`VERIFICATION.md`. This file preserves completed scaffold and fixture checks
+and records what remains unproven.
 
 ## Completed scaffold and fixture checks
 
@@ -48,9 +48,12 @@ issues must be corrected or result in a hold when that engine is built.
 | F-05 | Unproven | First-pass findings documented, not machine-enforced holds |
 | F-06 | Proven for fixture preview | API returns `insufficient_evidence`, null source-check metadata and `isPublished: false`; production hides the fixture |
 | F-07 | Unproven | No source-failure decision contract |
+| F-08 | Unproven | No retained snapshots or publication gate; all four fixtures remain unpublished |
+| F-09 | Unproven | Only development/test detail read exists; no public catalogue or filters |
+| F-10 | Unproven | Frontend is a scaffold; no public scholarship journeys or deployed URL |
 
-The former student UI screenshots, evaluator matrix, save tests and end-to-end
-walkthrough remain future S07 evidence requirements.
+Personal evaluator, save and comparison proof remains future work. Public
+catalogue/detail proof is now part of S01.
 
 ## T04-T05 storage and read check, 2026-10-23
 

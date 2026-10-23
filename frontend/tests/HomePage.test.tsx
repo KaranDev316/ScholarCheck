@@ -37,7 +37,7 @@ describe('HomePage (T01/T02)', () => {
     ).toBeInTheDocument()
   })
 
-  it('t02_lists_exactly_the_four_outcome_wordings', () => {
+  it('shows the public MVP scope without claiming publication', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(() =>
@@ -47,15 +47,8 @@ describe('HomePage (T01/T02)', () => {
 
     render(<HomePage />)
 
-    const outcomes = screen.getAllByRole('listitem').map((item) => item.textContent)
-
-    expect(outcomes).toEqual([
-      'Meets checked requirements',
-      'Potential fit: confirmation needed',
-      'Does not meet a stated requirement',
-      'Insufficient information',
-    ])
-    expect(screen.getByText(/no scores and no win probabilities/i)).toBeInTheDocument()
+    expect(screen.getByText(/search by country, study level and funding/i)).toBeInTheDocument()
+    expect(screen.getByText(/no opportunity is published/i)).toBeInTheDocument()
   })
 
   it('t01_reports_a_connected_api', async () => {

@@ -1,10 +1,11 @@
 # ScholarCheck
 
-An autonomous scholarship discovery and monitoring platform. It is designed
-to collect opportunities from official sources, validate material facts against
-retained evidence, and publish safe revisions without routine human approval.
-Students will see eligibility, funding, deadlines and the evidence behind each
-important claim.
+ScholarCheck's first release will be a public, no-account website for four
+source-checked scholarships. Visitors will browse and search, filter by
+country, study level and funding, inspect eligibility, deadlines and evidence,
+open official application links, and share scholarship pages. A worker will
+then monitor one published scholarship and safely update or hold changes.
+Automatic discovery and catalogue growth follow proven monitoring.
 
 The [publication policy](docs/PUBLICATION-POLICY.md), [roadmap](docs/ROADMAP.md)
 and [S01 plan](docs/slices/S01/PLAN.md) describe the revised direction.
@@ -16,8 +17,8 @@ and [S01 plan](docs/slices/S01/PLAN.md) describe the revised direction.
 | Frontend | React 19 + TypeScript (strict), Vite 8, Vitest + Testing Library |
 | Backend | FastAPI, Python 3.12+ (this machine: 3.14) |
 | Data | PostgreSQL with a repeatable fixture loader (S01 T04) |
-| Planned pipeline | Python scheduled jobs, source snapshots, deterministic validation and automatic publication |
-| Deferred | Accounts; model-assisted extraction is optional after parser evaluation |
+| Planned pipeline | Source snapshots and validation for initial publication; then one-source scheduled monitoring |
+| Deferred | Automatic discovery, personal assessments, saved items and accounts |
 
 ## Repository layout
 
@@ -91,9 +92,10 @@ references (a bare `tsc --noEmit` would check no files).
 
 ## Current status
 
-S01 scaffold and four regression fixtures exist. The live source pipeline and
-automatic publication engine do **not** exist yet. The
+The scaffold, four regression fixtures, PostgreSQL loader and development read
+endpoint exist. The public catalogue, publication gates, website journeys and
+monitoring worker do **not** exist yet. The
 [first-pass review](docs/slices/S01/FIRST-PASS-REVIEW.md) found material
-route, rate-year and deadline issues, so the fixtures cannot be labelled
-`source_checked` or published under the new policy. Human verification remains
-an optional, separately labelled assurance.
+route, rate-year and deadline issues, so the fixtures cannot yet be labelled
+`source_checked` or published. The [roadmap](docs/ROADMAP.md) now finishes the
+four-record public MVP before monitoring one record and then adding discovery.
