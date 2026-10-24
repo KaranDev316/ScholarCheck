@@ -1,7 +1,8 @@
 # ROADMAP.md — Scholarship MVP, then reliable monitoring
 
-Inputs: `CONTEXT.md`, `PRP.md`, `PUBLICATION-POLICY.md`. Owner decisions D-10
-and D-11 set the sequence below. The four current fixtures remain unpublished
+Inputs: `CONTEXT.md`, `PRP.md`, `ARCHITECTURE.md`,
+`PUBLICATION-POLICY.md`. Owner decisions D-10..D-12 set the sequence below.
+The four current fixtures remain unpublished
 regression inputs until their material claims pass the publication policy.
 
 ## Stage 1 — Make it work (finish S01)
@@ -12,7 +13,7 @@ account is required.
 
 | Order | Deliverable | Exit proof |
 |---|---|---|
-| 1 | Select launch records from government or established institutions; audit the four fixture issues and replace weak launch candidates | Every displayed material claim points to an exact retained passage or table cell; unsupported candidates remain private and all four fixtures stay in regression tests |
+| 1 | Select launch records from government, university or approved scholarship NGO sources; audit the four fixture issues and replace weak launch candidates | Every displayed material claim points to an exact retained passage or table cell; unsupported candidates remain private and all four fixtures stay in regression tests |
 | 2 | Build the public UI shell from the wireframe while publication work proceeds | Home, Find scholarships and detail routes work with clearly marked development data, responsive layouts and empty/loading/error states; no fixture is presented as published |
 | 3 | Migrate legacy human-verification fields and finish the validation/publication path | An extraction pass and a separate AI evidence-check pass produce auditable proposals; code enforces provider, exact excerpt, value, date, conflict and coverage gates; decisions and revisions are stored |
 | 4 | Complete published-only list, search, filter, detail and feedback APIs and connect the UI | Country, study level and funding-type filters work on published records; official actions, sharing and problem reports work; unknown IDs return the agreed 404 |

@@ -47,6 +47,10 @@ personal assessments and saving are later features. [D-10, D-11]
   from registered official sources and pass `PUBLICATION-POLICY.md` before
   publication. PostgreSQL stores current records and revision metadata;
   immutable snapshots preserve the evidence. [D-09]
+- The owner architecture is official government, university and approved
+  scholarship NGO sources → collector → retained snapshots → AI extraction and
+  evidence checking → deterministic publication gates → PostgreSQL →
+  published-only API → website. See `ARCHITECTURE.md`. [D-12]
 - There is no human-verification workflow or UI. Missing or conflicting
   material evidence holds publication automatically. [D-11]
 
@@ -109,6 +113,7 @@ Constraint: link to official sources; write own summaries.
 | D-09 | Automatic source-backed publication; human review initially optional | Routine operation cannot require owner approval. Superseded in part by D-11, which removes human verification entirely. | Owner direction, 23 Oct 2026 |
 | D-10 | Public MVP first, then reliable one-record monitoring, then discovery | Get a useful site running; prove a meaningful change can update or hold safely before expanding coverage | Owner direction, 23 Oct 2026 |
 | D-11 | Fully automated, evidence-first public product with strict coverage labels | No human-verification workflow; launch the best-evidenced records; enforce exact excerpts, fact states, computed funding types and a three-part “Fully funded” gate | Owner wireframe decisions and launch-set choice, 24 Oct 2026 |
+| D-12 | Source-to-website architecture with collector and AI validation | Accept government, university and approved scholarship NGO sources; retain snapshots; code gates publication between AI proposals and published revisions/API | Owner architecture diagram, 24 Oct 2026 |
 
 ## 10. Current status / next action
 S01 scaffold, fixtures, PostgreSQL storage and development read endpoint exist.

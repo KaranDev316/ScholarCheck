@@ -9,7 +9,8 @@ and safely update or hold changes. Automatic discovery follows proven
 monitoring. The four current fixtures remain regression inputs, not a launch
 quota.
 
-The [publication policy](docs/PUBLICATION-POLICY.md), [roadmap](docs/ROADMAP.md)
+The [architecture](docs/ARCHITECTURE.md),
+[publication policy](docs/PUBLICATION-POLICY.md), [roadmap](docs/ROADMAP.md)
 and [S01 plan](docs/slices/S01/PLAN.md) describe the revised direction.
 
 ## Stack
@@ -25,7 +26,7 @@ and [S01 plan](docs/slices/S01/PLAN.md) describe the revised direction.
 ## Repository layout
 
 ```
-docs/       CONTEXT.md PRP.md ROADMAP.md PUBLICATION-POLICY.md slices/S01/
+docs/       ARCHITECTURE.md CONTEXT.md PRP.md ROADMAP.md PUBLICATION-POLICY.md slices/S01/
 backend/    app/{api,domain,models} tests/
 frontend/   src/{pages} tests/
 content/    opportunities/*.yaml (unverified regression fixtures, S01 T03)

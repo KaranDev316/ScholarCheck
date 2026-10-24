@@ -1,7 +1,8 @@
 # S01 plan — Public evidence-backed MVP
 
-Rebased 24 October 2026 under D-09..D-11. Read `CONTEXT.md`,
-`PUBLICATION-POLICY.md`, `ROADMAP.md` and `VERIFICATION.md` before work.
+Rebased 24 October 2026 under D-09..D-12. Read `CONTEXT.md`,
+`ARCHITECTURE.md`, `PUBLICATION-POLICY.md`, `ROADMAP.md` and
+`VERIFICATION.md` before work.
 The profile/assessment/save steps are deferred; public catalogue and detail
 are part of this slice. Do not treat a schema pass or a successful HTTP fetch
 as permission to publish.

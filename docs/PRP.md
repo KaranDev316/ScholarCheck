@@ -102,9 +102,9 @@ public claim can no longer be supported.
 
 ## Growth requirements (Stage 3)
 
-Discover additional opportunities from permitted government and established
-institutional sources, extract evidence-backed candidates, reconcile identity
-and duplicates, and publish through the same gates. Discovery waits for
+Discover additional opportunities from permitted government, university and
+approved scholarship NGO sources, extract evidence-backed candidates,
+reconcile identity and duplicates, and publish through the same gates. Discovery waits for
 reliable Stage 2 monitoring.
 
 ## Later features and exclusions

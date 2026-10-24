@@ -45,8 +45,8 @@ structured values and qualifiers, source permission, consistency, and funding
 classification. Any unsupported or unclear material claim holds publication.
 Neither AI pass can set `source_checked` or publish a revision.
 
-1. **Source and access:** URL belongs to a government body or an established,
-   well-known institution on the approved provider list; its access rules
+1. **Source and access:** URL belongs to a government body, university or
+   established scholarship NGO on the approved provider list; its access rules
    permit the fetch method. Store source
    identity, URL, retrieval result, content hash, and parser version.
 2. **Claim evidence:** Every material amount, currency, rate year, deadline,
