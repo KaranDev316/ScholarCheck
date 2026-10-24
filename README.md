@@ -1,11 +1,13 @@
 # ScholarCheck
 
-ScholarCheck's first release will be a public, no-account website for four
-source-checked scholarships. Visitors will browse and search, filter by
-country, study level and funding, inspect eligibility, deadlines and evidence,
-open official application links, and share scholarship pages. A worker will
-then monitor one published scholarship and safely update or hold changes.
-Automatic discovery and catalogue growth follow proven monitoring.
+ScholarCheck's first release will be a public, no-account website with a small
+set of the best-evidenced scholarships. Visitors will browse and search,
+filter by country, study level and funding type, inspect stated eligibility,
+deadlines and exact official evidence, open official application links, and
+share scholarship pages. A worker will then monitor one published scholarship
+and safely update or hold changes. Automatic discovery follows proven
+monitoring. The four current fixtures remain regression inputs, not a launch
+quota.
 
 The [publication policy](docs/PUBLICATION-POLICY.md), [roadmap](docs/ROADMAP.md)
 and [S01 plan](docs/slices/S01/PLAN.md) describe the revised direction.
@@ -98,4 +100,6 @@ monitoring worker do **not** exist yet. The
 [first-pass review](docs/slices/S01/FIRST-PASS-REVIEW.md) found material
 route, rate-year and deadline issues, so the fixtures cannot yet be labelled
 `source_checked` or published. The [roadmap](docs/ROADMAP.md) now finishes the
-four-record public MVP before monitoring one record and then adding discovery.
+best-evidenced public MVP before monitoring one record and then adding
+discovery. Legacy human-verification fields in code and fixtures still need
+migration; they are no longer part of the product direction.

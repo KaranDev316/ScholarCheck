@@ -29,7 +29,7 @@ describe('HomePage (T01/T02)', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: /know whether a funded degree/i,
+        name: /find funding. check the evidence/i,
       }),
     ).toBeInTheDocument()
     expect(
@@ -47,7 +47,7 @@ describe('HomePage (T01/T02)', () => {
 
     render(<HomePage />)
 
-    expect(screen.getByText(/search by country, study level and funding/i)).toBeInTheDocument()
+    expect(screen.getByText(/search by country, study level and funding type/i)).toBeInTheDocument()
     expect(screen.getByText(/no opportunity is published/i)).toBeInTheDocument()
   })
 
@@ -86,7 +86,7 @@ describe('HomePage (T01/T02)', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: /know whether a funded degree/i,
+        name: /find funding. check the evidence/i,
       }),
     ).toBeInTheDocument()
   })

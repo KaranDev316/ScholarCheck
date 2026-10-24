@@ -44,14 +44,12 @@ not audit every linked PDF or every possible eligibility restriction.
 | [Sydney overview](https://www.sydney.edu.au/scholarships/australian-government-research-training-program.html) | `ev-usyd-eligibility`, `ev-usyd-academic-record`, `ev-usyd-process`, `ev-usyd-submission` | Corroborated as published preliminary requirements and application steps, with different steps for commencing and enrolled students. |
 | [Sydney international timeline](https://www.sydney.edu.au/scholarships/australian-government-research-training-program/rtp-international.html) | `ev-usyd-deadline` | Corroborated: 11 September 2026 for Research Period 1–2, 2027, and 18 December 2026 for Research Period 3–4, 2027. The seed currently models only the first round. |
 
-## Optional focused human review
+## Automated follow-up checks
 
-After the fixture corrections above, the most useful human checks are: (1)
-confirm the **3e-cycle** UdeM table and conditional award wording; (2) confirm
-that RMIT's 2026 rate is not presented as a 2027 rate or part-time entitlement;
-(3) confirm the CGRS D application channel and deadline for the intended
-international persona; and (4) confirm which Sydney research period the demo
-should use. D-09 replaced mandatory A2 human approval with an automated
-publication policy. These focused checks are useful for resolving exceptions;
-they do **not** authorize setting every evidence entry's human verification
-fields, and the automatic publication gates have not yet run.
+The publication pipeline must resolve: (1) the **3e-cycle** UdeM table,
+conditional award wording and whether only supplemental charges are exempt;
+(2) RMIT's 2026 rate, part-time wording and exact fee-offset scope; (3) the
+CGRS D application channel, deadline and absent tuition statement; and (4)
+Sydney's applicable research period. The four files remain regression inputs.
+D-11 removes the earlier optional human-verification direction; the automatic
+publication gates have not yet run.

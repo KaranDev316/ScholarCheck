@@ -32,12 +32,11 @@ cd backend && .venv/bin/python -m pytest tests/test_seed_content.py
    referenced by a rule or funding component, except the entry that backs a
    published date in a round label (`Round` has no reference field in S01); such
    an entry must quote a deadline.
-6. **Human verification is separate from automated source checking.** Seeds
-   ship with `verified_at: null`, `verified_by: null` and
-   `last_verified_at: null`. Only a human who has opened the official page may
-   set them. D-09 removes human approval as a routine release gate; the
-   `PUBLICATION-POLICY.md` gates must pass before a record can be published as
-   `source_checked`. A fetch or this YAML validation test alone is insufficient.
+6. **Legacy verification fields are not publication signals.** Format v1
+   seeds still have null `verified_at`, `verified_by` and `last_verified_at`
+   fields. D-11 removes these fields from the future active contract. The
+   `PUBLICATION-POLICY.md` gates must pass before any record can be published
+   as `source_checked`. A fetch or YAML validation test alone is insufficient.
 7. **No invention.** If the source does not state a fact, omit the field. A
    funding component whose value is not stated stays on the record with
    `status: unspecified` and no `amount`/`currency`; it is never shown as zero,
@@ -60,8 +59,8 @@ cd backend && .venv/bin/python -m pytest tests/test_seed_content.py
 
 ## Fixture register
 
-All four were retrieved on 2026-10-23. **None is human-verified or
-automatically source-checked for publication.** The
+All four were retrieved on 2026-10-23. **None is source-checked for
+publication.** The
 [first-pass review](../../docs/slices/S01/FIRST-PASS-REVIEW.md) found issues
 that must be corrected or held before the automated gate can pass.
 
@@ -72,10 +71,9 @@ that must be corrected or held before the automated gate can pass.
 | `rmit-research-stipend.yaml` | Multi-stage EOI round, stipend plus international tuition offset | [RMIT scholarships](https://www.rmit.edu.au/research/research-degrees/scholarships), [RMIT stipend](https://www.rmit.edu.au/scholarships/research/research-stipend), [RMIT T&Cs](https://www.rmit.edu.au/research/research-degrees/terms-and-conditions) |
 | `usyd-rtp-stipend.yaml` | Stipend plus fee offset, separate components | [RTP overview](https://www.sydney.edu.au/scholarships/australian-government-research-training-program.html), [RTP international](https://www.sydney.edu.au/scholarships/australian-government-research-training-program/rtp-international.html) |
 
-## Optional human verification
+## Future publication migration
 
-For each evidence entry: open `url`, confirm `passage` appears on the page (or
-that the table transcription matches cell by cell), then set `verified_at`,
-`verified_by` and the record's `last_verified_at`. If a claim has changed,
-update the value and the passage, and report the change rather than silently
-overwriting it.
+Keep these four files as regression inputs. Move material facts into the new
+stated/unspecified/conflicting contract, link them to retained official
+snapshots, and remove the legacy human-verification fields during migration.
+Candidates with missing or conflicting material evidence remain held.

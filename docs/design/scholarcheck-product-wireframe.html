@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ScholarCheck: product wireframe</title>
+<style>
+:root{--navy:#0D173B;--gold:#D4AF37;--on-gold:#0D173B;--bg:#F8F9FA;--surface:#fff;--ink:#0D173B;--mute:#4A5273;--line:#D9DDE8;--green:#0D173B;--teal:#D4AF37;--mint:#E8EBF4;--amber-bg:#fbf1d9;--amber:#7a5710;--red-bg:#fbe4e1;--red:#9c2f22;--ok-bg:#DDE5F7;--ok:#0D173B;
+--serif:"Iowan Old Style","Charter","Palatino Linotype",Georgia,serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A1230;--surface:#111C48;--ink:#F1F3FA;--mute:#A6AEC9;--line:#26325F;--green:#B9C6F5;--teal:#D4AF37;--mint:#18235A;--amber-bg:#3a2f12;--amber:#e8c46c;--red-bg:#401c18;--red:#f0a79d;--ok-bg:#1E2B66;--ok:#D5DEFA;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0A1230;--surface:#111C48;--ink:#F1F3FA;--mute:#A6AEC9;--line:#26325F;--green:#B9C6F5;--teal:#D4AF37;--mint:#18235A;--amber-bg:#3a2f12;--amber:#e8c46c;--red-bg:#401c18;--red:#f0a79d;--ok-bg:#1E2B66;--ok:#D5DEFA;color-scheme:dark}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans)}
+a{color:var(--green)}
+:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--serif);line-height:1.15;margin:0;font-weight:600;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,5vw,3.2rem)}h2{font-size:1.5rem}h3{font-size:1.1rem}
+p{margin:0}.mute{color:var(--mute)}.small{font-size:.875rem}
+header.top{background:var(--navy);border-bottom:3px solid var(--gold)}
+header .wrap{display:flex;align-items:center;gap:20px;min-height:64px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font:600 1.25rem var(--serif);color:#fff;text-decoration:none;margin-right:auto}
+.brand svg{width:30px;height:30px}
+nav{display:flex;gap:6px}nav a{padding:8px 12px;border-radius:6px;color:#C5CCE8;text-decoration:none;font-weight:500}
+nav a[aria-current="page"]{color:#fff;background:rgba(255,255,255,.14)}
+.tools{background:var(--mint);border-bottom:1px solid var(--line);font-size:.85rem}
+.tools .wrap{display:flex;gap:18px;align-items:center;padding-top:8px;padding-bottom:8px;flex-wrap:wrap}
+.tools select{font:inherit;padding:3px 6px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:6px;border:1px solid var(--gold);background:var(--gold);color:var(--on-gold);font:600 1rem var(--sans);text-decoration:none;cursor:pointer}
+.btn.alt{background:transparent;color:var(--green);border-color:var(--green)}
+.btn.sm{min-height:36px;padding:0 12px;font-size:.9rem}
+.btn[aria-disabled="true"]{background:transparent;color:var(--mute);border-style:dashed;border-color:var(--mute);cursor:not-allowed}
+.chip{display:inline-block;padding:2px 9px;border-radius:99px;font-size:.8rem;font-weight:600;background:var(--mint);color:var(--green);white-space:nowrap}
+.chip.stated{background:var(--ok-bg);color:var(--ok)}
+.chip.unspec{background:repeating-linear-gradient(135deg,var(--amber-bg) 0 6px,transparent 6px 9px);color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
+.chip.ff{background:var(--gold);color:var(--on-gold)}
+.chip.conflict{background:var(--red-bg);color:var(--red)}
+.chip.neutral{background:transparent;color:var(--mute);box-shadow:inset 0 0 0 1px var(--line);font-weight:500}
+.ph{color:var(--mute);font-style:italic}
+.note{display:none;font:600 .7rem var(--sans);background:var(--ink);color:var(--bg);padding:1px 6px;border-radius:3px;margin-left:6px;vertical-align:middle}
+body.notes .note{display:inline-block}
+section{padding:40px 0}
+/* hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:56px 0}
+.hero p.lead{font-size:1.15rem;color:var(--mute);margin:18px 0 24px;max-width:52ch}
+.search{display:flex;gap:8px;max-width:560px}
+.search input{flex:1;min-width:0;min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:6px;font:inherit;background:var(--surface);color:var(--ink)}
+.ledger{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.ledger .row{display:grid;grid-template-columns:1fr 1fr}
+.ledger .row>div{padding:14px 16px}
+.ledger .row>div+div{border-left:3px solid var(--teal);background:var(--mint)}
+.ledger .hd{font-size:.8rem;color:var(--mute);font-weight:600;border-bottom:1px solid var(--line)}
+.ledger .row+.row{border-top:1px solid var(--line)}
+.excerpt{border-left:3px solid var(--teal);padding:8px 12px;background:var(--mint);font-family:var(--serif);color:var(--mute);font-style:italic;border-radius:0 4px 4px 0}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:s;margin-top:20px;border-top:1px solid var(--line)}
+.pipeline li{list-style:none;padding:18px 18px 0 0;counter-increment:s}
+.pipeline li::before{content:counter(s);display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--green);color:var(--bg);font-weight:700;margin-bottom:8px}
+.pipeline{padding:0;margin-bottom:0}
+.band{background:var(--surface);border-block:1px solid var(--line)}
+/* cards */
+.cards{display:grid;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px;display:grid;gap:10px}
+.card .meta{color:var(--mute);font-size:.9rem}
+.card .foot{display:flex;justify-content:space-between;align-items:end;gap:12px;border-top:1px solid var(--line);padding-top:12px;flex-wrap:wrap}
+.amt{font:600 1.4rem var(--serif)}
+.card h3 a{color:var(--ink);text-decoration:none}.card h3 a:hover{text-decoration:underline}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+/* explore */
+.explore{display:grid;grid-template-columns:260px 1fr;gap:28px;align-items:start}
+.filters{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px;display:grid;gap:14px}
+.filters label{font-weight:600;font-size:.9rem;display:grid;gap:4px}
+.filters select,.bar input,.bar select{font:inherit;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.bar{display:flex;gap:10px;margin-bottom:12px}.bar input{flex:1;min-width:0}
+.active{display:flex;gap:8px;flex-wrap:wrap;min-height:32px;margin-bottom:8px}
+.active button{border:1px solid var(--teal);background:var(--mint);color:var(--green);border-radius:99px;padding:3px 10px;font:600 .85rem var(--sans);cursor:pointer}
+.state{background:var(--surface);border:1px dashed var(--mute);border-radius:8px;padding:32px;text-align:center;display:grid;gap:12px;justify-items:center}
+.skel{height:120px;border-radius:8px;background:linear-gradient(90deg,var(--line),var(--mint),var(--line));background-size:200% 100%;animation:sh 1.4s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}}
+/* detail */
+.detail{display:grid;grid-template-columns:1fr 320px;gap:32px;align-items:start}
+.crumbs{font-size:.9rem;color:var(--mute);margin:24px 0 12px}
+.actions{display:grid;gap:10px;margin:22px 0}
+.actionrow{display:flex;gap:10px;flex-wrap:wrap}
+.urlbox{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--mute);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 10px;overflow:auto;white-space:nowrap}
+.side{display:grid;gap:14px;position:sticky;top:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px}
+.panel dl{margin:12px 0 0;display:grid;gap:12px}.panel dt{font-size:.8rem;color:var(--mute)}.panel dd{margin:2px 0 0;font-weight:600}
+.tbl{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.tbl th,.tbl td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font-size:.8rem;color:var(--mute)}
+.tblwrap{overflow-x:auto}
+.rule{padding:14px 16px;border:1px solid var(--line);background:var(--surface);border-radius:8px;display:grid;gap:4px}
+.dsec{margin-top:36px;display:grid;gap:12px}
+.refbtn{background:none;border:none;color:var(--green);font:600 .85rem var(--sans);cursor:pointer;text-decoration:underline;padding:4px}
+.ev{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:10px;scroll-margin-top:16px}
+.ev:target,.ev.flash{box-shadow:0 0 0 3px var(--teal)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:6px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+footer{border-top:3px solid var(--gold);background:var(--navy);padding:28px 0;margin-top:40px;color:#C5CCE8;font-size:.9rem}
+.herobg{background:var(--navy);color:#fff}.herobg h1{color:#fff}.herobg p.lead,.herobg .hero>div:first-child .mute{color:#C5CCE8}.herobg .ledger{color:var(--ink)}
+header.top :focus-visible,footer :focus-visible,.herobg :focus-visible{outline-color:var(--gold)}
+.side .panel:first-child{background:var(--navy);color:#fff;border-color:var(--navy)}.side .panel:first-child h3{color:#fff}.side .panel:first-child dt,.side .panel:first-child .mute,.side .panel:first-child .ph{color:#B4BEE0}.side .panel:first-child .chip.neutral{color:#fff;box-shadow:inset 0 0 0 1px #B4BEE0}.side .panel:first-child .note{background:var(--gold);color:var(--on-gold)}
+.titlerow{display:flex;justify-content:space-between;align-items:start;gap:12px}.share{display:flex;gap:6px;flex-shrink:0}.iconbtn{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--green);cursor:pointer}.actionpair{display:flex;gap:20px;flex-wrap:wrap}.act{display:grid;gap:6px;max-width:300px;align-content:start}
+.schcard{background:#fff;color:#0D173B;border-radius:10px;padding:24px;display:grid;gap:16px;box-shadow:0 24px 48px rgba(0,0,0,.3)}.schcard .sm{color:#4A5273;font-size:.9rem}.schcard .st{font:600 1.35rem/1.2 var(--serif)}.schcard .sa{font:600 2rem var(--serif)}.schcard .sq{border-left:4px solid #D4AF37;background:#E8EBF4;padding:10px 14px;border-radius:0 6px 6px 0;display:grid;gap:4px;font-family:var(--serif);color:#4A5273}.schcard .sl{font:600 .8rem var(--sans);color:#0D173B}.schcard .sn{background:#FBF1D9;color:#7a5710;padding:8px 12px;border-radius:6px;font-size:.9rem;font-weight:600}
+.strip{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-top:20px}.strip>div{padding:14px 16px;display:grid;gap:2px;align-content:start}.strip>div+div{border-left:1px solid var(--line)}.sl2{font-size:.8rem;color:var(--mute)}
+@media (max-width:520px){.strip{grid-template-columns:1fr}.strip>div+div{border-left:0;border-top:1px solid var(--line)}}
+.qrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.qchip{min-height:44px;padding:0 16px;border-radius:99px;border:1px solid var(--green);background:var(--surface);color:var(--green);font:600 .95rem var(--sans);cursor:pointer}.qchip:hover{background:var(--mint)}
+dialog{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:22px;width:min(440px,calc(100vw - 32px))}dialog::backdrop{background:rgba(5,10,30,.6)}.rl{display:grid;gap:4px;font-weight:600;font-size:.9rem;margin-top:12px}.rl select,.rl textarea{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.pinbar{display:none}.toast{z-index:10}
+@media (max-width:860px){.pinbar{display:flex;position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);z-index:5}.pinbar .btn{flex:1}body{padding-bottom:76px}.toast{bottom:calc(88px + env(safe-area-inset-bottom,0px))}}
+@media (max-width:860px){.hero,.detail,.explore,.grid2{grid-template-columns:1fr}.pipeline{grid-template-columns:1fr 1fr}.side{position:static}.hero{padding:32px 0}}
+@media (max-width:520px){.pipeline{grid-template-columns:1fr}.ledger .row{grid-template-columns:1fr}.ledger .row>div+div{border-left:0;border-top:3px solid var(--teal)}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+ <a class="brand" href="#home"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="var(--navy)" stroke="var(--gold)"/><path d="M8 16.5l5.5 5.5L24 10.5" stroke="var(--gold)" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>ScholarCheck</a>
+ <nav aria-label="Main"><a href="#home" id="n-home">Home</a><a href="#explore" id="n-explore">Find scholarships</a></nav>
+</div></header>
+
+<main id="app" tabindex="-1" aria-live="polite"></main>
+<footer><div class="wrap"><p style="margin-bottom:8px;color:#fff;font-weight:600">Free for students. No paid listings and no sponsored placement.</p>ScholarCheck shows what official sources say. It is not an eligibility decision and does not predict awards. Every record is checked automatically against saved copies of official pages. Checks show what was found; confirm details with the provider before applying.<p class="small" style="margin-top:10px;opacity:.8"><em>Organisation name, contact email and postal address go here.</em></p></div></footer>
+<dialog id="rp" aria-labelledby="rpt"><h3 id="rpt">Report a problem</h3><p class="small mute" id="rps"></p><label class="rl">What looks wrong?<select id="rpr"><option>The amount</option><option>A deadline or round</option><option>Eligibility</option><option>A link doesn’t work</option><option>Something else</option></select></label><label class="rl">Details (optional)<textarea id="rpd" rows="3"></textarea></label><div class="actionrow" style="margin-top:14px"><button class="btn" onclick="sendReport()">Send report</button><button class="btn alt" onclick="document.getElementById('rp').close()">Cancel</button></div><p class="small mute" style="margin-top:10px">We don’t ask for your name or email.</p></dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const D=[
+{id:'canada-doctoral',t:'Canada Graduate Research Scholarship, Doctoral',p:'NSERC and Canadian research agencies',c:'Canada',lv:'PhD',ft:'Tuition not stated',tags:['PhD','Tuition not stated','Canada'],s:'A doctoral research award with an annual grant. International applicants must be registered in a Canadian doctoral programme by the applicable deadline.',amt:'CA$40,000',per:'per year for 36 months',
+ comp:[['Doctoral research grant','stated','CA$40,000 per year for 36 months',1],['Tuition coverage','unspec','Not specified in the source',0]],
+ el:[['Doctoral study within the published limit of 36 months.','stated',2],['International applicants must be registered in a Canadian doctoral programme by the applicable deadline.','stated',3]],
+ rd:[['Annual round','17 October, year not stated','Year not stated','Not treated as open or closed.']],
+ app:['confirm','No confirmed application route yet. Read the official requirements before acting.'],
+ ev:['CA$40,000 per year for 36 months','Study-duration limit for doctoral applicants','Conditions for international applicants']},
+{id:'umontreal-doctoral',t:'Université de Montréal Doctoral Tuition Exemption',p:'Université de Montréal',c:'Canada',lv:'PhD',ft:'Tuition',tags:['PhD','Tuition','Canada','Awarded on admission'],s:'Doctoral tuition exemption valued at the published 45-credit annual rate, awarded on admission rather than through a separate scholarship application.',amt:'CA$24,067.80',per:'annual tuition reduction, 2026–27',
+ comp:[['Doctoral tuition exemption','stated','CA$24,067.80 annual tuition reduction (45-credit rate, 2026–27)',1],['Stipend or living allowance','unspec','Not specified in the source',0]],
+ el:[['Awarded on admission, not through a separate scholarship application.','stated',2]],
+ rd:[['No separate round','Not applicable','No separate application','Decided with the admission offer.']],
+ app:['none','The source states no separate scholarship application. Apply for admission instead.'],
+ ev:['Published 45-credit annual tuition rate','Award made on admission']},
+{id:'rmit-stipend',t:'RMIT Research Stipend Scholarship',p:'RMIT University',c:'Australia',lv:'Research degree',ft:'Tuition + stipend',tags:['Research','Tuition + stipend','Australia','2026 dates passed'],s:'A research stipend with a staged application route and international research fee-offset provisions. Published 2026 application dates have passed.',amt:'A$36,245',per:'per year, published 2026 rate',
+ comp:[['Research stipend','stated','A$36,245 per year (published 2026 rate)',1],['International research fee offset','unspec','Provision mentioned; amount not specified',2]],
+ el:[['Stated eligibility conditions appear here, one per row, each with its excerpt.','ph',0]],
+ rd:[['2026 rounds','Published 2026 dates','Dates passed','Next round not published. Not treated as closed.']],
+ app:['route','Staged application route. Follow the official steps in order.'],
+ ev:['Stipend rate','Fee-offset provisions for international research students']},
+{id:'sydney-rtp',t:'University of Sydney RTP International Scholarship',p:'University of Sydney',c:'Australia',lv:'Research degree',ft:'Tuition + stipend',tags:['Research','Tuition + stipend','Australia','11 Sep 2026 passed'],s:'Research Training Program support with an annual stipend and a tuition fee offset. The recorded deadline for research periods 1–2 of 2027 has passed.',amt:'A$44,293',per:'per year, published 2027 rate',
+ comp:[['Annual stipend','stated','A$44,293 per year (published 2027 rate)',1],['Tuition fee offset','unspec','Offset stated; amount not specified',2]],
+ el:[['Stated eligibility conditions appear here, one per row, each with its excerpt.','ph',0]],
+ rd:[['Research periods 1–2, 2027','11 September 2026','Date passed','Later rounds not published. Not treated as closed.']],
+ app:['route','Application route stated by the provider.'],
+ ev:['Stipend rate for 2027','Tuition fee offset']}
+];
+const CV={'canada-doctoral':{t:'unspec',l:'unspec',a:'unspec'},'umontreal-doctoral':{t:'stated',l:'unspec',a:'unspec'},'rmit-stipend':{t:'stated',l:'stated',a:'unspec'},'sydney-rtp':{t:'stated',l:'stated',a:'unspec'}};
+D.forEach(r=>{r.cv=CV[r.id];r.ff=r.cv.t==='stated'&&r.cv.l==='stated'&&r.cv.a==='stated'});
+const chip={stated:['stated','Stated in source'],unspec:['unspec','Not specified'],conflict:['conflict','Sources conflict'],ph:['neutral','Awaiting extraction']};
+const $=s=>document.querySelector(s),app=$('#app');
+let F={q:'',c:'',l:'',f:''};
+const N=()=>'';
+const link=(label,cls='')=>`<a class="btn ${cls}" href="#" onclick="event.preventDefault();toast('Opens the official page in a new tab')">${label}</a>`;
+function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1800)}
+function card(r){return `<article class="card">${r.ff?'<div><span class="chip ff">Fully funded</span> <span class="small mute">Tuition, living costs and flights covered</span></div>':''}<div class="meta">${r.p}, ${r.c}</div><h3><a href="#${r.id}">${r.t}</a></h3><p class="mute">${r.s}</p><div>${r.tags.map(t=>`<span class="chip neutral">${t}</span> `).join('')}</div><div class="foot"><div><div class="amt">${r.amt}</div><div class="mute small">${r.per}</div><div class="small mute" style="margin-top:4px">Checked <span class="ph">n days ago</span> against the official page</div></div><a class="btn alt sm" href="#${r.id}">See evidence and details</a></div></article>`}
+function home(){return `
+<div class="herobg"><div class="wrap"><div class="hero"><div><h1>Find funding. Check the evidence. Decide for yourself.</h1>
+<p class="lead">Every amount and deadline sits beside the official wording it came from.</p>
+<form class="search" role="search" onsubmit="event.preventDefault();F.q=this.q.value;location.hash='explore'"><input name="q" aria-label="Search scholarships" placeholder="Try “doctoral scholarships in Canada”"><button class="btn">Search</button></form>
+<p class="small mute" style="margin-top:12px">No account needed to browse, filter or open official links.${N('MVP-01')}</p></div>
+<div class="schcard" aria-label="Example scholarship"><div class="sm">NSERC and Canadian research agencies, Canada</div><div class="st">Canada Graduate Research Scholarship, Doctoral</div><div><div class="sa">CA$40,000</div><div class="sm">per year for 36 months</div></div><div class="sq"><span class="sl">From the official page</span><em>Exact wording from the provider’s page</em></div><div class="sn">Tuition coverage: not stated by the provider</div>
+
+</div></div></div></div>
+
+<section class="wrap" style="padding:36px 20px 0"><h2>Not sure where to start?</h2><div style="display:grid;gap:14px;margin-top:14px"><div><p class="small mute">Where do you want to study?</p><div class="qrow"><button class="qchip" onclick="quick('c','Canada')">Canada</button><button class="qchip" onclick="quick('c','Australia')">Australia</button></div></div><div><p class="small mute">Which level?</p><div class="qrow"><button class="qchip" onclick="quick('l','Bachelor’s')">Bachelor’s</button><button class="qchip" onclick="quick('l','Master’s')">Master’s</button><button class="qchip" onclick="quick('l','PhD')">PhD</button><button class="qchip" onclick="quick('l','Research degree')">Research degree</button></div></div><div><p class="small mute">What kind of funding?</p><div class="qrow"><button class="qchip" onclick="quick('f','Fully funded')">Fully funded</button><button class="qchip" onclick="quick('f','Tuition + stipend')">Tuition + stipend</button><button class="qchip" onclick="quick('f','Tuition')">Tuition</button></div></div></div></section>
+<section class="wrap" style="padding:40px 20px"><div style="display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:16px;flex-wrap:wrap"><h2>Published scholarships</h2><a href="#explore">Browse all ${D.length}</a></div><div class="grid2">${D.map(card).join('')}</div>`}
+function results(){
+ const st='live';
+ if(st==='loading')return `<div class="cards" aria-busy="true"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>`;
+ if(st==='error')return `<div class="state" role="alert"><h3>We couldn’t load scholarships</h3><p class="mute">The list didn’t reach your browser. Your filters are unchanged. Check your connection and try again.</p><button class="btn" onclick="route()">Try again</button></div>`;
+ const q=F.q.toLowerCase();
+ const L=D.filter(r=>(!F.c||r.c===F.c)&&(!F.l||r.lv.split(', ').includes(F.l))&&(!F.f||r.ft===F.f||(F.f==='Fully funded'&&r.ff))&&(!q||(r.t+r.p+r.c+r.tags.join()+r.lv+(/PhD/.test(r.lv)?' doctoral doctorate':'')).toLowerCase().includes(q)));
+ const act=[['q',F.q&&`Search: “${F.q}”`],['c',F.c],['l',F.l],['f',F.f]].filter(a=>a[1]).map(a=>`<button onclick="F.${a[0]}='';route()" aria-label="Remove filter ${a[1]}">${a[1]} ×</button>`).join('');
+ return `<div class="active">${act}${N('MVP-02')}</div><p class="mute small" style="margin-bottom:10px" id="count">Showing ${L.length} of ${D.length} published scholarships</p>`+
+ (L.length?`<div class="cards">${L.map(card).join('')}</div>`:`<div class="state"><h3>No published scholarship matches these filters</h3><p class="mute">Only scholarships that passed our evidence checks are listed. Remove a filter to widen the search.</p><button class="btn" onclick="F={q:'',c:'',l:'',f:''};route()">Clear all filters</button></div>`)}
+function explore(){
+ const o=(a,v)=>a.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('');
+ return `<section><h1 style="font-size:2.2rem">Find scholarships</h1><p class="mute" style="margin:8px 0 24px">Filter by destination, study level and funding. Open any record to read the evidence.</p>
+<div class="explore"><details class="filters" open style="display:grid"><summary style="font:600 1.1rem var(--serif);cursor:pointer">Filters</summary><div style="display:grid;gap:14px;margin-top:14px">
+<label>Destination country<select onchange="F.c=this.value;route()"><option value="">All countries</option>${o(['Australia','Canada'],F.c)}</select></label>
+<label>Study level<select onchange="F.l=this.value;route()"><option value="">All levels</option>${o(['Bachelor’s','Master’s','PhD','Research degree'],F.l)}</select></label>
+<label>Funding type<select onchange="F.f=this.value;route()"><option value="">All funding types</option>${o(['Fully funded','Tuition + stipend','Tuition'],F.f)}</select></label>
+
+<button class="btn alt sm" onclick="F={q:'',c:'',l:'',f:''};route()">Clear all</button></div></details>
+<div><form class="bar" role="search" onsubmit="event.preventDefault();F.q=this.q.value;route()"><input name="q" value="${F.q}" aria-label="Search scholarships" placeholder="Scholarship, university or country"><button class="btn">Search</button></form>${results()}</div></div></section>`}
+function detail(r){
+
+ const canApply=r.app[0]==='route',passed=canApply&&r.rd.some(x=>/passed/i.test(x[2]));
+ const ic=`<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3H3v10h10v-3M9 3h4v4M13 3L7 9"/></svg>`;
+ const reqBtn=link('Read the requirements'+ic,passed||!canApply?'':'alt');
+ const appBtn=canApply?link('Apply on the provider’s site'+ic,passed?'alt':''):'';
+ const note=passed?`The published dates (${r.rd[0][1]}) have passed, and the next round isn’t published yet.`:canApply?'':r.app[1];
+ return `<div class="crumbs"><a href="#explore">All scholarships</a> / ${r.t}</div>
+<div class="detail"><div>
+<div class="titlerow"><h1>${r.t}</h1><div class="share"><button class="iconbtn" aria-label="Copy link" title="Copy link" onclick="copyLink('${r.id}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></button><button class="iconbtn" aria-label="Share" title="Share" onclick="shareLink('${r.t.replace(/'/g,'’')}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/></svg></button></div></div><p class="mute" style="margin-top:8px">${r.p}, ${r.c}</p><div style="margin-top:10px">${r.tags.map(t=>`<span class="chip neutral">${t}</span> `).join('')}</div>
+<div class="strip"><div><span class="sl2">${r.comp[0][0]}</span><strong class="amt">${r.amt}</strong><span class="small mute">${r.per}</span></div><div><span class="sl2">Study level</span><strong>${r.lv}</strong></div><div><span class="sl2">Application round</span><strong>${r.rd[0][2]}</strong></div></div>
+<div class="actions">${note?`<p class="small" style="background:var(--amber-bg);color:var(--amber);padding:8px 12px;border-radius:6px">${note}</p>`:''}<div class="actionpair"><div class="act">${reqBtn}<p class="small mute">What the official page says about eligibility and funding.</p></div>${canApply?`<div class="act">${appBtn}<p class="small mute">Opens the provider’s own application page.</p></div>`:''}</div></div>
+
+
+
+<div class="dsec"><h2>Funding components${N('MVP-07')}</h2><p class="mute small">Each component is listed on its own. We never add them together or call one a total.</p><div class="rule"><strong>${r.ff?'<span class="chip ff">Fully funded</span> ':''}What the official page says it covers</strong><div class="small mute">“Fully funded” is shown only when tuition, living costs and flights are all stated as covered.</div>${[['Tuition','t'],['Living costs','l'],['Flights','a']].map(x=>`<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span>${x[0]}</span><span class="chip ${chip[r.cv[x[1]]][0]}">${r.cv[x[1]]==='stated'?'Covered':'Not stated'}</span></div>`).join('')}</div>
+${r.comp.map(c=>`<div class="rule"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><strong>${c[0]}</strong><span class="chip ${chip[c[1]][0]}">${chip[c[1]][1]}</span></div><div class="${c[1]==='unspec'?'ph':'amt'}" style="${c[1]==='stated'?'font-size:1.15rem':''}">${c[2]}</div>${c[3]?`<button class="refbtn" style="justify-self:start" onclick="goEv(${c[3]})">Evidence ${c[3]}</button>`:''}</div>`).join('')}</div>
+
+<div class="dsec"><h2>Stated eligibility${N('MVP-03')}</h2><p class="mute small">What the official source says. This isn’t a decision about you or a chance of award.</p>
+${r.el.map(e=>`<div class="rule"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span class="${e[1]==='ph'?'ph':''}">${e[0]}</span><span class="chip ${chip[e[1]][0]}">${chip[e[1]][1]}</span></div>${e[2]?`<button class="refbtn" style="justify-self:start" onclick="goEv(${e[2]})">Evidence ${e[2]}</button>`:''}</div>`).join('')}</div>
+
+<div class="dsec"><h2>Rounds and deadlines</h2><div class="tblwrap"><table class="tbl"><thead><tr><th>Round</th><th>Date as published</th><th>Status</th><th>Note</th></tr></thead><tbody>
+${r.rd.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td><span class="chip neutral">${x[2]}</span></td><td class="mute small">${x[3]}</td></tr>`).join('')}</tbody></table></div>
+<p class="small mute">A passed date marks that round only. Other rounds stay as they are until a source says otherwise.</p></div>
+
+<div class="dsec"><h2>Evidence${N('MVP-06')}</h2><p class="mute small">Each claim above links to the wording it rests on, kept from the official page.</p>
+${r.ev.map((e,i)=>`<div class="ev" id="ev${i+1}"><strong>${i+1}. ${e}</strong><p class="excerpt">Exact passage retained from the saved official page.</p><div class="small mute">Source: <span class="ph">official page address</span> · Saved: <span class="ph">date and time of the saved copy</span></div>${link('Open the official page','alt sm')}</div>`).join('')}</div>
+</div>
+
+<aside class="side" aria-label="Assurance"><div class="panel"><h3>Checked against the official page</h3>
+<dl><div><dt>Last checked</dt><dd><span class="ph" style="font-weight:400">Date of the latest check</span></dd></div>
+<div><dt>Result</dt><dd><span class="chip stated">Matches the official page</span></dd></div>
+
+</dl><p class="small mute" style="margin-top:14px">Details can change. Confirm with the provider before you apply.</p></div>
+<div class="panel"><h3>At a glance</h3><dl><div><dt>Provider</dt><dd>${r.p}</dd></div><div><dt>Country</dt><dd>${r.c}</dd></div><div><dt>Study level</dt><dd>${r.lv}</dd></div><div><dt>Funding type</dt><dd>${r.ft}</dd></div></dl></div><div class="panel"><h3>See something wrong?</h3><p class="small mute" style="margin:6px 0 12px">Tell us and we’ll recheck this record.</p><button class="btn alt sm" onclick="report('${r.id}')">Report a problem</button></div></aside><div class="pinbar">${passed||!canApply?link('Read the requirements'+ic):link('Apply on the provider’s site'+ic)}</div></div>`}
+function quick(k,v){F={q:'',c:'',l:'',f:''};F[k]=v;location.hash='explore'}
+function report(id){const x=D.find(d=>d.id===id);$('#rps').textContent='About: '+x.t;$('#rp').showModal()}
+function sendReport(){$('#rp').close();$('#rpd').value='';toast('Thanks. We’ll recheck this record.')}
+function copyLink(id){const u='https://scholarcheck.example/scholarships/'+id;try{navigator.clipboard.writeText(u).then(()=>toast('Link copied'),()=>toast('Copy this link: '+u))}catch(e){toast('Copy this link: '+u)}}
+function shareLink(t){try{if(navigator.share){navigator.share({title:t,url:location.href}).catch(()=>{});return}}catch(e){}toast('Sharing isn’t available here. Use Copy link.')}
+function goEv(n){const e=document.getElementById('ev'+n);if(!e)return;e.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'center'});e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),1600)}
+
+function route(){
+ const h=(location.hash||'#home').slice(1);const r=D.find(x=>x.id===h);
+ ['home','explore'].forEach(k=>{const a=$('#n-'+k);a.removeAttribute('aria-current');if(k===h||(k==='explore'&&r))a.setAttribute('aria-current','page')});
+ app.innerHTML=(h==='explore'||r)?'<div class="wrap">'+(h==='explore'?explore():detail(r))+'</div>':home();
+ document.title=(r?r.t:'ScholarCheck')+': product wireframe';
+}
+addEventListener('hashchange',()=>{route();scrollTo(0,0)});
+
+
+
+route();
+</script>
+</body>
+</html>

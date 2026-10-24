@@ -1,7 +1,7 @@
 # Evidence — S01 foundation
 
-Status: **in progress under D-09 and D-10**. Personal assessment criteria
-AC-01..AC-14 are deferred. Current S01 criteria F-01..F-10 are in
+Status: **in progress under D-09..D-11**. Personal assessment criteria
+AC-01..AC-14 are deferred. Current S01 criteria F-01..F-12 are in
 `VERIFICATION.md`. This file preserves completed scaffold and fixture checks
 and records what remains unproven.
 
@@ -32,10 +32,11 @@ executed publication gate.
 ## Assurance under the revised policy
 
 Every existing `verified_at`, `verified_by` and `last_verified_at` remains
-`null`: no human verification is claimed. D-09 removes mandatory human
-approval, but no fixture currently has `source_checked` assurance either. The
-snapshot, validation and publication engine does not exist yet. The documented
-issues must be corrected or result in a hold when that engine is built.
+`null`. D-11 removes human verification from the product direction, but those
+legacy fields still exist in code and fixtures; migration is unproven. No
+fixture currently has `source_checked` assurance. The snapshot, validation
+and publication engine does not exist yet. Documented issues must be corrected
+or result in a hold when that engine is built.
 
 ## Current F-criterion ledger
 
@@ -51,6 +52,8 @@ issues must be corrected or result in a hold when that engine is built.
 | F-08 | Unproven | No retained snapshots or publication gate; all four fixtures remain unpublished |
 | F-09 | Unproven | Only development/test detail read exists; no public catalogue or filters |
 | F-10 | Unproven | Frontend is a scaffold; no public scholarship journeys or deployed URL |
+| F-11 | Unproven | No coverage checklist or strict computed funding classification |
+| F-12 | Unproven | No feedback endpoint or production brand/contact details |
 
 Personal evaluator, save and comparison proof remains future work. Public
 catalogue/detail proof is now part of S01.

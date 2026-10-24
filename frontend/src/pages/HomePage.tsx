@@ -8,12 +8,12 @@ export function HomePage() {
     <main className="page">
       <header className="masthead">
         <p className="eyebrow">ScholarCheck</p>
-        <h1>Know whether a funded degree really fits you</h1>
+        <h1>Find funding. Check the evidence. Decide for yourself.</h1>
         <p className="lede">
-          For bachelor&rsquo;s, master&rsquo;s and PhD study: browse scholarships
-          checked against official sources. Search by country, study level and
-          funding, then inspect stated eligibility, deadlines and evidence.
-          Open official application links and share a scholarship page.
+          For bachelor&rsquo;s, master&rsquo;s and PhD study: every amount and
+          deadline will sit beside the official wording it came from. Search
+          by country, study level and funding type, then open the provider&rsquo;s
+          own requirements and application pages. No account needed.
         </p>
       </header>
 
@@ -23,9 +23,9 @@ export function HomePage() {
         <h2 id="next-heading">What this build includes</h2>
         <p>
           The scaffold and four regression fixtures exist. Publication checks
-          and the public catalogue are next; no opportunity is published from
-          those fixtures yet. After launch, monitoring will start with one
-          scholarship.
+          and the public catalogue are next; no opportunity is published yet.
+          The launch set will use the best-evidenced records. After launch,
+          monitoring will start with one scholarship.
         </p>
       </section>
     </main>
