@@ -27,7 +27,7 @@ and [S01 plan](docs/slices/S01/PLAN.md) describe the revised direction.
 ```
 docs/       CONTEXT.md PRP.md ROADMAP.md PUBLICATION-POLICY.md slices/S01/
 backend/    app/{api,domain,models} tests/
-frontend/   src/{pages,components,api,types} tests/
+frontend/   src/{pages} tests/
 content/    opportunities/*.yaml (unverified regression fixtures, S01 T03)
 ```
 
@@ -72,11 +72,11 @@ npm install
 npm run dev
 ```
 
-The dev server proxies `/api` to `http://127.0.0.1:8000`, so start the backend
-first. Set `VITE_API_BASE_URL` to call a different API origin.
+The dev server proxies `/api` to `http://127.0.0.1:8000` for future public
+catalogue calls. The current landing page does not call the API.
 
 Environment variables (never committed): `APP_ENV`, `CORS_ALLOWED_ORIGINS`,
-`DATABASE_URL` for the backend; `VITE_API_BASE_URL` for the frontend.
+`DATABASE_URL` for the backend.
 
 ## Checks
 

@@ -14,7 +14,7 @@ Sources of truth (kept in step deliberately):
 |---|---|
 | Python request/response | `backend/app/models/assessment.py` |
 | Python error envelope | `backend/app/api/errors.py` |
-| TypeScript mirror | `frontend/src/types/api.ts`, `frontend/src/types/domain.ts` |
+| TypeScript mirror | Deferred; create when personal assessment is implemented |
 
 Wire format is camelCase (`alias_generator=to_camel`); Python attributes stay
 snake_case. Enums are `lower_snake_case` strings on the wire and are never
@@ -129,7 +129,7 @@ field is the alternative if TypeScript consumers prefer absence.
 
 1. Copy the route row, request/response examples and error table into
    that feature's verification contract, with the date.
-2. Replace the "PROPOSED" headers in `backend/app/models/assessment.py`,
-   `backend/app/api/errors.py`, `frontend/src/types/api.ts`.
+2. Replace the "PROPOSED" headers in `backend/app/models/assessment.py`
+   and `backend/app/api/errors.py`, and create the TypeScript mirror then.
 3. Keep `backend/tests/test_assessment_contract.py` as the executable form of
    the agreed shape.

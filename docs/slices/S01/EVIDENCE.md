@@ -87,3 +87,16 @@ details: null}`; an unconfigured database returns
 
 This proves read and storage behaviour, not live source checking or automatic
 publication. The temporary PostgreSQL instance is test infrastructure only.
+
+## Frontend cleanup, 2026-10-24
+
+The visitor-facing API health panel, Vite starter favicon and unused personal
+assessment TypeScript mirror were removed from the frontend. The backend
+health endpoint remains available for operations. The landing page now states
+that no scholarships are published, without displaying environment details.
+The wireframe reference uses text controls and no SVG icons; disconnected
+preview actions are labelled as such.
+
+The current frontend check passed: 1 test, typecheck, lint and production
+build. The earlier 7-test result above is historical scaffold evidence; its
+health-client tests were removed with that startup-only UI.

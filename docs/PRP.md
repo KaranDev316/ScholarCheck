@@ -4,8 +4,8 @@ Depends on `CONTEXT.md` decisions D-09..D-11 and
 `PUBLICATION-POLICY.md`. `ROADMAP.md` defines delivery order. The product
 wireframe decisions supplied on 24 October 2026 govern the first-release UI.
 The [local wireframe export](design/scholarcheck-product-wireframe.html) is a
-visual reference; the supplied decisions take precedence where it still shows
-preview controls.
+visual reference with sample content. The supplied decisions are the source of
+truth for implementation.
 
 ## Product and audience
 
@@ -23,7 +23,7 @@ not decide whether a particular visitor qualifies.
 | MVP-02 | Search and filters | Search title/provider and doctoral synonyms; filter by destination country, study level and funding type; removable active filters and clear-filters empty state work |
 | MVP-03 | Scholarship detail | Stable direct URL shows scheme, provider, applicable level, round, headline funding component and amount, stated eligibility, separate funding components, deadlines, exact evidence and the latest source-check date |
 | MVP-04 | Official actions | “Read the requirements” and “Apply on the provider's site” are distinct only when they lead to distinct confirmed destinations; passed dates or an unavailable route show a plain explanation, never a misleading disabled application button |
-| MVP-05 | Sharing | Copy-link and Share controls use the real canonical scholarship URL and open the same public detail page |
+| MVP-05 | Sharing | Text-labelled Copy link and Share controls use the real canonical scholarship URL and open the same public detail page |
 | MVP-06 | Evidence-backed publication | Each material claim passes `PUBLICATION-POLICY.md` against retained official content; missing or conflicting evidence holds publication automatically; no human-verification workflow exists |
 | MVP-07 | Honest unknowns and dates | Facts distinguish stated, unspecified and conflicting; a date without a year never implies an open round; a passed date affects only its own round and is labelled “Date passed” |
 | MVP-08 | Funding classification | Components stay separate in provider currency; the coverage checklist shows Tuition, Living costs and Flights as Covered or Not stated only when evidence supports each; the computed “Fully funded” chip requires all three |
@@ -60,7 +60,7 @@ and postdoctoral fellowships are outside the first release.
   removable active chips; cards with provider/country, title, tags, component
   amount and basis, actual checked date, and a detail link. Loading, error and
   empty states use real API state.
-- **Scholarship page:** breadcrumb; title and share controls; summary strip;
+- **Scholarship page:** breadcrumb; title and text-labelled share controls; summary strip;
   distinct official actions; funding coverage checklist and components;
   stated eligibility disclaimer; round/date/status table; exact retained
   evidence; source-check panel; at-a-glance facts; and a working problem-report
@@ -77,7 +77,7 @@ Do not show a human-verification label or panel.
 
 Navy `#0D173B`, off-white `#F8F9FA`, gold `#D4AF37`; navy dominates the
 header, hero, footer and source-check panel. White cards sit on off-white.
-Gold is reserved for primary actions, the logo checkmark, thin rules and the
+Gold is reserved for primary actions, thin rules and the
 “Fully funded” chip, never body text on off-white. Focus outlines are navy.
 Headings use Iowan Old Style/Charter/Georgia fallback; body uses system sans.
 Follow the visitor's system light/dark setting, with no theme switch. An

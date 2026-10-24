@@ -1,7 +1,5 @@
-import { ConnectionStatus } from '../components/ConnectionStatus'
-
 /**
- * Home page for the S01 scaffold while the public catalogue is being built.
+ * Public landing page while source-backed listings are being prepared.
  */
 export function HomePage() {
   return (
@@ -17,15 +15,11 @@ export function HomePage() {
         </p>
       </header>
 
-      <ConnectionStatus />
-
-      <section className="panel" aria-labelledby="next-heading">
-        <h2 id="next-heading">What this build includes</h2>
+      <section className="panel" aria-labelledby="availability-heading">
+        <h2 id="availability-heading">Scholarships are being checked</h2>
         <p>
-          The scaffold and four regression fixtures exist. Publication checks
-          and the public catalogue are next; no opportunity is published yet.
-          The launch set will use the best-evidenced records. After launch,
-          monitoring will start with one scholarship.
+          Listings will appear here when their details can be supported by
+          official sources. No scholarships are published yet.
         </p>
       </section>
     </main>

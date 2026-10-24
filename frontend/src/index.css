@@ -1,10 +1,10 @@
 :root {
-  --text: #1f2430;
-  --muted: #525a6b;
-  --bg: #f7f7f5;
+  --text: #0d173b;
+  --muted: #4a5273;
+  --bg: #f8f9fa;
   --surface: #ffffff;
-  --border: #d7d9de;
-  --accent: #1b4d3e;
+  --border: #d9dde8;
+  --accent: #0d173b;
 
   font: 17px/1.55 system-ui, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
@@ -14,12 +14,12 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #eceef2;
-    --muted: #b3b9c6;
-    --bg: #14161a;
-    --surface: #1c1f25;
-    --border: #333841;
-    --accent: #9ad8c0;
+    --text: #f1f3fa;
+    --muted: #a6aec9;
+    --bg: #0a1230;
+    --surface: #111c48;
+    --border: #26325f;
+    --accent: #d5defa;
   }
 }
 
@@ -42,6 +42,11 @@ body {
 
 .masthead {
   margin-bottom: 2rem;
+  padding: 2rem;
+  border-bottom: 3px solid #d4af37;
+  border-radius: 0.5rem;
+  background: #0d173b;
+  color: #fff;
 }
 
 .eyebrow {
@@ -49,23 +54,25 @@ body {
   font-size: 0.8rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: #c5cce8;
 }
 
 h1 {
   margin: 0 0 0.75rem;
   font-size: clamp(1.75rem, 4vw, 2.4rem);
   line-height: 1.15;
+  font-family: 'Iowan Old Style', Charter, Georgia, serif;
 }
 
 h2 {
   margin: 0 0 0.75rem;
   font-size: 1.1rem;
+  font-family: 'Iowan Old Style', Charter, Georgia, serif;
 }
 
 .lede {
   margin: 0;
-  color: var(--muted);
+  color: #c5cce8;
   max-width: 40rem;
 }
 
@@ -83,20 +90,6 @@ h2 {
 
 .panel p:last-child {
   margin-bottom: 0;
-}
-
-.outcome-list {
-  margin: 0 0 0.75rem;
-  padding-left: 1.1rem;
-}
-
-.outcome-list li {
-  margin-bottom: 0.35rem;
-}
-
-.fine-print {
-  font-size: 0.9rem;
-  color: var(--muted);
 }
 
 a {
