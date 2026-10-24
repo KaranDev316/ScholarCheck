@@ -38,6 +38,8 @@ as permission to publish.
   status/fields from active contracts; retain migration tests for old data.
 - Model each material fact as stated, unspecified or conflicting. Add
   evidence-backed tuition/living/flights coverage and computed funding type.
+- Define separate extraction and AI evidence-check outputs with snapshot ids,
+  exact spans, claim applicability and supported/unsupported/unclear results.
 - Specify publish/hold/reject/stale reasons and retained snapshot references.
   Test serialization and invalid states. No scheduler or live publisher yet.
 
@@ -67,12 +69,13 @@ as permission to publish.
   records, replacing weak candidates as needed. Retain official-source
   snapshots and map material displayed claims to exact excerpts or table cells.
 - Implement the publication policy gates, decision report, immutable revision
-  and atomic publish/hold operation. Enforce provider allowlist, exact excerpt
-  match, fact states and strict computed funding categories.
+  and atomic publish/hold operation. Use AI to propose and check claims, then
+  enforce provider allowlist, exact excerpt match, value/context consistency,
+  fact states and strict computed funding categories in code.
 - Publish each launch record only after its own gate passes. Keep the four
   original fixtures as regression inputs and record hold reasons.
 
-### Step 6 — Public website (T11-T12)
+### Step 6 — Public website (T11-T12; start UI shell alongside Steps 2–5)
 
 - Add published-only catalogue/search/filter endpoints for country, study
   level and the three funding types, plus a working problem-report endpoint.

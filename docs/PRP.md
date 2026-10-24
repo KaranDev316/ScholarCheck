@@ -24,7 +24,7 @@ not decide whether a particular visitor qualifies.
 | MVP-03 | Scholarship detail | Stable direct URL shows scheme, provider, applicable level, round, headline funding component and amount, stated eligibility, separate funding components, deadlines, exact evidence and the latest source-check date |
 | MVP-04 | Official actions | “Read the requirements” and “Apply on the provider's site” are distinct only when they lead to distinct confirmed destinations; passed dates or an unavailable route show a plain explanation, never a misleading disabled application button |
 | MVP-05 | Sharing | Text-labelled Copy link and Share controls use the real canonical scholarship URL and open the same public detail page |
-| MVP-06 | Evidence-backed publication | Each material claim passes `PUBLICATION-POLICY.md` against retained official content; missing or conflicting evidence holds publication automatically; no human-verification workflow exists |
+| MVP-06 | Evidence-backed publication | AI extracts candidate facts and a separate AI pass checks whether retained official wording supports each claim; deterministic gates in `PUBLICATION-POLICY.md` make the final publish/hold decision; missing or conflicting evidence holds automatically |
 | MVP-07 | Honest unknowns and dates | Facts distinguish stated, unspecified and conflicting; a date without a year never implies an open round; a passed date affects only its own round and is labelled “Date passed” |
 | MVP-08 | Funding classification | Components stay separate in provider currency; the coverage checklist shows Tuition, Living costs and Flights as Covered or Not stated only when evidence supports each; the computed “Fully funded” chip requires all three |
 | MVP-09 | Public quality | Keyboard access, mobile layout, system light/dark theme, clear loading/error states, source-check wording rather than internal pipeline details, and no claims beyond the stored decision |
@@ -123,6 +123,8 @@ weak candidates when needed and retain all four existing fixtures as
 regression inputs. The final count follows evidence quality, not a four-record
 quota. Every launched record must pass the policy; a held record cannot be
 published to meet a count.
+Build and test the public UI with development-only data while source checking
+is implemented; that data must never appear as published in production.
 Stage 2 requires one unattended unchanged/safe-change/conflict/fetch-failure
 demonstration with last-supported-version behaviour.
 

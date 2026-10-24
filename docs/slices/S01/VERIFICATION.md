@@ -22,7 +22,7 @@ fixtures are regression inputs, not a required launch set.
 | F-05 | Known issues in `FIRST-PASS-REVIEW.md` are represented as failed/uncertain checks and cannot be labelled `source_checked` | Fixture audit tests/report |
 | F-06 | Read responses expose assurance and checked date honestly; a YAML fixture never says “source checked” solely because it parsed | API tests |
 | F-07 | A source failure is represented as unavailable/needs recheck in the contract; it never implies a round closed | Contract tests |
-| F-08 | Every launch record passes the provider, exact-evidence, conflict and funding-coverage gates against retained snapshots; unsupported candidates stay held | Validation reports, snapshot references and publication tests |
+| F-08 | Every launch record passes separate AI evidence checking plus provider, exact-evidence, value/context, conflict and funding-coverage code gates against retained snapshots; unsupported or unclear candidates stay held | Validation reports, snapshot references and publication tests |
 | F-09 | Public APIs expose only published records and support search plus country, study level and the three funding-type filters | API tests including unpublished/empty/unknown cases |
 | F-10 | A visitor can browse, filter, inspect stated eligibility, deadlines and exact evidence, open confirmed official links, and share a stable URL without an account | UI tests and deployed smoke check |
 | F-11 | “Fully funded” appears only with explicit tuition, living and flights evidence; amount basis and partial exemptions remain accurate | Classification tests and UI check |

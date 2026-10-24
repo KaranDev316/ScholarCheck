@@ -34,6 +34,17 @@ candidate; it cannot be converted to a positive public claim.
 All checks below must pass. A model confidence score cannot override a failed
 check.
 
+The pipeline may use one AI pass to extract candidate facts and a separate
+pass to check whether each claim is supported by the retained source in its
+full context. The verifier must check applicability of the quoted text to the
+same scholarship, applicant category, degree level, round, rate year and
+application route, and return `supported`, `unsupported` or `unclear` with a
+snapshot reference. A matching quotation by itself does not establish that
+the claim applies. Code independently checks exact excerpt presence,
+structured values and qualifiers, source permission, consistency, and funding
+classification. Any unsupported or unclear material claim holds publication.
+Neither AI pass can set `source_checked` or publish a revision.
+
 1. **Source and access:** URL belongs to a government body or an established,
    well-known institution on the approved provider list; its access rules
    permit the fetch method. Store source
@@ -42,8 +53,9 @@ check.
    stage, intake, application route, eligibility restriction, and funding
    relationship points to a passage or table cell in a retained snapshot.
    Exact displayed excerpts must occur in that saved snapshot; values and
-   units must agree with the cited wording or table cell. An HTTP 200 alone
-   is not evidence. A model may propose facts but cannot publish them.
+   units must agree with the cited wording or table cell. The independent
+   evidence-check pass must find that the surrounding context supports the
+   claim. An HTTP 200 alone is not evidence.
 3. **Structure and semantics:** The `Opportunity` schema validates. Unknown
    values remain unspecified. Amounts are not summed or converted; tuition
    reduction is not called a stipend; no deadline year, degree recognition,

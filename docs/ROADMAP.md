@@ -13,13 +13,15 @@ account is required.
 | Order | Deliverable | Exit proof |
 |---|---|---|
 | 1 | Select launch records from government or established institutions; audit the four fixture issues and replace weak launch candidates | Every displayed material claim points to an exact retained passage or table cell; unsupported candidates remain private and all four fixtures stay in regression tests |
-| 2 | Migrate legacy human-verification fields and finish the validation/publication path | No human-verification status or UI; fact states, provider allowlist, exact excerpt checks, conflict holds and computed coverage/funding types are tested; decisions and revisions are stored |
-| 3 | Complete published-only list, search, filter, detail and feedback APIs | Country, study level and the three funding-type filters work; problem reports have a real endpoint; unknown IDs return the agreed 404 |
-| 4 | Build the public site | Home, Find scholarships and stable detail URLs support browse/search, filters, exact evidence, official actions, sharing and problem reports without sign-in; source-check language stays plain |
+| 2 | Build the public UI shell from the wireframe while publication work proceeds | Home, Find scholarships and detail routes work with clearly marked development data, responsive layouts and empty/loading/error states; no fixture is presented as published |
+| 3 | Migrate legacy human-verification fields and finish the validation/publication path | An extraction pass and a separate AI evidence-check pass produce auditable proposals; code enforces provider, exact excerpt, value, date, conflict and coverage gates; decisions and revisions are stored |
+| 4 | Complete published-only list, search, filter, detail and feedback APIs and connect the UI | Country, study level and funding-type filters work on published records; official actions, sharing and problem reports work; unknown IDs return the agreed 404 |
 | 5 | Run release checks and deploy | Every launch record is source-checked, first-release journeys work at the deployed URL, and real branding/contact details replace placeholders |
 
 The release target is evidence quality. If a source cannot support a material
 claim, hold or replace that candidate. No human-verification path exists.
+UI work starts before the publication pipeline is complete, but the public
+catalogue stays empty until records pass the gate.
 
 ## Stage 2 — Make it update itself
 

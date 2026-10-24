@@ -30,7 +30,7 @@ personal assessments and saving are later features. [D-10, D-11]
 | Backend | FastAPI (Python) | Typed request/response models, fast to build | [ASSUMED D-02] |
 | Data | PostgreSQL | Relational model (opportunity / round / programme / rule / evidence) | [ASSUMED D-02] |
 | Auth | No accounts in first release | Automated publication has no reviewer login; later applicant account sync is deferred | [D-11] |
-| Extraction | Deterministic parsers first; model-assisted extraction may propose candidates | Independent validation gates decide publication, never model confidence alone | [D-09] |
+| Extraction and checking | Parsers plus AI candidate extraction and a separate AI evidence-check pass | Code checks retained excerpts, values, context and policy gates before publication; model confidence alone never decides | [D-11, clarified 24 Oct 2026] |
 | UI library | NOT DECIDED | | |
 | Hosting | NOT DECIDED; low-cost, single deployable | | |
 | Workers | Python scheduled jobs, initially simple | Fetch, extract, validate and retry independently of user requests | [D-09; implementation pending] |
