@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 import { CoverageChip, FactChip, TagChip } from '../components/Chips'
 import { ReportDialog } from '../components/ReportDialog'
-import { formatDate } from '../data/format'
 import { fundingTypeFor, passedRoundDates } from '../data/funding'
 import { COVERAGE_KEYS, COVERAGE_LABELS } from '../data/types'
 import type { Scholarship } from '../data/types'
@@ -260,35 +259,7 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
           </div>
         </div>
 
-        <aside className="side" aria-label="Assurance">
-          <div className="panel">
-            <h3>Checked against the official page</h3>
-            {record.sourceCheck ? (
-              <dl>
-                <div>
-                  <dt>Last checked</dt>
-                  <dd>{formatDate(record.sourceCheck.checkedAt)}</dd>
-                </div>
-                <div>
-                  <dt>Result</dt>
-                  <dd>
-                    <span className="chip stated">Matches the official page</span>
-                  </dd>
-                </div>
-              </dl>
-            ) : (
-              <p className="small mute">
-                <span className="chip unspec">Not source checked yet</span>
-                <br />
-                The record appears here as a development preview. A record is published only once an
-                automated check confirms it matches the official page.
-              </p>
-            )}
-            <p className="small mute">
-              Details can change. Confirm with the provider before you apply.
-            </p>
-          </div>
-
+        <aside className="side" aria-label="Scholarship details">
           <div className="panel">
             <h3>At a glance</h3>
             <dl>

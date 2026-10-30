@@ -52,7 +52,23 @@ describe('ScholarshipPage', () => {
 
     expect(screen.getByText(/development preview\. this record is not published/i)).toBeInTheDocument()
     expect(screen.getByText(/the published dates \(11 september 2026\) have passed/i)).toBeInTheDocument()
-    expect(screen.getByText(/not source checked yet/i)).toBeInTheDocument()
+    expect(screen.queryByText(/checked against the official page/i)).toBeNull()
+    expect(screen.queryByText(/not source checked yet/i)).toBeNull()
+  })
+
+  it('leaves the source-check status off the detail page', () => {
+    const { unmount } = render(<ScholarshipPage record={makeRecord()} isDevelopment />)
+
+    expect(screen.queryByText(/checked against the official page/i)).toBeNull()
+    expect(screen.queryByText(/not source checked yet/i)).toBeNull()
+    expect(screen.queryByText(/confirm with the provider before you apply/i)).toBeNull()
+
+    unmount()
+
+    render(<ScholarshipPage record={fullyFundedRecord} isDevelopment={false} />)
+    expect(screen.queryByText(/checked against the official page/i)).toBeNull()
+    expect(screen.queryByText(/last checked/i)).toBeNull()
+    expect(screen.queryByText(/matches the official page/i)).toBeNull()
   })
 
   it('offers only the requirements link whatever the application route', () => {

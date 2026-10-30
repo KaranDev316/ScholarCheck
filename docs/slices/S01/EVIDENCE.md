@@ -106,11 +106,14 @@ health-client tests were removed with that startup-only UI.
 The frontend now implements the home, explore and detail views from
 `docs/design/scholarcheck-product-wireframe.html` over the four S01 fixtures,
 as development previews: every screen says the record is not published and
-`sourceCheck` is `null`, so no view can imply `source_checked` assurance.
+`sourceCheck` is `null`, so no view can imply `source_checked` assurance. The
+detail view shows no source-check panel at all — no check date, no result, and
+no "confirm with the provider" reminder — so the record's status cannot read as
+a claim about the source.
 
 | Check | Command | Actual result |
 |---|---|---|
-| Frontend tests | `cd frontend && npm test` | 56 passed in 9 files |
+| Frontend tests | `cd frontend && npm test` | 60 passed in 9 files |
 | Typecheck | `npx tsc -b --force` | No errors |
 | Lint | `npm run lint` | No problems |
 | Production build | `npm run build` | Built; no preview data in the bundle (`RMIT` and the fixture amounts are absent from `dist/assets`) |

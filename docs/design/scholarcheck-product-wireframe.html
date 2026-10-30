@@ -189,12 +189,8 @@ ${r.rd.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td><span class="chip neutral
 
 </div>
 
-<aside class="side" aria-label="Assurance"><div class="panel"><h3>Checked against the official page</h3>
-<dl><div><dt>Last checked</dt><dd><span class="ph" style="font-weight:400">Date of the latest check</span></dd></div>
-<div><dt>Result</dt><dd><span class="chip stated">Matches the official page</span></dd></div>
-
-</dl><p class="small mute" style="margin-top:14px">Details can change. Confirm with the provider before you apply.</p></div>
-<div class="panel"><h3>At a glance</h3><dl><div><dt>Provider</dt><dd>${r.p}</dd></div><div><dt>Country</dt><dd>${r.c}</dd></div><div><dt>Study level</dt><dd>${r.lv}</dd></div><div><dt>Funding type</dt><dd>${r.ft}</dd></div></dl></div><div class="panel"><h3>See something wrong?</h3><p class="small mute" style="margin:6px 0 12px">Tell us and we’ll recheck this record.</p><button class="btn alt sm" onclick="report('${r.id}')">Report a problem</button></div></aside><div class="pinbar">${passed||!canApply?link('Read the requirements'):link('Apply on the provider’s site')}</div></div>`}
+<aside class="side" aria-label="Scholarship details">
+<div class="panel"><h3>At a glance</h3><dl><div><dt>Provider</dt><dd>${r.p}</dd></div><div><dt>Country</dt><dd>${r.c}</dd></div><div><dt>Study level</dt><dd>${r.lv}</dd></div><div><dt>Funding type</dt><dd>${r.ft}</dd></div></dl></div><div class="panel"><h3>See something wrong?</h3><p class="small mute" style="margin:6px 0 12px">Tell us and we’ll recheck this record.</p><button class="btn alt sm" onclick="report('${r.id}')">Report a problem</button></div></aside><div class="pinbar">${link('Read the requirements')}</div></div>`}
 function quick(k,v){F={q:'',c:'',l:'',f:''};F[k]=v;location.hash='explore'}
 function report(id){const x=D.find(d=>d.id===id);$('#rps').textContent='About: '+x.t;$('#rp').showModal()}
 function sendReport(){$('#rp').close();$('#rpd').value='';toast('Design preview: report not sent')}
