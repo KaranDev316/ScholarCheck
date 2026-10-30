@@ -5,7 +5,7 @@ import { HomePage } from '../src/pages/HomePage'
 
 describe('HomePage', () => {
   it('states the ScholarCheck promise and the current publication status', () => {
-    render(<HomePage />)
+    render(<HomePage records={[]} isDevelopment={false} />)
 
     expect(
       screen.getByRole('heading', {
@@ -13,7 +13,7 @@ describe('HomePage', () => {
         name: /find funding. check the evidence. decide for yourself/i,
       }),
     ).toBeInTheDocument()
-    expect(screen.getByText(/no scholarships are published yet/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/no published scholarships yet/i)).not.toHaveLength(0)
     expect(screen.queryByText(/api connected|environment/i)).not.toBeInTheDocument()
   })
 })
