@@ -51,8 +51,8 @@ or result in a hold when that engine is built.
 | F-07 | Unproven | No source-failure decision contract |
 | F-08 | Unproven | No retained snapshots or publication gate; all four fixtures remain unpublished |
 | F-09 | Unproven | Only development/test detail read exists; no public catalogue or filters |
-| F-10 | Unproven | Frontend is a scaffold; no public scholarship journeys or deployed URL |
-| F-11 | Unproven | No coverage checklist or strict computed funding classification |
+| F-10 | Partly proven | Local UI tests cover browse, filters, detail, stated eligibility, rounds, exact evidence, official links and shareable hash URLs with no account; the deployed smoke check is outstanding |
+| F-11 | Partly proven | Coverage checklist plus a computed classification that only says “Fully funded” when tuition, living costs and flights are all stated, with tests; no published record exercises it yet |
 | F-12 | Unproven | No feedback endpoint or production brand/contact details |
 
 Personal evaluator, save and comparison proof remains future work. Public
@@ -97,6 +97,39 @@ that no scholarships are published, without displaying environment details.
 The wireframe reference uses text controls and no SVG icons; disconnected
 preview actions are labelled as such.
 
-The current frontend check passed: 1 test, typecheck, lint and production
-build. The earlier 7-test result above is historical scaffold evidence; its
+At this earlier stage, the frontend check passed: 1 test, typecheck, lint and
+production build. The 7-test result above is historical scaffold evidence; its
 health-client tests were removed with that startup-only UI.
+
+## Public catalogue UI, 2026-10-30
+
+The frontend now implements the home, explore and detail views from
+`docs/design/scholarcheck-product-wireframe.html` over the four S01 fixtures,
+as development previews: every screen says the record is not published and
+`sourceCheck` is `null`, so no view can imply `source_checked` assurance.
+
+| Check | Command | Actual result |
+|---|---|---|
+| Frontend tests | `cd frontend && npm test` | 56 passed in 9 files |
+| Typecheck | `npx tsc -b --force` | No errors |
+| Lint | `npm run lint` | No problems |
+| Production build | `npm run build` | Built; no preview data in the bundle (`RMIT` and the fixture amounts are absent from `dist/assets`) |
+
+What the tests establish, and what they do not:
+
+- Search and filters run over the derived records. Funding type is computed
+  from the three coverage facts, so a record is “Fully funded” only with
+  tuition, living costs and flights all `stated`; a stored label cannot
+  override that. Passed-round notes come from a round's published status, not
+  from a guessed date.
+- A record shows components separately, without a computed total. Components
+  and eligibility statements can point at numbered evidence passages kept with
+  source URLs and save times. Catalogue tests fail if a supplied reference does
+  not resolve; they do not require every statement to have a reference.
+- Hash routes keep `#cgsd-doctoral` and `#explore?c=Canada` shareable, and an
+  unknown id says the record is unavailable instead of inventing one.
+- The report dialog closes and states that nothing was sent, because no
+  feedback endpoint exists yet (F-12). Branding and contact details remain
+  placeholders.
+- This is local UI proof only. No record is published. The published-only
+  public API and the deployed smoke check for F-09/F-10 are still outstanding.

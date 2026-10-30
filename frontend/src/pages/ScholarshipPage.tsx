@@ -312,17 +312,6 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
               </div>
             ))}
           </div>
-
-          <div className="dsec">
-            <h2>Was this record wrong?</h2>
-            <p className="mute small">
-              Feedback is not collected yet. Until it is, read the official pages linked above and
-              treat them as the authority.
-            </p>
-            <button className="btn alt sm" type="button" onClick={() => setReportOpen(true)}>
-              Report a problem
-            </button>
-          </div>
         </div>
 
         <aside className="side" aria-label="Assurance">
