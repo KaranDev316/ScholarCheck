@@ -39,7 +39,6 @@ section{padding:40px 0}
 .hero p.lead{font-size:1.15rem;color:var(--mute);margin:18px 0 24px;max-width:52ch}
 .search{display:flex;gap:8px;max-width:560px}
 .search input{flex:1;min-width:0;min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:6px;font:inherit;background:var(--surface);color:var(--ink)}
-.excerpt{border-left:3px solid var(--teal);padding:8px 12px;background:var(--mint);font-family:var(--serif);color:var(--mute);font-style:italic;border-radius:0 4px 4px 0}
 /* cards */
 .cards{display:grid;gap:14px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px;display:grid;gap:10px}
@@ -71,9 +70,8 @@ section{padding:40px 0}
 .tblwrap{overflow-x:auto}
 .rule{padding:14px 16px;border:1px solid var(--line);background:var(--surface);border-radius:8px;display:grid;gap:4px}
 .dsec{margin-top:36px;display:grid;gap:12px}
-.refbtn{background:none;border:none;color:var(--green);font:600 .85rem var(--sans);cursor:pointer;text-decoration:underline;padding:4px}
-.ev{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:10px;scroll-margin-top:16px}
-.ev:target,.ev.flash{box-shadow:0 0 0 3px var(--teal)}
+.elig{margin:0;padding-left:26px;display:grid;gap:14px;font-size:1.05rem;line-height:1.55}
+.elig li{padding-left:6px}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:6px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.on{opacity:1}
 footer{border-top:3px solid var(--gold);background:var(--navy);padding:28px 0;margin-top:40px;color:#C5CCE8;font-size:.9rem}
@@ -118,13 +116,13 @@ const D=[
  ev:['Published 45-credit annual tuition rate','Award made on admission']},
 {id:'rmit-stipend',t:'RMIT Research Stipend Scholarship',p:'RMIT University',c:'Australia',lv:'Research degree',ft:'Tuition + stipend',tags:['Research','Tuition + stipend','Australia','2026 dates passed'],s:'A research stipend with a staged application route and international research fee-offset provisions. Published 2026 application dates have passed.',amt:'A$36,245',per:'per year, published 2026 rate',
  comp:[['Research stipend','stated','A$36,245 per year (published 2026 rate)',1],['International research fee offset','unspec','Provision mentioned; amount not specified',2]],
- el:[['Stated eligibility conditions appear here, one per row, each with its excerpt.','ph',0]],
+ el:[['Eligibility conditions appear here, one per row.','ph',0]],
  rd:[['2026 rounds','Published 2026 dates','Dates passed','Next round not published. Not treated as closed.']],
  app:['route','Staged application route. Follow the official steps in order.'],
  ev:['Stipend rate','Fee-offset provisions for international research students']},
 {id:'sydney-rtp',t:'University of Sydney RTP International Scholarship',p:'University of Sydney',c:'Australia',lv:'Research degree',ft:'Tuition + stipend',tags:['Research','Tuition + stipend','Australia','11 Sep 2026 passed'],s:'Research Training Program support with an annual stipend and a tuition fee offset. The recorded deadline for research periods 1–2 of 2027 has passed.',amt:'A$44,293',per:'per year, published 2027 rate',
  comp:[['Annual stipend','stated','A$44,293 per year (published 2027 rate)',1],['Tuition fee offset','unspec','Offset stated; amount not specified',2]],
- el:[['Stated eligibility conditions appear here, one per row, each with its excerpt.','ph',0]],
+ el:[['Eligibility conditions appear here, one per row.','ph',0]],
  rd:[['Research periods 1–2, 2027','11 September 2026','Date passed','Later rounds not published. Not treated as closed.']],
  app:['route','Application route stated by the provider.'],
  ev:['Stipend rate for 2027','Tuition fee offset']}
@@ -179,17 +177,16 @@ function detail(r){
 
 
 <div class="dsec"><h2>Funding components</h2><p class="mute small">Each component is listed on its own. We never add them together or call one a total.</p><div class="rule"><strong>${r.ff?'<span class="chip ff">Fully funded</span> ':''}What the official page says it covers</strong><div class="small mute">“Fully funded” is shown only when tuition, living costs and flights are all stated as covered.</div>${[['Tuition','t'],['Living costs','l'],['Flights','a']].map(x=>`<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span>${x[0]}</span><span class="chip ${chip[r.cv[x[1]]][0]}">${r.cv[x[1]]==='stated'?'Covered':'Not stated'}</span></div>`).join('')}</div>
-${r.comp.map(c=>`<div class="rule"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><strong>${c[0]}</strong><span class="chip ${chip[c[1]][0]}">${chip[c[1]][1]}</span></div><div class="${c[1]==='unspec'?'ph':'amt'}" style="${c[1]==='stated'?'font-size:1.15rem':''}">${c[2]}</div>${c[3]?`<button class="refbtn" style="justify-self:start" onclick="goEv(${c[3]})">Evidence ${c[3]}</button>`:''}</div>`).join('')}</div>
+${r.comp.map(c=>`<div class="rule"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><strong>${c[0]}</strong><span class="chip ${chip[c[1]][0]}">${chip[c[1]][1]}</span></div><div class="${c[1]==='unspec'?'ph':'amt'}" style="${c[1]==='stated'?'font-size:1.15rem':''}">${c[2]}</div></div>`).join('')}</div>
 
-<div class="dsec"><h2>Stated eligibility</h2><p class="mute small">What the official source says. This isn’t a decision about you or a chance of award.</p>
-${r.el.map(e=>`<div class="rule"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span class="${e[1]==='ph'?'ph':''}">${e[0]}</span><span class="chip ${chip[e[1]][0]}">${chip[e[1]][1]}</span></div>${e[2]?`<button class="refbtn" style="justify-self:start" onclick="goEv(${e[2]})">Evidence ${e[2]}</button>`:''}</div>`).join('')}</div>
+<div class="dsec"><h2>Eligibility</h2><p class="mute small">What the official source says. This isn’t a decision about you or a chance of award.</p>
+<ol class="elig">${r.el.map(e=>`<li>${e[0]}</li>`).join('')}</ol></div>
 
 <div class="dsec"><h2>Rounds and deadlines</h2><div class="tblwrap"><table class="tbl"><thead><tr><th>Round</th><th>Date as published</th><th>Status</th><th>Note</th></tr></thead><tbody>
 ${r.rd.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td><span class="chip neutral">${x[2]}</span></td><td class="mute small">${x[3]}</td></tr>`).join('')}</tbody></table></div>
 <p class="small mute">A passed date marks that round only. Other rounds stay as they are until a source says otherwise.</p></div>
 
-<div class="dsec"><h2>Evidence</h2><p class="mute small">Each claim above links to the wording it rests on, kept from the official page.</p>
-${r.ev.map((e,i)=>`<div class="ev" id="ev${i+1}"><strong>${i+1}. ${e}</strong><p class="excerpt">Exact passage retained from the saved official page.</p><div class="small mute">Source: <span class="ph">official page address</span> · Saved: <span class="ph">date and time of the saved copy</span></div>${link('Open the official page','alt sm')}</div>`).join('')}</div>
+
 </div>
 
 <aside class="side" aria-label="Assurance"><div class="panel"><h3>Checked against the official page</h3>
@@ -203,7 +200,6 @@ function report(id){const x=D.find(d=>d.id===id);$('#rps').textContent='About: '
 function sendReport(){$('#rp').close();$('#rpd').value='';toast('Design preview: report not sent')}
 function copyLink(id){const u=new URL('#'+id,location.href).href;try{navigator.clipboard.writeText(u).then(()=>toast('Link copied'),()=>toast('Copy this link: '+u))}catch(e){toast('Copy this link: '+u)}}
 function shareLink(t){try{if(navigator.share){navigator.share({title:t,url:location.href}).catch(()=>{});return}}catch(e){}toast('Sharing isn’t available here. Use Copy link.')}
-function goEv(n){const e=document.getElementById('ev'+n);if(!e)return;e.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'center'});e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),1600)}
 
 function route(){
  const h=(location.hash||'#home').slice(1);const r=D.find(x=>x.id===h);

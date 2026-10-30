@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { CoverageChip, FactChip, TagChip } from '../components/Chips'
 import { ReportDialog } from '../components/ReportDialog'
-import { formatDate, formatDateTime, displayUrl } from '../data/format'
+import { formatDate } from '../data/format'
 import { fundingTypeFor, passedRoundDates } from '../data/funding'
 import { COVERAGE_KEYS, COVERAGE_LABELS } from '../data/types'
 import type { Scholarship } from '../data/types'
@@ -20,9 +20,12 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
   const passed = passedRoundDates(record)
   const canApply = record.application.kind === 'provider'
   const datesPassed = passed.length > 0
+  const upcomingRound = record.rounds.find((round) => round.status === 'Deadline published')
 
   const dateNote = datesPassed
-    ? `The published dates (${passed.join('; ')}) have passed, and the next round isn’t published yet.`
+    ? upcomingRound
+      ? `The ${passed.join('; ')} deadline has passed. Another round has a published deadline; confirm it with the provider before applying.`
+      : `The published dates (${passed.join('; ')}) have passed, and the next round isn’t published yet.`
     : record.application.note
 
   function announce(message: string) {
@@ -50,12 +53,6 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
     }
 
     await copyLink()
-  }
-
-  function showEvidence(number: number | undefined) {
-    if (!number) return
-    const target = document.getElementById(`${record.id}-ev${number}`)
-    if (typeof target?.scrollIntoView === 'function') target.scrollIntoView({ block: 'center' })
   }
 
   function sendReport() {
@@ -116,7 +113,7 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
             </div>
             <div>
               <span className="sl2">Application round</span>
-              <strong>{record.rounds[0]?.status ?? 'Not published'}</strong>
+              <strong>{upcomingRound?.status ?? record.rounds[0]?.status ?? 'Not published'}</strong>
             </div>
           </div>
 
@@ -143,19 +140,6 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
                   What the official page says about eligibility and funding.
                 </p>
               </div>
-              {canApply ? (
-                <div className="act">
-                  <a
-                    className={datesPassed ? 'btn alt' : 'btn'}
-                    href={record.links.portal}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Apply on the provider’s site
-                  </a>
-                  <p className="small mute">Opens the provider’s own application page.</p>
-                </div>
-              ) : null}
             </div>
           </div>
 
@@ -221,42 +205,26 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
                     ))}
                   </ul>
                 ) : null}
-                {component.evidenceNumber ? (
-                  <button
-                    className="refbtn"
-                    type="button"
-                    onClick={() => showEvidence(component.evidenceNumber)}
-                  >
-                    Evidence {component.evidenceNumber}
-                  </button>
-                ) : null}
               </div>
             ))}
           </div>
 
 
           <div className="dsec">
-            <h2>Stated eligibility</h2>
+            <h2>Eligibility</h2>
             <p className="mute small">
               What the official source says. This isn’t a decision about you or a chance of award.
             </p>
-            {record.eligibility.map((item) => (
-              <div className="rule" key={item.id}>
-                <div className="comphead">
-                  <span>{item.statement}</span>
-                  <FactChip state={item.state} />
-                </div>
-                {item.evidenceNumber ? (
-                  <button
-                    className="refbtn"
-                    type="button"
-                    onClick={() => showEvidence(item.evidenceNumber)}
-                  >
-                    Evidence {item.evidenceNumber}
-                  </button>
-                ) : null}
-              </div>
-            ))}
+            <ol className="elig">
+              {record.eligibility.map((item) => (
+                <li key={item.id}>
+                  {item.statement}
+                  {item.state === 'stated' ? null : (
+                    <span className="small mute"> (not stated in the source)</span>
+                  )}
+                </li>
+              ))}
+            </ol>
           </div>
 
           <div className="dsec">
@@ -289,28 +257,6 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
               A passed date marks that round only. Other rounds stay as they are until a source says
               otherwise.
             </p>
-          </div>
-
-
-          <div className="dsec">
-            <h2>Evidence</h2>
-            <p className="mute small">
-              Each claim above links to the wording it rests on, kept from the official page.
-            </p>
-            {record.evidence.map((entry) => (
-              <div className="ev" id={`${record.id}-ev${entry.number}`} key={entry.number}>
-                <strong>
-                  {entry.number}. {entry.claim}
-                </strong>
-                <p className="excerpt">“{entry.passage}”</p>
-                <div className="small mute">
-                  Source: {displayUrl(entry.url)} · Saved: {formatDateTime(entry.savedAt)}
-                </div>
-                <a className="btn alt sm" href={entry.url} target="_blank" rel="noreferrer">
-                  Open the official page
-                </a>
-              </div>
-            ))}
           </div>
         </div>
 
@@ -375,15 +321,9 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
         </aside>
 
         <div className="pinbar">
-          {canApply && !datesPassed ? (
-            <a className="btn" href={record.links.portal} target="_blank" rel="noreferrer">
-              Apply on the provider’s site
-            </a>
-          ) : (
-            <a className="btn" href={record.links.requirements} target="_blank" rel="noreferrer">
-              Read the requirements
-            </a>
-          )}
+          <a className="btn" href={record.links.requirements} target="_blank" rel="noreferrer">
+            Read the requirements
+          </a>
         </div>
       </div>
 

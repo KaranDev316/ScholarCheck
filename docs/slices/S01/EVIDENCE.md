@@ -51,7 +51,7 @@ or result in a hold when that engine is built.
 | F-07 | Unproven | No source-failure decision contract |
 | F-08 | Unproven | No retained snapshots or publication gate; all four fixtures remain unpublished |
 | F-09 | Unproven | Only development/test detail read exists; no public catalogue or filters |
-| F-10 | Partly proven | Local UI tests cover browse, filters, detail, stated eligibility, rounds, exact evidence, official links and shareable hash URLs with no account; the deployed smoke check is outstanding |
+| F-10 | Partly proven | Local UI tests cover browse, filters, detail, stated eligibility, rounds, a single official link and shareable hash URLs with no account; the deployed smoke check is outstanding |
 | F-11 | Partly proven | Coverage checklist plus a computed classification that only says “Fully funded” when tuition, living costs and flights are all stated, with tests; no published record exercises it yet |
 | F-12 | Unproven | No feedback endpoint or production brand/contact details |
 
@@ -122,10 +122,11 @@ What the tests establish, and what they do not:
   tuition, living costs and flights all `stated`; a stored label cannot
   override that. Passed-round notes come from a round's published status, not
   from a guessed date.
-- A record shows components separately, without a computed total. Components
-  and eligibility statements can point at numbered evidence passages kept with
-  source URLs and save times. Catalogue tests fail if a supplied reference does
-  not resolve; they do not require every statement to have a reference.
+- A record shows components separately, without a computed total, and lists the
+  eligibility conditions as published. Quoted passages, source addresses and
+  saved dates are no longer shown, and “Read the requirements” is the only
+  route to the official page. Catalogue tests still fail if a retained
+  reference does not resolve.
 - Hash routes keep `#cgsd-doctoral` and `#explore?c=Canada` shareable, and an
   unknown id says the record is unavailable instead of inventing one.
 - The report dialog closes and states that nothing was sent, because no

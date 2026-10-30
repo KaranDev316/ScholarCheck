@@ -747,14 +747,22 @@ section {
   padding-left: 18px;
 }
 
-.refbtn {
-  background: none;
-  border: none;
-  color: var(--green);
-  font: 600 0.85rem var(--sans);
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 4px 0;
+.elig {
+  margin: 0;
+  padding-left: 26px;
+  display: grid;
+  gap: 14px;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.elig li {
+  padding-left: 6px;
+}
+
+.elig li::marker {
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
 }
 
 .tblwrap {
@@ -780,27 +788,6 @@ section {
 .tbl th {
   font-size: 0.8rem;
   color: var(--mute);
-}
-
-.ev {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 16px;
-  display: grid;
-  gap: 10px;
-  justify-items: start;
-  scroll-margin-top: 16px;
-}
-
-.excerpt {
-  border-left: 3px solid var(--teal);
-  padding: 8px 12px;
-  background: var(--mint);
-  font-family: var(--serif);
-  color: var(--mute);
-  font-style: italic;
-  border-radius: 0 4px 4px 0;
 }
 
 .side {
