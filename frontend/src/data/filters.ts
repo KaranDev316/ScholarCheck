@@ -64,9 +64,24 @@ function searchText(record: Scholarship): string {
 }
 
 /**
- * Every word of the query must appear somewhere in the record, so
- * "doctoral scholarships in Canada" finds a Canadian doctoral award.
+ * Every meaningful word of the query must appear somewhere in the record, so
+ * "doctoral scholarships in Canada" finds a Canadian doctoral award. Short
+ * linking words are dropped, because no record is expected to contain them.
  */
+const STOP_WORDS = new Set([
+  'a',
+  'an',
+  'and',
+  'at',
+  'for',
+  'in',
+  'of',
+  'on',
+  'the',
+  'to',
+  'with',
+])
+
 export function matchesQuery(record: Scholarship, query: string): boolean {
   const tokens = normalise(query)
     .split(/\s+/)
@@ -75,8 +90,11 @@ export function matchesQuery(record: Scholarship, query: string): boolean {
 
   if (tokens.length === 0) return true
 
+  const meaningful = tokens.filter((token) => !STOP_WORDS.has(token))
+  const required = meaningful.length > 0 ? meaningful : tokens
+
   const haystack = searchText(record)
-  return tokens.every((token) => haystack.includes(token))
+  return required.every((token) => haystack.includes(token))
 }
 
 export function filterScholarships(
