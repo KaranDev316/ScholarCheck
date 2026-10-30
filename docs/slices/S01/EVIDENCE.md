@@ -51,7 +51,7 @@ or result in a hold when that engine is built.
 | F-07 | Unproven | No source-failure decision contract |
 | F-08 | Unproven | No retained snapshots or publication gate; all four fixtures remain unpublished |
 | F-09 | Unproven | Only development/test detail read exists; no public catalogue or filters |
-| F-10 | Partly proven | Local UI tests cover browse, filters, detail, stated eligibility, rounds, a single official link and shareable hash URLs with no account; the deployed smoke check is outstanding |
+| F-10 | Partly proven | Local UI tests cover browse, filters, detail, stated eligibility, rounds, the official requirements and application links and shareable hash URLs with no account; the deployed smoke check is outstanding |
 | F-11 | Partly proven | Coverage checklist plus a computed classification that only says “Fully funded” when tuition, living costs and flights are all stated, with tests; no published record exercises it yet |
 | F-12 | Unproven | No feedback endpoint or production brand/contact details |
 

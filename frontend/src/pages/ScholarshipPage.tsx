@@ -116,32 +116,17 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
             </div>
           </div>
 
-          <div className="actions">
-            {isDevelopment ? (
-              <p className="small note warn">
-                Development preview. This record is not published and has not passed the automated
-                source check.
-              </p>
-            ) : null}
-            {dateNote ? <p className="small note warn">{dateNote}</p> : null}
-
-            <div className="actionpair">
-              <div className="act">
-                <a
-                  className={canApply && !datesPassed ? 'btn alt' : 'btn'}
-                  href={record.links.requirements}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Read the requirements
-                </a>
-                <p className="small mute">
-                  What the official page says about eligibility and funding.
+          {isDevelopment || dateNote ? (
+            <div className="actions">
+              {isDevelopment ? (
+                <p className="small note warn">
+                  Development preview. This record is not published and has not passed the automated
+                  source check.
                 </p>
-              </div>
+              ) : null}
+              {dateNote ? <p className="small note warn">{dateNote}</p> : null}
             </div>
-          </div>
-
+          ) : null}
 
           <div className="dsec">
             <h2>Funding components</h2>
@@ -256,6 +241,28 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
               A passed date marks that round only. Other rounds stay as they are until a source says
               otherwise.
             </p>
+
+            <div className="actionpair">
+              <div className="act">
+                <a className="btn" href={record.links.requirements} target="_blank" rel="noreferrer">
+                  Official page
+                </a>
+                <p className="small mute">
+                  What the official page says about eligibility and funding.
+                </p>
+              </div>
+              <div className="act">
+                <a
+                  className={canApply && !datesPassed ? 'btn alt' : 'btn'}
+                  href={record.links.portal}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Apply now
+                </a>
+                <p className="small mute">Opens the provider’s application page.</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -290,12 +297,6 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
             </button>
           </div>
         </aside>
-
-        <div className="pinbar">
-          <a className="btn" href={record.links.requirements} target="_blank" rel="noreferrer">
-            Read the requirements
-          </a>
-        </div>
       </div>
 
       <ReportDialog

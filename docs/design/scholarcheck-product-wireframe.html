@@ -84,8 +84,7 @@ header.top :focus-visible,footer :focus-visible,.herobg :focus-visible{outline-c
 @media (max-width:520px){.strip{grid-template-columns:1fr}.strip>div+div{border-left:0;border-top:1px solid var(--line)}}
 .qrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.qchip{min-height:44px;padding:0 16px;border-radius:99px;border:1px solid var(--green);background:var(--surface);color:var(--green);font:600 .95rem var(--sans);cursor:pointer}.qchip:hover{background:var(--mint)}
 dialog{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:22px;width:min(440px,calc(100vw - 32px))}dialog::backdrop{background:rgba(5,10,30,.6)}.rl{display:grid;gap:4px;font-weight:600;font-size:.9rem;margin-top:12px}.rl select,.rl textarea{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
-.pinbar{display:none}.toast{z-index:10}
-@media (max-width:860px){.pinbar{display:flex;position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);z-index:5}.pinbar .btn{flex:1}body{padding-bottom:76px}.toast{bottom:calc(88px + env(safe-area-inset-bottom,0px))}}
+.toast{z-index:10}
 @media (max-width:860px){.hero,.detail,.explore,.grid2{grid-template-columns:1fr}.side{position:static}.hero{padding:32px 0}}
 </style>
 </head>
@@ -165,14 +164,14 @@ function explore(){
 function detail(r){
 
  const canApply=r.app[0]==='route',passed=canApply&&r.rd.some(x=>/passed/i.test(x[2]));
- const reqBtn=link('Read the requirements',passed||!canApply?'':'alt');
- const appBtn=canApply?link('Apply on the provider’s site',passed?'alt':''):'';
+ const reqBtn=link('Official page');
+ const appBtn=link('Apply now',passed?'':'alt');
  const note=passed?`The published dates (${r.rd[0][1]}) have passed, and the next round isn’t published yet.`:canApply?'':r.app[1];
  return `<div class="crumbs"><a href="#explore">All scholarships</a> / ${r.t}</div>
 <div class="detail"><div>
 <div class="titlerow"><h1>${r.t}</h1><div class="share"><button class="sharebtn" onclick="copyLink('${r.id}')">Copy link</button><button class="sharebtn" onclick="shareLink('${r.t.replace(/'/g,'’')}')">Share</button></div></div><p class="mute" style="margin-top:8px">${r.p}, ${r.c}</p><div style="margin-top:10px">${r.tags.map(t=>`<span class="chip neutral">${t}</span> `).join('')}</div>
 <div class="strip"><div><span class="sl2">${r.comp[0][0]}</span><strong class="amt">${r.amt}</strong><span class="small mute">${r.per}</span></div><div><span class="sl2">Study level</span><strong>${r.lv}</strong></div><div><span class="sl2">Application round</span><strong>${r.rd[0][2]}</strong></div></div>
-<div class="actions">${note?`<p class="small" style="background:var(--amber-bg);color:var(--amber);padding:8px 12px;border-radius:6px">${note}</p>`:''}<div class="actionpair"><div class="act">${reqBtn}<p class="small mute">What the official page says about eligibility and funding.</p></div>${canApply?`<div class="act">${appBtn}<p class="small mute">Opens the provider’s own application page.</p></div>`:''}</div></div>
+${note?`<div class="actions"><p class="small" style="background:var(--amber-bg);color:var(--amber);padding:8px 12px;border-radius:6px">${note}</p></div>`:''}
 
 
 
@@ -184,13 +183,13 @@ ${r.comp.map(c=>`<div class="rule"><div style="display:flex;justify-content:spac
 
 <div class="dsec"><h2>Rounds and deadlines</h2><div class="tblwrap"><table class="tbl"><thead><tr><th>Round</th><th>Date as published</th><th>Status</th><th>Note</th></tr></thead><tbody>
 ${r.rd.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td><span class="chip neutral">${x[2]}</span></td><td class="mute small">${x[3]}</td></tr>`).join('')}</tbody></table></div>
-<p class="small mute">A passed date marks that round only. Other rounds stay as they are until a source says otherwise.</p></div>
+<p class="small mute">A passed date marks that round only. Other rounds stay as they are until a source says otherwise.</p><div class="actionpair"><div class="act">${reqBtn}<p class="small mute">What the official page says about eligibility and funding.</p></div><div class="act">${appBtn}<p class="small mute">Opens the provider’s own application page.</p></div></div></div>
 
 
 </div>
 
 <aside class="side" aria-label="Scholarship details">
-<div class="panel"><h3>At a glance</h3><dl><div><dt>Provider</dt><dd>${r.p}</dd></div><div><dt>Country</dt><dd>${r.c}</dd></div><div><dt>Study level</dt><dd>${r.lv}</dd></div><div><dt>Funding type</dt><dd>${r.ft}</dd></div></dl></div><div class="panel"><h3>See something wrong?</h3><p class="small mute" style="margin:6px 0 12px">Tell us and we’ll recheck this record.</p><button class="btn alt sm" onclick="report('${r.id}')">Report a problem</button></div></aside><div class="pinbar">${link('Read the requirements')}</div></div>`}
+<div class="panel"><h3>At a glance</h3><dl><div><dt>Provider</dt><dd>${r.p}</dd></div><div><dt>Country</dt><dd>${r.c}</dd></div><div><dt>Study level</dt><dd>${r.lv}</dd></div><div><dt>Funding type</dt><dd>${r.ft}</dd></div></dl></div><div class="panel"><h3>See something wrong?</h3><p class="small mute" style="margin:6px 0 12px">Tell us and we’ll recheck this record.</p><button class="btn alt sm" onclick="report('${r.id}')">Report a problem</button></div></aside></div>`}
 function quick(k,v){F={q:'',c:'',l:'',f:''};F[k]=v;location.hash='explore'}
 function report(id){const x=D.find(d=>d.id===id);$('#rps').textContent='About: '+x.t;$('#rp').showModal()}
 function sendReport(){$('#rp').close();$('#rpd').value='';toast('Design preview: report not sent')}

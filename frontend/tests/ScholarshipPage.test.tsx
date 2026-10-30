@@ -71,25 +71,28 @@ describe('ScholarshipPage', () => {
     expect(screen.queryByText(/matches the official page/i)).toBeNull()
   })
 
-  it('offers only the requirements link whatever the application route', () => {
-    const { unmount } = render(
-      <ScholarshipPage
-        record={makeRecord({ application: { kind: 'confirm', note: 'No confirmed route yet.' } })}
-        isDevelopment
-      />,
+  it('puts the official page and Apply now under Rounds and deadlines', () => {
+    render(<ScholarshipPage record={makeRecord()} isDevelopment />)
+
+    const heading = screen.getByRole('heading', { level: 2, name: 'Rounds and deadlines' })
+    const section = heading.closest('.dsec') as HTMLElement
+    expect(section).not.toBeNull()
+
+    const official = within(section).getByRole('link', { name: 'Official page' })
+    expect(official).toHaveAttribute('href', 'https://example.edu/requirements')
+    expect(
+      within(section).getByText(/what the official page says about eligibility and funding/i),
+    ).toBeInTheDocument()
+
+    expect(within(section).getByRole('link', { name: 'Apply now' })).toHaveAttribute(
+      'href',
+      'https://example.edu/apply',
     )
 
-    expect(screen.getAllByRole('link', { name: /read the requirements/i }).length).toBeGreaterThan(0)
-    expect(screen.queryByRole('link', { name: /go to application/i })).toBeNull()
-
-    unmount()
-
-    render(<ScholarshipPage record={fullyFundedRecord} isDevelopment={false} />)
-    expect(screen.getAllByRole('link', { name: /read the requirements/i }).length).toBeGreaterThan(0)
-    expect(screen.queryByRole('link', { name: /go to application/i })).toBeNull()
+    expect(screen.queryByRole('link', { name: /read the requirements/i })).toBeNull()
   })
 
-  it('keeps the requirements link when another round has a published deadline', () => {
+  it('keeps the date note and both links when another round has a published deadline', () => {
     render(
       <ScholarshipPage
         record={makeRecord({
@@ -102,22 +105,30 @@ describe('ScholarshipPage', () => {
       />,
     )
 
-    const requirements = screen.getAllByRole('link', { name: 'Read the requirements' })
-    expect(requirements.length).toBeGreaterThan(0)
-    expect(requirements[0]).toHaveAttribute('href', 'https://example.edu/requirements')
-    expect(screen.queryByRole('link', { name: /application/i })).toBeNull()
     expect(screen.getByText(/another round has a published deadline/i)).toBeInTheDocument()
     expect(screen.queryByText(/next round isn’t published yet/i)).toBeNull()
+    expect(screen.getByRole('link', { name: 'Official page' })).toHaveAttribute(
+      'href',
+      'https://example.edu/requirements',
+    )
+    expect(screen.getByRole('link', { name: 'Apply now' })).toHaveAttribute(
+      'href',
+      'https://example.edu/apply',
+    )
   })
 
-  it('keeps the Sydney RTP record on the requirements link', () => {
+  it('links the Sydney RTP record to its official page and its application', () => {
     const record = developmentCatalogue.find((item) => item.id === 'usyd-rtp-stipend')
     expect(record).toBeDefined()
     render(<ScholarshipPage record={record!} isDevelopment />)
 
-    expect(screen.getAllByRole('link', { name: 'Read the requirements' })[0]).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Official page' })).toHaveAttribute(
       'href',
       'https://www.sydney.edu.au/scholarships/australian-government-research-training-program/rtp-international.html',
+    )
+    expect(screen.getByRole('link', { name: 'Apply now' })).toHaveAttribute(
+      'href',
+      'https://sydneyuniversity.formstack.com/forms/rtpapp',
     )
   })
 
@@ -139,7 +150,7 @@ describe('ScholarshipPage', () => {
     expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
       '#explore',
       'https://example.edu/requirements',
-      'https://example.edu/requirements',
+      'https://example.edu/apply',
     ])
     expect(screen.queryByText(/open the official page/i)).toBeNull()
     expect(screen.queryByText(/^source:/i)).toBeNull()
