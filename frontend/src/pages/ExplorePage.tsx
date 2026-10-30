@@ -26,10 +26,18 @@ export function ExplorePage({
   onFiltersChange,
 }: ExplorePageProps) {
   const [query, setQuery] = useState(filters.q)
+  const [syncedQuery, setSyncedQuery] = useState(filters.q)
   const idPrefix = useId()
   const countries = availableCountries(records)
   const results = filterScholarships(records, filters)
   const filtering = hasActiveFilters(filters)
+
+  // The URL is the source of truth. When it changes — a chip removed, "Clear
+  // all", a shared link — the search box follows before the next paint.
+  if (syncedQuery !== filters.q) {
+    setSyncedQuery(filters.q)
+    setQuery(filters.q)
+  }
 
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

@@ -372,19 +372,28 @@ section {
   color: #0d173b;
 }
 
-.schcard .sn {
-  background: #fbf1d9;
-  color: #7a5710;
-  padding: 8px 12px;
-  border-radius: 6px;
+.schcard .slist {
+  display: grid;
+  gap: 8px;
   font-size: 0.9rem;
-  font-weight: 600;
+  color: #4a5273;
+}
+
+.schcard .slist li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
 
 
 /* start-here rows and cards */
 .starthere {
   padding: 36px 0 0;
+}
+
+.published {
+  padding: 36px 0 56px;
 }
 
 .startgrid {

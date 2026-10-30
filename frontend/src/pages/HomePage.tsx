@@ -69,7 +69,7 @@ export function HomePage({ records, isDevelopment }: HomePageProps) {
                     <em>“{sample.evidence[0].passage}”</em>
                   </div>
                 ) : null}
-                <ul className="sn list-plain">
+                <ul className="slist list-plain">
                   {COVERAGE_KEYS.map((key) => (
                     <li key={key}>
                       {COVERAGE_LABELS[key]}: <CoverageChip state={sample.coverage[key].state} />
