@@ -10,7 +10,6 @@ import json
 import re
 from datetime import UTC, datetime
 from decimal import Decimal
-from pathlib import Path
 from typing import Any
 
 from app.domain.enums import (
@@ -27,15 +26,46 @@ from app.publication.contracts import (
     ValidationReport,
 )
 from app.publication.policy import POLICY_VERSION
+from app.publication.register import REGISTER_PATH, Finding, FindingsRegister
 
 CHECKED_AT = datetime(2026, 10, 31, 9, 0, tzinfo=UTC)
 RETRIEVED_AT = datetime(2026, 10, 30, 8, 0, tzinfo=UTC)
 PARSER_VERSION = "test-extraction/1"
-SAMPLE_URL = "https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp"
-SAMPLE_PASSAGE = "The scholarship pays $40,000 per year for 36 months."
-FINDINGS_PATH = (
-    Path(__file__).resolve().parents[2] / "content" / "publication" / "first-pass-review.json"
+SAMPLE_URL = (
+    "https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/sample-award_eng.asp"
 )
+SAMPLE_PASSAGE = "The scholarship pays $40,000 per year for 36 months."
+FINDINGS_PATH = REGISTER_PATH
+
+
+def no_findings() -> FindingsRegister:
+    """A register with nothing outstanding, for records under review nowhere."""
+
+    return FindingsRegister()
+
+
+def held_register(
+    opportunity_id: str,
+    evidence_id: str,
+    url: str,
+    reason: str,
+    *,
+    result: CheckResult = CheckResult.UNCLEAR,
+) -> FindingsRegister:
+    """A register recording one open finding against one record and page."""
+
+    return FindingsRegister(
+        entries={
+            opportunity_id: (
+                Finding(
+                    evidence_id=evidence_id,
+                    evidence_url=url,
+                    result=result,
+                    reason=reason,
+                ),
+            )
+        }
+    )
 
 
 def sample_record(

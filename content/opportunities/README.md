@@ -38,7 +38,9 @@ cd backend && .venv/bin/python -m pytest tests/test_seed_content.py
    which needs a validation report and the retained snapshots that report
    checked (`docs/PUBLICATION-POLICY.md`). A fetch or YAML validation test
    alone is still insufficient. The open findings for each fixture live in
-   `content/publication/first-pass-review.json`.
+   `content/publication/first-pass-review.json`, which the gate reads itself: a
+   fixture with an entry there stays held until that entry is removed after a
+   re-check.
 7. **No invention.** If the source does not state a fact, omit the field. A
    funding component whose value is not stated stays on the record with
    `status: unspecified` and no `amount`/`currency`; it is never shown as zero,

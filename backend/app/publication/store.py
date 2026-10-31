@@ -9,6 +9,10 @@ half-published or marked checked without a report behind it.
 
 Re-processing the same snapshot produces the same content hash, so an unchanged
 record does not gain a duplicate revision.
+
+The review findings register is read here, from ``content/publication``, and is
+not a parameter: a caller cannot publish a held candidate by leaving the
+findings out, and an unreadable register holds every candidate.
 """
 
 from collections.abc import Sequence
@@ -27,6 +31,7 @@ from app.publication.contracts import (
 )
 from app.publication.gates import PublicationBlocked, evaluate
 from app.publication.policy import APPROVED_SOURCE_HOSTS, POLICY_VERSION
+from app.publication.register import load_register
 from app.storage.opportunities import write_payload
 
 
@@ -101,9 +106,12 @@ def publish(
     *,
     policy_version: str = POLICY_VERSION,
     approved_hosts: Sequence[str] = APPROVED_SOURCE_HOSTS,
-    open_findings: Sequence[str] = (),
 ) -> PublishedRevision:
-    """Publish one revision or raise ``PublicationBlocked`` without writing."""
+    """Publish one revision or raise ``PublicationBlocked`` without writing.
+
+    The review findings are loaded from their register here, so the decision
+    always accounts for a recorded discrepancy.
+    """
 
     by_id: dict[str, SourceSnapshot] = {}
     for snapshot in snapshots:
@@ -115,9 +123,9 @@ def publish(
         record,
         report,
         by_id,
+        register=load_register(),
         policy_version=policy_version,
         approved_hosts=approved_hosts,
-        open_findings=open_findings,
     )
     if decision.decision is not DecisionType.PUBLISH:
         raise PublicationBlocked(decision)

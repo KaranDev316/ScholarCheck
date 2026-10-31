@@ -12,6 +12,7 @@ from app.config import Settings
 from app.main import create_app
 from app.publication.contracts import CheckResult, DecisionType
 from app.publication.gates import PublicationBlocked
+from app.publication.register import FindingsRegister
 from app.publication.store import SnapshotConflict, publish, read_snapshot, store_snapshot
 from app.storage.opportunities import CONTENT_DIR, read_seed
 from tests.publication_helpers import (
@@ -22,6 +23,7 @@ from tests.publication_helpers import (
 )
 
 APPROVED = ("nserc-crsng.gc.ca",)
+RMIT = ("rmit.edu.au",)
 
 
 class _NoDatabase:
@@ -159,19 +161,12 @@ def test_an_unsupported_fixture_leaves_no_trace(test_dsn: str) -> None:
     """The real RMIT candidate is held and nothing about it becomes public."""
 
     candidate = read_seed(CONTENT_DIR / "rmit-research-stipend.yaml")
-    findings = load_findings()["findings"][candidate.id]
     snapshots = build_snapshots(candidate)
     report = build_report(candidate, snapshots)
 
     with psycopg.connect(test_dsn) as conn:
         with pytest.raises(PublicationBlocked):
-            publish(
-                conn,
-                candidate,
-                report,
-                snapshots,
-                open_findings=tuple(item["reason"] for item in findings),
-            )
+            publish(conn, candidate, report, snapshots, approved_hosts=RMIT)
 
         assert _count(conn, "source_snapshots") == 0
         assert _count(conn, "opportunity_revisions") == 0
@@ -182,6 +177,64 @@ def test_an_unsupported_fixture_leaves_no_trace(test_dsn: str) -> None:
 
     assert hidden.status_code == 404
     assert hidden.json()["code"] == "opportunity_not_found"
+
+
+def test_publishing_cannot_omit_the_recorded_findings() -> None:
+    """A perfect report and no argument to drop them: RMIT still holds."""
+
+    candidate = read_seed(CONTENT_DIR / "rmit-research-stipend.yaml")
+    snapshots = build_snapshots(candidate)
+    report = build_report(candidate, snapshots)
+    expected = [
+        item["reason"] for item in load_findings()["findings"][candidate.id]
+    ]
+
+    with pytest.raises(PublicationBlocked) as blocked:
+        publish(_NoDatabase(), candidate, report, snapshots, approved_hosts=RMIT)
+
+    decision = blocked.value.decision
+    assert decision.decision is DecisionType.HOLD
+    for reason in expected:
+        assert any(reason in held for held in decision.reasons), reason
+
+
+def test_a_held_fixture_cannot_be_published_under_a_new_id() -> None:
+    """Renaming the record does not move the page out from under the finding."""
+
+    original = read_seed(CONTENT_DIR / "rmit-research-stipend.yaml")
+    candidate = original.model_copy(update={"id": "rmit-research-stipend-copy"})
+    snapshots = build_snapshots(candidate)
+    report = build_report(candidate, snapshots)
+
+    with pytest.raises(PublicationBlocked) as blocked:
+        publish(_NoDatabase(), candidate, report, snapshots, approved_hosts=RMIT)
+
+    assert blocked.value.decision.decision is DecisionType.HOLD
+    assert any(
+        "open review finding" in reason for reason in blocked.value.decision.reasons
+    )
+
+
+def test_an_unreadable_register_holds_every_candidate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Deleting or breaking the register must not read as "nothing outstanding"."""
+
+    monkeypatch.setattr(
+        "app.publication.store.load_register",
+        lambda: FindingsRegister(problem="first-pass-review.json: no such file"),
+    )
+    candidate = sample_record()
+    snapshots = build_snapshots(candidate)
+    report = build_report(candidate, snapshots)
+
+    with pytest.raises(PublicationBlocked) as blocked:
+        publish(_NoDatabase(), candidate, report, snapshots, approved_hosts=APPROVED)
+
+    assert blocked.value.decision.decision is DecisionType.HOLD
+    assert any(
+        "could not be read" in reason for reason in blocked.value.decision.reasons
+    )
 
 
 def test_a_failure_half_way_through_rolls_every_write_back(

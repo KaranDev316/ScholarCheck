@@ -104,8 +104,8 @@ evidence-check pass, the website journeys and the monitoring worker do **not**
 exist yet. The
 [first-pass review](docs/slices/S01/FIRST-PASS-REVIEW.md) found material
 route, rate-year and deadline issues; those findings are recorded in
-`content/publication/first-pass-review.json` and keep the fixtures held, so
-none is published. The [roadmap](docs/ROADMAP.md) now finishes the
-best-evidenced public MVP before monitoring one record and then adding
-discovery. Human-verification fields are gone from the model, fixtures and
+`content/publication/first-pass-review.json`, which `publish` reads itself, and
+keep the fixtures held, so none is published. The [roadmap](docs/ROADMAP.md) now
+finishes the best-evidenced public MVP before monitoring one record and then
+adding discovery. Human-verification fields are gone from the model, fixtures and
 schema.

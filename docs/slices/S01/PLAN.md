@@ -18,8 +18,8 @@ as permission to publish.
    and decision contracts and an atomic publish that needs both. Human
    verification is gone from the model, fixtures and schema, with a migration
    that demotes pre-gate rows. The review findings are machine-readable in
-   `content/publication/first-pass-review.json` and keep all four fixtures
-   held.
+   `content/publication/first-pass-review.json`; `store.publish` reads that
+   register itself, so all four fixtures stay held.
 
 ## Delivery sequence
 

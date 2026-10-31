@@ -48,7 +48,7 @@ fixture is held by a recorded finding.
 | F-02 | Proven | Real PostgreSQL round-trip; the check time is stored separately from retrieval and only set with a revision; migration test demotes `human_verified` and a source check without a revision |
 | F-03 | Proven | API returns structured `opportunity_not_found` 404 |
 | F-04 | Proven | `app/publication/contracts.py` defines `SourceSnapshot`, `ClaimCheck`, `ValidationReport`, `PublicationDecision` and `PublishedRevision`; tests reject invalid states, and no human-verification state can be constructed |
-| F-05 | Proven | `content/publication/first-pass-review.json` records each open finding; the gate holds a candidate whose findings are passed to it, even when the report claims support |
+| F-05 | Proven | `content/publication/first-pass-review.json` records each open finding; `publication/register.py` reads it and `store.publish` loads it itself, so a report claiming support — and no argument that could leave the findings out — still holds the record |
 | F-06 | Proven | API returns `insufficient_evidence`, null check metadata and `isPublished: false` for a preview; production hides it; after a real publish it returns `source_checked` with the check date |
 | F-07 | Unproven | No source-failure decision contract |
 | F-08 | Partly proven | Gate and atomic publish proven against retained snapshots and reports; the collector, the separate AI evidence-check pass and real launch snapshots are outstanding |
@@ -162,9 +162,12 @@ The decision is pure (`gates.evaluate`). A record is published only when:
 - every evidence entry is covered, no claim has two different excerpts, and
   every stated amount appears in the passage that backs it;
 - the candidate has no open review finding. The findings from
-  `content/publication/first-pass-review.json` are passed to the gate, so a
-  report that claims support for every entry still cannot publish a record
-  with a known discrepancy.
+  `content/publication/first-pass-review.json` are read by the gate itself
+  (`publication/register.py`) and loaded inside `store.publish`, which has no
+  argument that could leave them out. A finding holds the record it names and
+  any record citing the same page, and a register that cannot be read holds
+  every candidate, so neither a supporting report nor a deleted file clears a
+  held record.
 
 `store.publish` then writes, in one transaction, the snapshots, the live facts,
 an immutable revision carrying the report and snapshot references, and the
@@ -175,8 +178,8 @@ constraints refuse `source_checked` without a revision.
 
 | Check | Command | Actual result |
 |---|---|---|
-| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 122 passed |
-| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 108 passed, 14 skipped |
+| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 126 passed |
+| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 112 passed, 14 skipped |
 
 What the tests establish, and what they do not:
 
@@ -189,9 +192,13 @@ What the tests establish, and what they do not:
   hold the candidate. An unapproved host, another revision's report and
   evidence the record does not carry are rejected.
 - The real RMIT fixture cannot be published: with a report that claims support
-  for every entry and with its recorded findings passed to the gate, no
-  snapshot, revision or opportunity row is written, and the production
-  endpoint answers 404.
+  for every entry, and with no argument in `publish` that could omit the
+  findings, `publish` holds it and no snapshot, revision or opportunity row is
+  written; the production endpoint answers 404. A copy under a new id is held
+  just the same, because the hold follows the page the finding was raised on.
+  A register that cannot be read holds every candidate.
+- `evaluate` has no default for `register`, so the check cannot be skipped by a
+  caller that simply says nothing; a test asserts the parameter's absence.
 - A publish that fails halfway rolls the snapshot and revision writes back.
 - A pre-gate database is migrated: `human_verified` rows become
   `insufficient_evidence`/`needs_recheck`, and the level can no longer be
@@ -199,8 +206,8 @@ What the tests establish, and what they do not:
 - The gate cannot establish editorial truth. It proves that a quoted span
   exists, that values match it and that the report covers every claim; it
   cannot prove the surrounding context means what the claim says. That is what
-  the separate evidence-check pass is for, and why the review findings must be
-  handed to the gate rather than trusted to appear in the report.
+  the separate evidence-check pass is for, and why the review findings are read
+  by the gate itself rather than trusted to appear in the report.
 - No launch record is published. Source-failure handling (F-07), the collector,
   the AI passes, the published-only catalogue API and the deployed smoke check
   remain outstanding.

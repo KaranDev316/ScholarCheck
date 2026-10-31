@@ -1,21 +1,26 @@
 """S01 F-08: publication needs a report the code gate can verify.
 
-Every case here is pure: no database, no network. The gate must decide from
-the candidate, the validation report and the retained snapshots alone.
+Every case here is pure: no database, no network. The gate must decide from the
+candidate, the validation report, the retained snapshots and the review findings
+register alone.
 """
 
+import inspect
 from datetime import timedelta
 
 from app.domain.enums import PublicationAssurance
 from app.domain.models import Evidence, Opportunity
 from app.publication.contracts import CheckResult, DecisionType
 from app.publication.gates import evaluate
+from app.publication.register import FindingsRegister
 from tests.publication_helpers import (
     RETRIEVED_AT,
     SAMPLE_PASSAGE as PASSAGE,
     SAMPLE_URL as URL,
     build_report,
     build_snapshots,
+    held_register,
+    no_findings,
     sample_record as record,
 )
 
@@ -25,6 +30,7 @@ def decide(
     *,
     snapshots=None,
     report=None,
+    register: FindingsRegister | None = None,
     gate_kwargs: dict | None = None,
     **report_kwargs,
 ):
@@ -40,6 +46,7 @@ def decide(
         candidate,
         checked,
         {snapshot.id: snapshot for snapshot in retained},
+        register=no_findings() if register is None else register,
         **(gate_kwargs or {}),
     )
 
@@ -204,3 +211,51 @@ def test_a_citation_and_snapshot_from_different_pages_are_held() -> None:
 
     assert decision.decision is DecisionType.HOLD
     assert any("different pages" in reason for reason in decision.reasons)
+
+
+def test_the_gate_cannot_be_asked_to_decide_without_the_register() -> None:
+    """A default would let a caller publish a held record by saying nothing."""
+
+    parameter = inspect.signature(evaluate).parameters["register"]
+
+    assert parameter.default is inspect.Parameter.empty
+    assert parameter.kind is inspect.Parameter.KEYWORD_ONLY
+
+
+def test_a_recorded_finding_holds_a_fully_supporting_report() -> None:
+    findings = held_register(
+        "gate-sample", "ev-value", URL, "the page states a different amount"
+    )
+
+    decision = decide(record(), register=findings)
+
+    assert decision.decision is DecisionType.HOLD
+    assert any(
+        "ev-value" in reason and "the page states a different amount" in reason
+        for reason in decision.reasons
+    )
+
+
+def test_a_finding_holds_any_record_citing_the_page_it_was_raised_on() -> None:
+    """A new id must not launder a claim the review already doubted."""
+
+    other_id = "gate-sample-copy"
+    findings = held_register(
+        "some-other-record", "ev-value", URL, "the amount is unconfirmed"
+    )
+    candidate = record().model_copy(update={"id": other_id})
+    snapshots = build_snapshots(candidate)
+
+    decision = decide(candidate, snapshots=snapshots, register=findings)
+
+    assert decision.decision is DecisionType.HOLD
+    assert any("the amount is unconfirmed" in reason for reason in decision.reasons)
+
+
+def test_a_register_that_cannot_be_read_holds_the_candidate() -> None:
+    unreadable = FindingsRegister(problem="first-pass-review.json: not found")
+
+    decision = decide(record(), register=unreadable)
+
+    assert decision.decision is DecisionType.HOLD
+    assert any("could not be read" in reason for reason in decision.reasons)

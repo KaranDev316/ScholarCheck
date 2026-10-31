@@ -105,13 +105,18 @@ snapshots and the validation report, and every check below runs deterministicall
 |---|---|
 | `publication/contracts.py` | `SourceSnapshot` (immutable retained text), `ClaimCheck`, `ValidationReport`, `PublicationDecision`, `PublishedRevision`. No verified-by field and no assurance above `source_checked`. |
 | `publication/policy.py` | `POLICY_VERSION` (`s01.publication.1`) and the approved provider hosts. |
-| `publication/gates.py` | `evaluate()` returns publish, hold or reject with reasons. It requires a report for this exact revision and policy version; a retained snapshot from an approved provider; every cited excerpt and every displayed passage still present in that snapshot; every evidence entry covered; one excerpt per claim; and every stated amount present in the passage backing it. Any open review finding holds the candidate even when the report claims support. |
-| `publication/store.py` | `publish()` runs the gate first and raises `PublicationBlocked` before touching the database. A passing decision is written in one transaction: snapshots, live facts, an immutable revision with its report and snapshot references, and the `source_checked` state pointing at that revision. A failure rolls every write back, and re-publishing identical facts keeps one revision. |
+| `publication/register.py` | Reads `content/publication/first-pass-review.json` into a `FindingsRegister`. Holds the record that names a finding and any record citing the page it was raised on. A register that cannot be read holds everything, so a missing file never reads as “nothing outstanding”. |
+| `publication/gates.py` | `evaluate()` returns publish, hold or reject with reasons. It requires a report for this exact revision and policy version; a retained snapshot from an approved provider; every cited excerpt and every displayed passage still present in that snapshot; every evidence entry covered; one excerpt per claim; and every stated amount present in the passage backing it. Any open review finding holds the candidate even when the report claims support. `register` is a required keyword argument with no default. |
+| `publication/store.py` | `publish()` runs the gate first and raises `PublicationBlocked` before touching the database. The findings register is loaded inside `publish()`, not accepted as an argument, so no caller can publish a held candidate by omitting the findings. A passing decision is written in one transaction: snapshots, live facts, an immutable revision with its report and snapshot references, and the `source_checked` state pointing at that revision. A failure rolls every write back, and re-publishing identical facts keeps one revision. |
 
 Snapshots are immutable in the database (a trigger rejects update and delete),
 `revision_snapshots` links each revision to the snapshots it was checked
 against, and the `publication_state.revision` foreign key and check constraint
 make it impossible to store `source_checked` without the revision behind it.
+
+Clearing a hold is an edit to the register, not to the report. Remove an entry
+only after the fixture is corrected and re-checked against a retained snapshot;
+a report that claims support for every entry changes nothing.
 
 ## Operational contracts (to be designed and implemented)
 

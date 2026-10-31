@@ -122,8 +122,10 @@ The publication gate is implemented: a record becomes public only through
 revision and the retained snapshots that report checked, then writes the
 revision, the report and the `source_checked` state in one transaction. Human
 verification has been removed from the model, fixtures and schema. The fixture
-review findings are recorded in `content/publication/first-pass-review.json`
-and keep all four fixtures held, so no launch record is published yet.
+review findings are recorded in `content/publication/first-pass-review.json`;
+`store.publish` loads that register itself, with no argument that could leave the
+findings out, and an unreadable register holds every candidate, so all four
+fixtures stay held and no launch record is published yet.
 Next: correct the held fixtures or replace them with better-evidenced launch
 records, build the collector and the separate evidence-check pass that supply
 reports, then the published-only catalogue and detail journeys. Then monitor

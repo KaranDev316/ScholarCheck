@@ -13,6 +13,11 @@ way no record becomes public: ``store.publish`` raises before writing. A
 candidate with an open review finding is always held, even if its report claims
 support for every entry, so a known discrepancy cannot be papered over.
 
+The findings come from a ``FindingsRegister`` the caller must supply: the
+parameter has no default, and ``store.publish`` reads the register from disk
+itself rather than accepting one. A publisher therefore cannot omit the findings
+it does not like.
+
 Nothing here can be satisfied by a confidence score or by a person's approval.
 """
 
@@ -35,6 +40,7 @@ from app.publication.policy import (
     is_approved_source,
     source_host,
 )
+from app.publication.register import FindingsRegister
 
 
 class PublicationBlocked(Exception):
@@ -75,17 +81,19 @@ def evaluate(
     report: ValidationReport,
     snapshots: Mapping[str, SourceSnapshot],
     *,
+    register: FindingsRegister,
     policy_version: str = POLICY_VERSION,
     approved_hosts: Sequence[str] = APPROVED_SOURCE_HOSTS,
-    open_findings: Sequence[str] = (),
 ) -> PublicationDecision:
-    """Decide publish, hold or reject for one candidate revision."""
+    """Decide publish, hold or reject for one candidate revision.
+
+    ``register`` is required and has no default: a candidate with a recorded
+    finding is held whatever its report says, and a register that could not be
+    read holds everything.
+    """
 
     rejected: list[str] = []
-    held: list[str] = []
-
-    for finding in open_findings:
-        held.append(f"open review finding: {normalise(finding)}")
+    held: list[str] = list(register.holds(record))
 
     if report.opportunity_id != record.id:
         rejected.append(f"report is for {report.opportunity_id}, not {record.id}")
