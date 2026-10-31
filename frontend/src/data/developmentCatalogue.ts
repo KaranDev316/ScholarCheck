@@ -294,7 +294,7 @@ export const developmentCatalogue: readonly Scholarship[] = [
         label: 'Research stipend',
         state: 'stated',
         amount: 'A$36,245',
-        basis: 'per year, pro rata for part-time study',
+        basis: 'per year, published 2026 rate',
         conditions: [
           'The published amount is the 2026 rate; 2027 rates were not yet released.',
           'Amount is indexed annually.',

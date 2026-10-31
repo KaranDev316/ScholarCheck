@@ -16,10 +16,15 @@ from app.publication.contracts import CheckResult, DecisionType
 from app.publication.gates import evaluate
 from app.publication.register import load_register
 from app.storage.opportunities import CONTENT_DIR, read_seed
-from tests.publication_helpers import build_report, build_snapshots, load_findings
+from tests.publication_helpers import build_report, build_snapshots, load_findings, no_findings
 
 FINDINGS = load_findings()
 SEED_FILES = sorted(CONTENT_DIR.glob("*.yaml"))
+FINDING_CASES = [
+    (opportunity_id, finding)
+    for opportunity_id, findings in FINDINGS["findings"].items()
+    for finding in findings
+]
 
 
 def _record(opportunity_id: str) -> Opportunity:
@@ -48,6 +53,39 @@ def test_every_recorded_finding_names_a_real_claim() -> None:
             assert finding["evidence_url"] == citations[finding["evidence_id"]]
             assert finding["result"] in {member.value for member in CheckResult}
             assert finding["result"] != CheckResult.SUPPORTED.value
+
+
+@pytest.mark.parametrize(
+    ("opportunity_id", "finding"),
+    FINDING_CASES,
+    ids=lambda value: value.get("evidence_id", value) if isinstance(value, dict) else value,
+)
+def test_each_known_finding_fails_the_publication_gate(
+    opportunity_id: str, finding: dict[str, str]
+) -> None:
+    """Each first-pass issue independently holds its fixture when checking fails."""
+
+    record = _record(opportunity_id)
+    snapshots = build_snapshots(record)
+    report = build_report(
+        record,
+        snapshots,
+        results={finding["evidence_id"]: CheckResult(finding["result"])},
+        reasons={finding["evidence_id"]: finding["reason"]},
+    )
+
+    decision = evaluate(
+        record,
+        report,
+        _retained(snapshots),
+        register=no_findings(),
+    )
+
+    assert decision.decision is DecisionType.HOLD
+    assert any(
+        finding["evidence_id"] in reason and finding["reason"] in reason
+        for reason in decision.reasons
+    )
 
 
 @pytest.mark.parametrize("path", SEED_FILES, ids=lambda path: path.stem)

@@ -74,7 +74,7 @@ funding_components:
     description: Stipend paid to the candidate for living costs during the research degree.
     amount: "36245"
     currency: AUD
-    period: per year, pro rata for part-time study
+    period: per year
     conditions:
       - Amount is indexed annually.
       - Paid for three and a half years for a doctoral programme.

@@ -69,6 +69,14 @@ describe('development catalogue', () => {
     }
   })
 
+  it('does not turn RMIT’s full-time stipend wording into a part-time claim', () => {
+    const rmit = developmentCatalogue.find((record) => record.id === 'rmit-research-stipend')
+    const stipend = rmit?.components.find((component) => component.id === 'rmit-stipend')
+
+    expect(stipend?.basis).toBe('per year, published 2026 rate')
+    expect(stipend?.basis).not.toMatch(/part-time/i)
+  })
+
   it('renders the previews in development and an honest empty list in production', () => {
     expect(getCatalogue()).toEqual({ records: developmentCatalogue, isDevelopment: true })
   })
