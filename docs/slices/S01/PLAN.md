@@ -86,8 +86,9 @@ as permission to publish.
 
 - Add published-only catalogue/search/filter endpoints for country, study
   level and the three funding types, plus a working problem-report endpoint.
-  Detail responses expose stated eligibility, funding, deadlines, evidence,
-  actual checked date and distinct confirmed official links.
+  Detail responses supply stated eligibility, funding, deadlines, the actual
+  checked date and distinct confirmed official links. The published-only API
+  omits claim-level excerpts, snapshots and validation reports.
 - Build Home, Find scholarships and stable shareable detail pages without an
   account. Include empty, loading, error, mobile and keyboard states. Use real
   domain/contact details and no unsupported business-model claim.

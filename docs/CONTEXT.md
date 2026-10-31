@@ -7,7 +7,7 @@
 
 ## 1. Project
 - **Name:** NOT DECIDED (working title: "ScholarCheck")
-- **Purpose:** Help students find funding and check exact official-source evidence. Automated monitoring and discovery grow the catalogue after the public MVP. [D-10, D-11]
+- **Purpose:** Help students find funding through facts checked against official sources. The evidence trail stays in the backend; automated monitoring and discovery grow the catalogue after the public MVP. [D-10, D-11, D-13]
 - **Target user:** International applicants seeking funded **bachelor's, master's or doctoral (PhD)** degrees. First test profile: Malawian national, resident in India, three-year BCA. [ASSUMED D-08; the source audit covered research master's only]
 - **Problem:** Aggregator listings blur funding (tuition exemption shown as "fully funded"), flatten multi-stage deadlines into one date, bury blocking eligibility conditions, and label article links "Apply Now". [SOURCE]
 - **Status:** S01 scaffold, four unverified seed fixtures, PostgreSQL loader and a development-only read endpoint exist; public publication and monitoring are not implemented.
@@ -16,8 +16,9 @@
 ## 2. MVP boundary
 Publish a small set of the best-evidenced scholarships through source-backed
 validation and launch a public, no-account site for browsing, search,
-country/level/funding-type filters, stated eligibility, deadlines, exact
-evidence, official application links and sharing. Keep the four existing
+country/level/funding-type filters, stated eligibility, deadlines, the actual
+check date, official provider/application links and sharing. Claim-linked
+evidence stays in the backend. Keep the four existing
 fixtures for regression, replacing weak launch candidates as needed. Then
 monitor one published scholarship until it can update or hold a meaningful
 change unattended. Expand monitoring before automatic discovery. Profiles,
@@ -63,7 +64,8 @@ personal assessments and saving are later features. [D-10, D-11]
    `retrieved_at` and automated `source_checked_at` are different events.
    Human-verification fields are removed from the contract. Each material
    fact has `stated`, `unspecified` or `conflicting` state rather than a bare
-   null in the publication contract.
+   null in the publication contract. The evidence trail is internal; public
+   pages show the actual check date and official provider links. [D-13]
 6. Grades keep their original scale; no universal conversion. Unresolved degree recognition stays **unknown**. "International students accepted" does not imply a three-year degree is accepted.
 7. "Submitted" and decision states are user-reported only.
 8. An unavailable source keeps previously supported public data and its real
@@ -113,6 +115,7 @@ Constraint: link to official sources; write own summaries.
 | D-09 | Automatic source-backed publication; human review initially optional | Routine operation cannot require owner approval. Superseded in part by D-11, which removes human verification entirely. | Owner direction, 23 Oct 2026 |
 | D-10 | Public MVP first, then reliable one-record monitoring, then discovery | Get a useful site running; prove a meaningful change can update or hold safely before expanding coverage | Owner direction, 23 Oct 2026 |
 | D-11 | Fully automated, evidence-first public product with strict coverage labels | No human-verification workflow; launch the best-evidenced records; enforce exact excerpts, fact states, computed funding types and a three-part “Fully funded” gate | Owner wireframe decisions and launch-set choice, 24 Oct 2026 |
+| D-13 | Keep claim-linked evidence in the backend | Visitors need clear facts and official links, not an evidence-reading UI; retain exact excerpts, snapshots and reports for automated publication checks and audit | Owner direction, 1 Nov 2026 |
 | D-12 | Source-to-website architecture with collector and AI validation | Accept government, university and approved scholarship NGO sources; retain snapshots; code gates publication between AI proposals and published revisions/API | Owner architecture diagram, 24 Oct 2026 |
 
 ## 10. Current status / next action

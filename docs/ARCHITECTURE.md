@@ -43,9 +43,10 @@ flowchart TD
    hold with reasons.
 5. **Storage and website:** PostgreSQL stores candidates, decisions and
    immutable published revisions; the snapshot store retains the underlying
-   content. The public API reads only published revisions. The React website
-   shows plain source evidence, actual check dates and official links, without
-   exposing internal gate or model details.
+   content. The public API reads only published revisions and omits internal
+   evidence passages and validation reports. The React website
+   shows actual check dates and official links. Claim-linked evidence,
+   snapshots, validation reports and gate or model details stay in the backend.
 
 The current repository has the PostgreSQL seed loader and a development-only
 detail endpoint. The collector, snapshot store, AI passes, publication gate,

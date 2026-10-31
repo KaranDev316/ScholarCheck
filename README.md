@@ -3,11 +3,11 @@
 ScholarCheck's first release will be a public, no-account website with a small
 set of the best-evidenced scholarships. Visitors will browse and search,
 filter by country, study level and funding type, inspect stated eligibility,
-deadlines and exact official evidence, open official application links, and
+deadlines and the actual check date, open official provider/application links, and
 share scholarship pages. A worker will then monitor one published scholarship
 and safely update or hold changes. Automatic discovery follows proven
 monitoring. The four current fixtures remain regression inputs, not a launch
-quota.
+quota. Claim-linked evidence and retained snapshots stay in the backend.
 
 The [architecture](docs/ARCHITECTURE.md),
 [publication policy](docs/PUBLICATION-POLICY.md), [roadmap](docs/ROADMAP.md)

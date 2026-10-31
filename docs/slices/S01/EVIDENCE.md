@@ -211,3 +211,15 @@ What the tests establish, and what they do not:
 - No launch record is published. Source-failure handling (F-07), the collector,
   the AI passes, the published-only catalogue API and the deployed smoke check
   remain outstanding.
+
+## Public evidence boundary, 2026-11-01
+
+Owner decision D-13 keeps claim-linked passages, snapshots and validation
+reports in the backend. Published pages will show the actual check date, a plain
+source-check result and official provider links, without an evidence-reading
+interface. The current development frontend already omits the passages and
+source-check panel; it must only show a checked date for a truly published
+record. The existing detail API returns the full `Opportunity`, including
+evidence, so the future published-only public response still needs a smaller
+shape that omits internal evidence. This is an outstanding F-09 response-shape
+check, not completed UI or API proof.

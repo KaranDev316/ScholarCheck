@@ -9,11 +9,11 @@ truth for implementation.
 
 ## Product and audience
 
-**Find funding. Check the evidence. Decide for yourself.** ScholarCheck is a
+**Find funding. Check the facts. Decide for yourself.** ScholarCheck is a
 public, no-account website for applicants seeking a degree after grade 12:
 Bachelor's, Master's or PhD. It shows a small number of useful facts per
-scholarship, alongside exact official wording and visible unknowns. It does
-not decide whether a particular visitor qualifies.
+scholarship, official provider links, the actual check date and visible
+unknowns. It does not decide whether a particular visitor qualifies.
 
 ## First-release requirements (Stage 1)
 
@@ -21,7 +21,7 @@ not decide whether a particular visitor qualifies.
 |---|---|---|
 | MVP-01 | Public catalogue | Visitors browse published scholarships without signing in; held fixtures never appear |
 | MVP-02 | Search and filters | Search title/provider and doctoral synonyms; filter by destination country, study level and funding type; removable active filters and clear-filters empty state work |
-| MVP-03 | Scholarship detail | Stable direct URL shows scheme, provider, applicable level, round, headline funding component and amount, stated eligibility, separate funding components, deadlines, exact evidence and the latest source-check date |
+| MVP-03 | Scholarship detail | Stable direct URL shows scheme, provider, applicable level, round, headline funding component and amount, stated eligibility, separate funding components, deadlines, official provider links and the latest source-check date; claim-level evidence remains internal |
 | MVP-04 | Official actions | “Read the requirements” and “Apply on the provider's site” are distinct only when they lead to distinct confirmed destinations; passed dates or an unavailable route show a plain explanation, never a misleading disabled application button |
 | MVP-05 | Sharing | Text-labelled Copy link and Share controls use the real canonical scholarship URL and open the same public detail page |
 | MVP-06 | Evidence-backed publication | AI extracts candidate facts and a separate AI pass checks whether retained official wording supports each claim; deterministic gates in `PUBLICATION-POLICY.md` make the final publish/hold decision; missing or conflicting evidence holds automatically |
@@ -53,30 +53,32 @@ and postdoctoral fellowships are outside the first release.
 
 ### Public screens
 
-- **Home:** navy hero, the product promise, one sentence about official
-  wording, search, no-account note, a real evidence-backed example card, quick
-  filters and published scholarships. No pipeline explainer or stats row.
+- **Home:** navy hero, the product promise, one sentence about checked
+  official-source facts, search, no-account note, an example card backed by
+  internal evidence, quick filters and published scholarships. No pipeline
+  explainer or stats row.
 - **Find scholarships:** search; country, level and funding-type filters;
   removable active chips; cards with provider/country, title, tags, component
   amount and basis, actual checked date, and a detail link. Loading, error and
   empty states use real API state.
 - **Scholarship page:** breadcrumb; title and text-labelled share controls; summary strip;
   distinct official actions; funding coverage checklist and components;
-  stated eligibility disclaimer; round/date/status table; exact retained
-  evidence; source-check panel; at-a-glance facts; and a working problem-report
+  stated eligibility disclaimer; round/date/status table; concise checked date
+  and source-check result; at-a-glance facts; and a working problem-report
   dialog. A phone layout keeps the primary official action reachable.
 - **Navigation:** Home and Find scholarships. No account, “How we check” page,
   theme switch, preview banner, or saved-item controls in this release.
 
-Student-facing copy shows the source, exact passage, saved/check date and a
-plain result such as “Matches the official page.” Claim counts, policy version,
-revision number and gate explanations stay in the internal decision trail.
+Student-facing copy links to the official provider page and shows the actual
+check date with a plain result such as “Checked against the official page.”
+Claim-linked passages, saved snapshots, validation reports, claim counts, policy
+version, revision number and gate explanations stay in the backend.
 Do not show a human-verification label or panel.
 
 ### Visual direction
 
 Navy `#0D173B`, off-white `#F8F9FA`, gold `#D4AF37`; navy dominates the
-header, hero, footer and source-check panel. White cards sit on off-white.
+header, hero and footer. White cards sit on off-white.
 Gold is reserved for primary actions, thin rules and the
 “Fully funded” chip, never body text on off-white. Focus outlines are navy.
 Headings use Iowan Old Style/Charter/Georgia fallback; body uses system sans.

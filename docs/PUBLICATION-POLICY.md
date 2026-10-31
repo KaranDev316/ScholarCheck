@@ -23,8 +23,9 @@ revision. The legacy `verified_at`, `verified_by`, `last_verified_at` and
 `human_verified` fields are gone from the model, the fixtures and the schema;
 opening a pre-gate database demotes those rows to `insufficient_evidence` with
 `needs_recheck` so no old label survives. The public UI uses the actual check
-date and a plain source-match result; policy version and revision metadata
-remain internal. Freshness is separate from assurance.
+date, a plain source-check result and official provider links. Claim-linked
+excerpts, retained snapshots, validation reports, policy version and revision
+metadata remain internal. Freshness is separate from assurance.
 
 Publication fields belong to revision metadata, not applicant data. Each
 material extracted fact has a first-class state: `stated`, `unspecified` or
@@ -75,10 +76,11 @@ Neither AI pass can set `source_checked` or publish a revision.
    components. If no category is supported, leave it untagged. A partial
    exemption must not become full tuition coverage. Recompute and withdraw
    labels on every supported revision.
-7. **Safety of output:** Public pages show the actual check date and a plain
-   source-match result, with exact evidence accessible. Internal claim counts,
-   policy version and revision IDs stay out of the UI. Unsupported claims do
-   not enter the public record. A failed fetch never means the scholarship
+7. **Safety of output:** Public pages show the actual check date, a plain
+   source-check result and official provider links. Exact excerpts, claim-level
+   evidence links, retained snapshots, validation reports, claim counts, policy
+   version and revision IDs stay in the backend, not the public API or UI.
+   Unsupported claims do not enter the public record. A failed fetch never means the scholarship
    closed; a passed date marks only its own round as “Date passed.”
 
 ## Decisions

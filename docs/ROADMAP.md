@@ -13,7 +13,7 @@ account is required.
 
 | Order | Deliverable | Exit proof |
 |---|---|---|
-| 1 | Select launch records from government, university or approved scholarship NGO sources; audit the four fixture issues and replace weak launch candidates | Every displayed material claim points to an exact retained passage or table cell; unsupported candidates remain private and all four fixtures stay in regression tests |
+| 1 | Select launch records from government, university or approved scholarship NGO sources; audit the four fixture issues and replace weak launch candidates | Every displayed material claim has an internal reference to an exact retained passage or table cell; unsupported candidates remain private and all four fixtures stay in regression tests |
 | 2 | Build the public UI shell from the wireframe while publication work proceeds | Home, Find scholarships and detail routes work with clearly marked development data, responsive layouts and empty/loading/error states; no fixture is presented as published |
 | 3 | Migrate legacy human-verification fields and finish the validation/publication path | Contracts, an atomic report-and-snapshot-backed publish and the fixture-hold register are done; an extraction pass and a separate AI evidence-check pass must still produce auditable proposals, and code must keep enforcing provider, exact excerpt, value, date, conflict and coverage gates |
 | 4 | Complete published-only list, search, filter, detail and feedback APIs and connect the UI | Country, study level and funding-type filters work on published records; official actions, sharing and problem reports work; unknown IDs return the agreed 404 |

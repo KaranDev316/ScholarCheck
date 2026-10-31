@@ -133,13 +133,13 @@ const $=s=>document.querySelector(s),app=$('#app');
 let F={q:'',c:'',l:'',f:''};
 const link=(label,cls='')=>`<a class="btn ${cls}" href="#" onclick="event.preventDefault();toast('Design preview: official link not connected')">${label}</a>`;
 function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1800)}
-function card(r){return `<article class="card">${r.ff?'<div><span class="chip ff">Fully funded</span> <span class="small mute">Tuition, living costs and flights covered</span></div>':''}<div class="meta">${r.p}, ${r.c}</div><h3><a href="#${r.id}">${r.t}</a></h3><p class="mute">${r.s}</p><div>${r.tags.map(t=>`<span class="chip neutral">${t}</span> `).join('')}</div><div class="foot"><div><div class="amt">${r.amt}</div><div class="mute small">${r.per}</div><div class="small mute" style="margin-top:4px">Checked <span class="ph">n days ago</span> against the official page</div></div><a class="btn alt sm" href="#${r.id}">See evidence and details</a></div></article>`}
+function card(r){return `<article class="card">${r.ff?'<div><span class="chip ff">Fully funded</span> <span class="small mute">Tuition, living costs and flights covered</span></div>':''}<div class="meta">${r.p}, ${r.c}</div><h3><a href="#${r.id}">${r.t}</a></h3><p class="mute">${r.s}</p><div>${r.tags.map(t=>`<span class="chip neutral">${t}</span> `).join('')}</div><div class="foot"><div><div class="amt">${r.amt}</div><div class="mute small">${r.per}</div><div class="small mute" style="margin-top:4px">Checked <span class="ph">n days ago</span> against the official page</div></div><a class="btn alt sm" href="#${r.id}">See details</a></div></article>`}
 function home(){return `
-<div class="herobg"><div class="wrap"><div class="hero"><div><h1>Find funding. Check the evidence. Decide for yourself.</h1>
-<p class="lead">Every amount and deadline sits beside the official wording it came from.</p>
+<div class="herobg"><div class="wrap"><div class="hero"><div><h1>Find funding. Check the facts. Decide for yourself.</h1>
+<p class="lead">Scholarship facts are checked against official provider pages.</p>
 <form class="search" role="search" onsubmit="event.preventDefault();F.q=this.q.value;location.hash='explore'"><input name="q" aria-label="Search scholarships" placeholder="Try “doctoral scholarships in Canada”"><button class="btn">Search</button></form>
 <p class="small mute" style="margin-top:12px">No account needed to browse, filter or open official links.</p></div>
-<div class="schcard" aria-label="Example scholarship"><div class="sm">NSERC and Canadian research agencies, Canada</div><div class="st">Canada Graduate Research Scholarship, Doctoral</div><div><div class="sa">CA$40,000</div><div class="sm">per year for 36 months</div></div><div class="sq"><span class="sl">From the official page</span><em>Exact wording from the provider’s page</em></div><div class="sn">Tuition coverage: not stated by the provider</div>
+<div class="schcard" aria-label="Example scholarship"><div class="sm">NSERC and Canadian research agencies, Canada</div><div class="st">Canada Graduate Research Scholarship, Doctoral</div><div><div class="sa">CA$40,000</div><div class="sm">per year for 36 months</div></div><div class="sn">Tuition coverage: not stated by the provider</div>
 
 </div></div></div></div>
 
@@ -153,7 +153,7 @@ function results(){
  (L.length?`<div class="cards">${L.map(card).join('')}</div>`:`<div class="state"><h3>No published scholarship matches these filters</h3><p class="mute">Only scholarships that passed our evidence checks are listed. Remove a filter to widen the search.</p><button class="btn" onclick="F={q:'',c:'',l:'',f:''};route()">Clear all filters</button></div>`)}
 function explore(){
  const o=(a,v)=>a.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('');
- return `<section><h1 style="font-size:2.2rem">Find scholarships</h1><p class="mute" style="margin:8px 0 24px">Filter by destination, study level and funding. Open any record to read the evidence.</p>
+ return `<section><h1 style="font-size:2.2rem">Find scholarships</h1><p class="mute" style="margin:8px 0 24px">Filter by destination, study level and funding. Open any record for details and official provider links.</p>
 <div class="explore"><details class="filters" open style="display:grid"><summary style="font:600 1.1rem var(--serif);cursor:pointer">Filters</summary><div style="display:grid;gap:14px;margin-top:14px">
 <label>Destination country<select onchange="F.c=this.value;route()"><option value="">All countries</option>${o(['Australia','Canada'],F.c)}</select></label>
 <label>Study level<select onchange="F.l=this.value;route()"><option value="">All levels</option>${o(['Bachelor’s','Master’s','PhD','Research degree'],F.l)}</select></label>
