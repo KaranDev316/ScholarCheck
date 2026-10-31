@@ -1,4 +1,4 @@
-# CGRS D — retrieved 2026-10-23, not yet human-verified (see README.md).
+# CGRS D — retrieved 2026-10-23, not source-checked for publication (see README.md).
 id: cgsd-doctoral
 scheme_name: Canada Graduate Research Scholarship – Doctoral (CGRS D)
 funder: Government of Canada (CIHR, NSERC and SSHRC)
@@ -61,8 +61,6 @@ evidence:
     url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
     passage: Value $40,000 per year Duration 36 months
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-cgsd-deadline
     url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
     passage: >-
@@ -70,8 +68,6 @@ evidence:
       institution (often significantly earlier than the agency’s deadline)
       Directly to the agency: October 17
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-cgsd-international
     url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
     passage: >-
@@ -81,8 +77,6 @@ evidence:
       study at an eligible Canadian institution by the application deadline. Up
       to 15% of awards will be available to international applicants.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-cgsd-study-months
     url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
     passage: >-
@@ -92,7 +86,4 @@ evidence:
       joint program for which you are requesting funding by December 31 of the
       calendar year of your application.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
 last_retrieved_at: 2026-10-23T07:00:00Z
-last_verified_at: null

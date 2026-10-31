@@ -61,7 +61,7 @@ personal assessments and saving are later features. [D-10, D-11]
 4. Deadlines belong to a route and intake and have a stage (EOI, admission, scholarship, nomination, university). Exact time/zone only when published. A date without a year is never treated as open; a past date reads “Date passed” for that round only. Other rounds remain independent.
 5. Every decision-critical claim has exact retained official-source evidence.
    `retrieved_at` and automated `source_checked_at` are different events.
-   Legacy human-verification fields are scheduled for removal. Each material
+   Human-verification fields are removed from the contract. Each material
    fact has `stated`, `unspecified` or `conflicting` state rather than a bare
    null in the publication contract.
 6. Grades keep their original scale; no universal conversion. Unresolved degree recognition stays **unknown**. "International students accepted" does not imply a three-year degree is accepted.
@@ -117,10 +117,17 @@ Constraint: link to official sources; write own summaries.
 
 ## 10. Current status / next action
 S01 scaffold, fixtures, PostgreSQL storage and development read endpoint exist.
-The fixture review found material route, wording and deadline issues; none is
-yet eligible for publication. Next: migrate legacy human-verification fields,
-implement strict evidence and coverage gates, select best-evidenced launch
-records, and build the public catalogue/detail journeys. Then monitor one.
+The publication gate is implemented: a record becomes public only through
+`app.publication.store.publish`, which needs a validation report for the exact
+revision and the retained snapshots that report checked, then writes the
+revision, the report and the `source_checked` state in one transaction. Human
+verification has been removed from the model, fixtures and schema. The fixture
+review findings are recorded in `content/publication/first-pass-review.json`
+and keep all four fixtures held, so no launch record is published yet.
+Next: correct the held fixtures or replace them with better-evidenced launch
+records, build the collector and the separate evidence-check pass that supply
+reports, then the published-only catalogue and detail journeys. Then monitor
+one record.
 
 ## 11. Open (nonblocking) questions
 Hosting and snapshot storage provider; provider allowlist/access policy;

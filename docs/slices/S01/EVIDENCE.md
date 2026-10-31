@@ -18,7 +18,8 @@ and records what remains unproven.
 T03 created four YAML regression fixtures: CGRS D, UdeM doctoral exemption,
 RMIT research stipend, and Sydney RTP stipend. Tests cover model parsing,
 unique ids and evidence references, blocking-rule evidence, funding component
-shape, separate retrieval/human timestamps, and intentionally unspecified
+shape, separate retrieval timestamps (the human-verification fields they once
+carried have since been removed), and intentionally unspecified
 values. The 2026-10-23 content pass recorded 13/13 source URLs responding,
 19 passages matching after whitespace normalisation, and six table
 transcriptions checked cell by cell. Those checks establish neither complete
@@ -31,25 +32,26 @@ executed publication gate.
 
 ## Assurance under the revised policy
 
-Every existing `verified_at`, `verified_by` and `last_verified_at` remains
-`null`. D-11 removes human verification from the product direction, but those
-legacy fields still exist in code and fixtures; migration is unproven. No
-fixture currently has `source_checked` assurance. The snapshot, validation
-and publication engine does not exist yet. Documented issues must be corrected
-or result in a hold when that engine is built.
+Human verification is gone from the active contract: the `human_verified`
+assurance level, `Evidence.verified_at`/`verified_by` and
+`Opportunity.last_verified_at` were removed from the model, the fixtures and
+the schema, and a migration demotes any pre-gate row to
+`insufficient_evidence` with `needs_recheck`. No fixture has
+`source_checked` assurance. The gate that can grant it now exists and every
+fixture is held by a recorded finding.
 
 ## Current F-criterion ledger
 
 | Criterion | State | Evidence or gap |
 |---|---|---|
 | F-01 | Partly proven | 36 seed tests parse and check references; material completeness is not proven |
-| F-02 | Partly proven | Real PostgreSQL round-trip and timestamp separation test; source-check timestamp is absent as expected |
+| F-02 | Proven | Real PostgreSQL round-trip; the check time is stored separately from retrieval and only set with a revision; migration test demotes `human_verified` and a source check without a revision |
 | F-03 | Proven | API returns structured `opportunity_not_found` 404 |
-| F-04 | Unproven | Operational schemas not built |
-| F-05 | Unproven | First-pass findings documented, not machine-enforced holds |
-| F-06 | Proven for fixture preview | API returns `insufficient_evidence`, null source-check metadata and `isPublished: false`; production hides the fixture |
+| F-04 | Proven | `app/publication/contracts.py` defines `SourceSnapshot`, `ClaimCheck`, `ValidationReport`, `PublicationDecision` and `PublishedRevision`; tests reject invalid states, and no human-verification state can be constructed |
+| F-05 | Proven | `content/publication/first-pass-review.json` records each open finding; the gate holds a candidate whose findings are passed to it, even when the report claims support |
+| F-06 | Proven | API returns `insufficient_evidence`, null check metadata and `isPublished: false` for a preview; production hides it; after a real publish it returns `source_checked` with the check date |
 | F-07 | Unproven | No source-failure decision contract |
-| F-08 | Unproven | No retained snapshots or publication gate; all four fixtures remain unpublished |
+| F-08 | Partly proven | Gate and atomic publish proven against retained snapshots and reports; the collector, the separate AI evidence-check pass and real launch snapshots are outstanding |
 | F-09 | Unproven | Only development/test detail read exists; no public catalogue or filters |
 | F-10 | Partly proven | Local UI tests cover browse, filters, detail, stated eligibility, rounds, the official requirements and application links and shareable hash URLs with no account; the deployed smoke check is outstanding |
 | F-11 | Partly proven | Coverage checklist plus a computed classification that only says “Fully funded” when tuition, living costs and flights are all stated, with tests; no published record exercises it yet |
@@ -140,3 +142,65 @@ What the tests establish, and what they do not:
   placeholders.
 - This is local UI proof only. No record is published. The published-only
   public API and the deployed smoke check for F-09/F-10 are still outstanding.
+
+## Automated publication gate, 2026-10-31
+
+`backend/app/publication/` now decides whether a candidate may become public
+and writes the result atomically. Human verification was removed first, so
+nothing — a person, an agent note or a successful fetch — can grant assurance:
+`PublicationAssurance` has two values, and the fixtures, model and schema carry
+no `verified_at`, `verified_by`, `last_verified_at` or `human_verified`.
+
+The decision is pure (`gates.evaluate`). A record is published only when:
+
+- the report names the same opportunity and the same canonical content hash as
+  the candidate, under the current `POLICY_VERSION`;
+- every check cites a supplied, retained snapshot from an approved provider
+  host, with the same URL and retrieval time as the evidence entry;
+- every cited excerpt and every displayed passage still occurs in the snapshot
+  (exact wording; only whitespace is collapsed);
+- every evidence entry is covered, no claim has two different excerpts, and
+  every stated amount appears in the passage that backs it;
+- the candidate has no open review finding. The findings from
+  `content/publication/first-pass-review.json` are passed to the gate, so a
+  report that claims support for every entry still cannot publish a record
+  with a known discrepancy.
+
+`store.publish` then writes, in one transaction, the snapshots, the live facts,
+an immutable revision carrying the report and snapshot references, and the
+`source_checked` state tied to that revision. A held or rejected candidate
+raises `PublicationBlocked` before any write; a failure inside the transaction
+leaves no trace. Snapshots are immutable in the database, and the state
+constraints refuse `source_checked` without a revision.
+
+| Check | Command | Actual result |
+|---|---|---|
+| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 122 passed |
+| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 108 passed, 14 skipped |
+
+What the tests establish, and what they do not:
+
+- A supported candidate publishes its revision, report and snapshot links, and
+  the production read endpoint then serves it as `source_checked` with the
+  actual check date.
+- An unsupported claim, an unclear claim, an excerpt missing from its snapshot,
+  a missing or unchecked evidence entry, a conflicting excerpt, an amount the
+  passage does not state, a stale retrieval time and a mismatched page each
+  hold the candidate. An unapproved host, another revision's report and
+  evidence the record does not carry are rejected.
+- The real RMIT fixture cannot be published: with a report that claims support
+  for every entry and with its recorded findings passed to the gate, no
+  snapshot, revision or opportunity row is written, and the production
+  endpoint answers 404.
+- A publish that fails halfway rolls the snapshot and revision writes back.
+- A pre-gate database is migrated: `human_verified` rows become
+  `insufficient_evidence`/`needs_recheck`, and the level can no longer be
+  stored.
+- The gate cannot establish editorial truth. It proves that a quoted span
+  exists, that values match it and that the report covers every claim; it
+  cannot prove the surrounding context means what the claim says. That is what
+  the separate evidence-check pass is for, and why the review findings must be
+  handed to the gate rather than trusted to appear in the report.
+- No launch record is published. Source-failure handling (F-07), the collector,
+  the AI passes, the published-only catalogue API and the deployed smoke check
+  remain outstanding.

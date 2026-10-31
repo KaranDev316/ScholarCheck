@@ -1,4 +1,4 @@
-# RMIT — retrieved 2026-10-23, not yet human-verified (see README.md).
+# RMIT — retrieved 2026-10-23, not source-checked for publication (see README.md).
 id: rmit-research-stipend
 scheme_name: RTP Stipend Scholarship (RSS) and RMIT Research Stipend Scholarship (RRSS)
 funder: RMIT University and the Australian Government
@@ -117,8 +117,6 @@ evidence:
       a stipend of $36,245 per annum pro rata (full-time study). This amount is
       subject to indexation annually
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-rmit-tuition
     url: https://www.rmit.edu.au/scholarships/research/research-stipend
     passage: >-
@@ -126,8 +124,6 @@ evidence:
       RTP International Tuition Fee Offset Scholarship (RIFOS) or an RMIT Research
       International Tuition Fee Scholarship (RRITFS)
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-rmit-relocation
     url: https://www.rmit.edu.au/scholarships/research/research-stipend
     passage: >-
@@ -135,16 +131,12 @@ evidence:
       postgraduate research program. The amount is up to $515 per adult and $255
       per child to a maximum of $1,540
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-rmit-duration
     url: https://www.rmit.edu.au/scholarships/research/research-stipend
     passage: >-
       The standard duration of a research doctoral scholarship is three and a
       half years full-time.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-rmit-enrolment
     url: https://www.rmit.edu.au/research/research-degrees/terms-and-conditions
     passage: >-
@@ -153,16 +145,12 @@ evidence:
       not be receiving any other Commonwealth award or scholarship designed to
       offset HDR tuition fees.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-rmit-english
     url: https://www.rmit.edu.au/scholarships/research/research-stipend
     passage: >-
       International applicants must meet English language requirements by the
       application closing date to be considered for a scholarship.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-rmit-supervisor
     url: https://www.rmit.edu.au/scholarships/research/research-stipend
     passage: >-
@@ -170,8 +158,6 @@ evidence:
       staff who agrees to supervise your research when submitting an expression of
       interest.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-rmit-doctorate
     url: https://www.rmit.edu.au/research/research-degrees/terms-and-conditions
     passage: >-
@@ -180,8 +166,6 @@ evidence:
       they are an Australian and New Zealand citizen undertaking a second PhD in
       which case they are eligible for the RTP Fee Offset scholarship only.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-rmit-priority
     url: https://www.rmit.edu.au/scholarships/research/research-stipend
     passage: >-
@@ -189,8 +173,6 @@ evidence:
       program(s). At RMIT, a grade of high distinction represents an academic
       achievement of 80% or higher
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-rmit-dates
     url: https://www.rmit.edu.au/research/research-degrees/scholarships
     passage: >-
@@ -200,7 +182,4 @@ evidence:
       deadline (last day to submit documents for full applications): 30 September
       2026.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
 last_retrieved_at: 2026-10-23T07:00:00Z
-last_verified_at: null

@@ -40,6 +40,13 @@ def test_partial_or_false_source_check_is_rejected(
         )
 
 
+def test_human_verified_is_not_a_valid_assurance() -> None:
+    """D-11: the read model cannot carry a human-approval label either."""
+
+    with pytest.raises(ValidationError):
+        PublicationMetadata(assurance="human_verified", freshness="current")
+
+
 def test_checked_timestamp_requires_timezone() -> None:
     with pytest.raises(ValidationError):
         PublicationMetadata(

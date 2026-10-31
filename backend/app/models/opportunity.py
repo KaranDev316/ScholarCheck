@@ -1,4 +1,4 @@
-"""Read response for a fixture or future published opportunity."""
+"""Read response for a fixture or a published opportunity."""
 
 from datetime import datetime
 from enum import StrEnum
@@ -6,13 +6,8 @@ from typing import Self
 
 from pydantic import Field, field_validator, model_validator
 
+from app.domain.enums import PublicationAssurance
 from app.domain.models import DomainModel, Opportunity
-
-
-class PublicationAssurance(StrEnum):
-    INSUFFICIENT_EVIDENCE = "insufficient_evidence"
-    SOURCE_CHECKED = "source_checked"
-    HUMAN_VERIFIED = "human_verified"
 
 
 class Freshness(StrEnum):
@@ -49,5 +44,8 @@ class OpportunityResponse(DomainModel):
     opportunity: Opportunity
     publication: PublicationMetadata
     is_published: bool = Field(
-        description="False for development fixture previews; publication begins in S04."
+        description=(
+            "True only when the publication gate published a revision of this "
+            "record; development fixture previews are false."
+        )
     )

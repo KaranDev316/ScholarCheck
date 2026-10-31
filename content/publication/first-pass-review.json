@@ -1,0 +1,40 @@
+{
+  "reviewed_at": "2026-10-23",
+  "source": "docs/slices/S01/FIRST-PASS-REVIEW.md",
+  "note": "Machine-readable form of the open findings in the first-pass review. The gate is given these reasons and holds the candidate even when a validation report claims support, so an unresolved finding cannot be published away. Each entry also names the evidence check that must stay unclear until the fixture or the source question is resolved. Remove an entry only when the finding is corrected and re-checked against a retained snapshot.",
+  "findings": {
+    "cgsd-doctoral": [
+      {
+        "evidence_id": "ev-cgsd-deadline",
+        "result": "unclear",
+        "reason": "the quoted 17 October date is the direct-to-agency deadline; an applicant's own route through a Canadian institution is not settled"
+      }
+    ],
+    "rmit-research-stipend": [
+      {
+        "evidence_id": "ev-rmit-stipend",
+        "result": "unclear",
+        "reason": "the quoted rate is the 2026 benefit and the source does not support the recorded pro-rata part-time wording for international applicants"
+      },
+      {
+        "evidence_id": "ev-rmit-dates",
+        "result": "unclear",
+        "reason": "both published 2027 international deadlines have passed, so the round's availability is unresolved"
+      }
+    ],
+    "udem-exemption-doctoral": [
+      {
+        "evidence_id": "ev-udem-process",
+        "result": "unclear",
+        "reason": "the award follows an admission offer only when every condition is met; the recorded route states it unconditionally"
+      }
+    ],
+    "usyd-rtp-stipend": [
+      {
+        "evidence_id": "ev-usyd-deadline",
+        "result": "unclear",
+        "reason": "only the passed Research Period 1-2, 2027 round is recorded; the later 18 December 2026 round is missing"
+      }
+    ]
+  }
+}

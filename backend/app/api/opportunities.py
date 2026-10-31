@@ -5,6 +5,7 @@ from fastapi import APIRouter, Request
 
 from app.api.errors import ApiError, ErrorCode
 from app.config import Settings
+from app.domain.enums import PublicationAssurance
 from app.models.opportunity import OpportunityResponse, PublicationMetadata
 from app.storage.opportunities import get_opportunity
 
@@ -34,7 +35,7 @@ def read_opportunity(opportunity_id: str, request: Request) -> OpportunityRespon
 
     opportunity, raw_metadata = loaded
     publication = PublicationMetadata.model_validate(raw_metadata)
-    is_published = publication.assurance.value in {"source_checked", "human_verified"}
+    is_published = publication.assurance is PublicationAssurance.SOURCE_CHECKED
     if not is_published and settings.app_env not in {"development", "test"}:
         raise ApiError(
             404, ErrorCode.OPPORTUNITY_NOT_FOUND, "We could not find that opportunity."

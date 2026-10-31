@@ -1,4 +1,4 @@
-# University of Sydney RTP — retrieved 2026-10-23, not yet human-verified (see README.md).
+# University of Sydney RTP — retrieved 2026-10-23, not source-checked for publication (see README.md).
 id: usyd-rtp-stipend
 scheme_name: Research Training Program (RTP) Stipend Scholarship
 funder: Australian Government, administered by the University of Sydney
@@ -109,8 +109,6 @@ evidence:
       competitively awarded; $44,293 p.a. stipend (2027 rate), $42,754 p.a.
       stipend (2026 rate); relocation and thesis allowance.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-usyd-tuition
     url: https://www.sydney.edu.au/scholarships/australian-government-research-training-program/rtp-international.html
     passage: >-
@@ -119,24 +117,18 @@ evidence:
       scholarship; 100% tuition fees for up to 14 research periods; Overseas
       Student Health Cover (OSHC).
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-usyd-eligibility
     url: https://www.sydney.edu.au/scholarships/australian-government-research-training-program.html
     passage: >-
       You must be a commencing or enrolled domestic or international higher degree
       by research student.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-usyd-academic-record
     url: https://www.sydney.edu.au/scholarships/australian-government-research-training-program.html
     passage: >-
       You must have an outstanding record of academic achievement and previous
       research experience.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-usyd-process
     url: https://www.sydney.edu.au/scholarships/australian-government-research-training-program.html
     passage: >-
@@ -145,14 +137,10 @@ evidence:
       in the 'Application and award timeline' table – these differ for domestic
       students and international students
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-usyd-submission
     url: https://www.sydney.edu.au/scholarships/australian-government-research-training-program.html
     passage: Submit the scholarship application form by the deadlines.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-usyd-deadline
     url: https://www.sydney.edu.au/scholarships/australian-government-research-training-program/rtp-international.html
     passage: >-
@@ -160,7 +148,4 @@ evidence:
       September 2026. Research Period 3 and 4, 2027 — submission deadline 18
       December 2026.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
 last_retrieved_at: 2026-10-23T07:00:00Z
-last_verified_at: null

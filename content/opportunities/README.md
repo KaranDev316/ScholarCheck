@@ -32,11 +32,13 @@ cd backend && .venv/bin/python -m pytest tests/test_seed_content.py
    referenced by a rule or funding component, except the entry that backs a
    published date in a round label (`Round` has no reference field in S01); such
    an entry must quote a deadline.
-6. **Legacy verification fields are not publication signals.** Format v1
-   seeds still have null `verified_at`, `verified_by` and `last_verified_at`
-   fields. D-11 removes these fields from the future active contract. The
-   `PUBLICATION-POLICY.md` gates must pass before any record can be published
-   as `source_checked`. A fetch or YAML validation test alone is insufficient.
+6. **No human-verification field.** Format v1 seeds carry no `verified_at`,
+   `verified_by` or `last_verified_at`; those fields are gone from the model.
+   Whether a record may be public is decided only by the publication gate,
+   which needs a validation report and the retained snapshots that report
+   checked (`docs/PUBLICATION-POLICY.md`). A fetch or YAML validation test
+   alone is still insufficient. The open findings for each fixture live in
+   `content/publication/first-pass-review.json`.
 7. **No invention.** If the source does not state a fact, omit the field. A
    funding component whose value is not stated stays on the record with
    `status: unspecified` and no `amount`/`currency`; it is never shown as zero,
@@ -74,6 +76,6 @@ that must be corrected or held before the automated gate can pass.
 ## Future publication migration
 
 Keep these four files as regression inputs. Move material facts into the new
-stated/unspecified/conflicting contract, link them to retained official
-snapshots, and remove the legacy human-verification fields during migration.
-Candidates with missing or conflicting material evidence remain held.
+stated/unspecified/conflicting contract and link them to retained official
+snapshots. The legacy human-verification fields are already gone. Candidates
+with missing or conflicting material evidence remain held.

@@ -27,9 +27,10 @@ and [S01 plan](docs/slices/S01/PLAN.md) describe the revised direction.
 
 ```
 docs/       ARCHITECTURE.md CONTEXT.md PRP.md ROADMAP.md PUBLICATION-POLICY.md slices/S01/
-backend/    app/{api,domain,models} tests/
+backend/    app/{api,domain,models,publication,storage} tests/
 frontend/   src/{pages} tests/
 content/    opportunities/*.yaml (unverified regression fixtures, S01 T03)
+            publication/first-pass-review.json (findings that hold each fixture)
 ```
 
 ## Run locally
@@ -96,11 +97,15 @@ references (a bare `tsc --noEmit` would check no files).
 ## Current status
 
 The scaffold, four regression fixtures, PostgreSQL loader and development read
-endpoint exist. The public catalogue, publication gates, website journeys and
-monitoring worker do **not** exist yet. The
+endpoint exist, and `app/publication/` decides publication: a record becomes
+public only through an atomic publish backed by a validation report and the
+retained snapshots it checked. The public catalogue, the collector, the AI
+evidence-check pass, the website journeys and the monitoring worker do **not**
+exist yet. The
 [first-pass review](docs/slices/S01/FIRST-PASS-REVIEW.md) found material
-route, rate-year and deadline issues, so the fixtures cannot yet be labelled
-`source_checked` or published. The [roadmap](docs/ROADMAP.md) now finishes the
+route, rate-year and deadline issues; those findings are recorded in
+`content/publication/first-pass-review.json` and keep the fixtures held, so
+none is published. The [roadmap](docs/ROADMAP.md) now finishes the
 best-evidenced public MVP before monitoring one record and then adding
-discovery. Legacy human-verification fields in code and fixtures still need
-migration; they are no longer part of the product direction.
+discovery. Human-verification fields are gone from the model, fixtures and
+schema.

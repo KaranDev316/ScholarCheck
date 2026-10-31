@@ -10,6 +10,7 @@ from app.domain.enums import (
     DegreeLevel,
     EligibilityRuleKind,
     FundingStatus,
+    PublicationAssurance,
 )
 from app.domain.models import (
     AssessmentResult,
@@ -17,6 +18,7 @@ from app.domain.models import (
     Evidence,
     FundingComponent,
     Grade,
+    Opportunity,
     Profile,
     RuleAssessment,
 )
@@ -101,21 +103,30 @@ def test_t02_grade_stays_a_string() -> None:
     assert grade.value == "3.5"
 
 
-def test_t02_evidence_keeps_retrieved_and_verified_separate(
-    evidence: Evidence,
-) -> None:
-    """Invariant 5: an automatic fetch never counts as human verification."""
+def test_t02_a_refetch_only_moves_the_retrieval_time(evidence: Evidence) -> None:
+    """Invariant 5: an automatic fetch never becomes an approval."""
 
     assert evidence.retrieved_at == RETRIEVED_AT
-    assert evidence.verified_at is None
-    assert evidence.verified_by is None
 
     refreshed = evidence.model_copy(
         update={"retrieved_at": RETRIEVED_AT + timedelta(days=7)}
     )
 
     assert refreshed.retrieved_at > evidence.retrieved_at
-    assert refreshed.verified_at is None
+
+
+def test_t02_no_human_verification_field_survives(evidence: Evidence) -> None:
+    """D-11: a person's approval is not part of the evidence contract."""
+
+    assert set(Evidence.model_fields) == {"id", "url", "passage", "retrieved_at"}
+    assert "last_verified_at" not in Opportunity.model_fields
+    assert "human_verified" not in {member.value for member in PublicationAssurance}
+    assert evidence.model_dump(mode="json", by_alias=True) == {
+        "id": "ev-tuition-waiver",
+        "url": "https://example.edu/scholarships/waiver",
+        "passage": "Tuition fees are waived for the duration of the programme.",
+        "retrievedAt": "2026-10-20T09:00:00Z",
+    }
 
 
 def test_t02_evidence_requires_timezone_aware_timestamps() -> None:
@@ -125,18 +136,6 @@ def test_t02_evidence_requires_timezone_aware_timestamps() -> None:
             url="https://example.edu/page",
             passage="Some text.",
             retrieved_at=datetime(2026, 10, 20, 9, 0),
-        )
-
-
-def test_t02_verification_cannot_precede_retrieval() -> None:
-    with pytest.raises(ValidationError):
-        Evidence(
-            id="ev-backwards",
-            url="https://example.edu/page",
-            passage="Some text.",
-            retrieved_at=datetime(2026, 10, 20, 9, 0, tzinfo=UTC),
-            verified_at=datetime(2026, 10, 19, 9, 0, tzinfo=UTC),
-            verified_by="reviewer",
         )
 
 

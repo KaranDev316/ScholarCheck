@@ -1,11 +1,11 @@
 # Publication policy — autonomous, evidence-first
 
-Status: **product direction updated 24 October 2026; implementation pending**.
+Status: **gate implemented 31 October 2026; collector and AI passes pending.**
 All publication decisions are automated. No human verification or
-human-verification UI is part of ScholarCheck. This does not declare the
-current YAML fixtures publishable. The existing code still contains legacy
-human-verification fields; removing them is migration work, not completed by
-this document.
+human-verification UI is part of ScholarCheck. The four YAML fixtures are
+candidates, not publishable records: the gate holds each of them for a recorded
+finding (see `slices/S01/EVIDENCE.md` and
+`content/publication/first-pass-review.json`).
 
 ## Assurance and timestamps
 
@@ -16,12 +16,15 @@ this document.
 
 `retrieved_at` records when a source was fetched. `source_checked_at` records
 when the automated gates passed. `validation_policy_version` identifies the
-gate version. `publication_assurance` is derived from that decision alone.
-Legacy `verified_at`, `verified_by`, `last_verified_at` and `human_verified`
-must be removed from the active data/API contract, with a deliberate database
-and fixture migration. The public UI uses the actual check date and a plain
-source-match result; policy version and revision metadata remain internal.
-Freshness is separate from assurance.
+gate version. `publication_assurance` is derived from that decision alone:
+`backend/app/publication/store.py` writes it in the same transaction as the
+revision and its report, and the database refuses `source_checked` without a
+revision. The legacy `verified_at`, `verified_by`, `last_verified_at` and
+`human_verified` fields are gone from the model, the fixtures and the schema;
+opening a pre-gate database demotes those rows to `insufficient_evidence` with
+`needs_recheck` so no old label survives. The public UI uses the actual check
+date and a plain source-match result; policy version and revision metadata
+remain internal. Freshness is separate from assurance.
 
 Publication fields belong to revision metadata, not applicant data. Each
 material extracted fact has a first-class state: `stated`, `unspecified` or
@@ -91,6 +94,24 @@ Each decision stores policy version, checked time, snapshot IDs, passed/failed
 checks, candidate/revision IDs, and machine-readable reasons. Publishing is
 atomic with the revision and its validation report. Repeated processing of the
 same snapshot must not create duplicate revisions.
+
+## Implemented gate (31 October 2026)
+
+`backend/app/publication/` enforces this policy in code. There is no collector,
+no AI pass and no scheduled worker yet, so a caller supplies the retained
+snapshots and the validation report, and every check below runs deterministically.
+
+| Module | Responsibility |
+|---|---|
+| `publication/contracts.py` | `SourceSnapshot` (immutable retained text), `ClaimCheck`, `ValidationReport`, `PublicationDecision`, `PublishedRevision`. No verified-by field and no assurance above `source_checked`. |
+| `publication/policy.py` | `POLICY_VERSION` (`s01.publication.1`) and the approved provider hosts. |
+| `publication/gates.py` | `evaluate()` returns publish, hold or reject with reasons. It requires a report for this exact revision and policy version; a retained snapshot from an approved provider; every cited excerpt and every displayed passage still present in that snapshot; every evidence entry covered; one excerpt per claim; and every stated amount present in the passage backing it. Any open review finding holds the candidate even when the report claims support. |
+| `publication/store.py` | `publish()` runs the gate first and raises `PublicationBlocked` before touching the database. A passing decision is written in one transaction: snapshots, live facts, an immutable revision with its report and snapshot references, and the `source_checked` state pointing at that revision. A failure rolls every write back, and re-publishing identical facts keeps one revision. |
+
+Snapshots are immutable in the database (a trigger rejects update and delete),
+`revision_snapshots` links each revision to the snapshots it was checked
+against, and the `publication_state.revision` foreign key and check constraint
+make it impossible to store `source_checked` without the revision behind it.
 
 ## Operational contracts (to be designed and implemented)
 

@@ -14,6 +14,12 @@ as permission to publish.
 3. Agent first-pass source comparison in `FIRST-PASS-REVIEW.md`. Its findings
    require correction or a hold decision. This historical review is not a
    publication gate.
+4. T06-T07 in part: `app/publication/` defines the snapshot, validation-report
+   and decision contracts and an atomic publish that needs both. Human
+   verification is gone from the model, fixtures and schema, with a migration
+   that demotes pre-gate rows. The review findings are machine-readable in
+   `content/publication/first-pass-review.json` and keep all four fixtures
+   held.
 
 ## Delivery sequence
 

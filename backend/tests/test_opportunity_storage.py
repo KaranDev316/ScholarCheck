@@ -4,45 +4,20 @@ Set SCHOLARCHECK_TEST_DATABASE_URL to a disposable PostgreSQL database to run
 these integration tests. Each test creates and drops its own schema.
 """
 
-import os
-from collections.abc import Iterator
-from uuid import uuid4
-
 import psycopg
 import pytest
 from fastapi.testclient import TestClient
-from psycopg import sql
-from psycopg.conninfo import make_conninfo
 
 from app.config import Settings
 from app.main import create_app
+from app.publication.store import publish
 from app.storage.opportunities import (
     CONTENT_DIR,
-    create_schema,
     get_opportunity,
     load_seed,
     read_seed,
 )
-
-
-@pytest.fixture
-def test_dsn() -> Iterator[str]:
-    base_dsn = os.getenv("SCHOLARCHECK_TEST_DATABASE_URL")
-    if not base_dsn:
-        pytest.skip("SCHOLARCHECK_TEST_DATABASE_URL is not set")
-
-    schema = f"scholarcheck_test_{uuid4().hex}"
-    with psycopg.connect(base_dsn, autocommit=True) as admin:
-        admin.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema)))
-        try:
-            scoped_dsn = make_conninfo(base_dsn, options=f"-csearch_path={schema}")
-            with psycopg.connect(scoped_dsn) as conn:
-                create_schema(conn)
-            yield scoped_dsn
-        finally:
-            admin.execute(
-                sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema))
-            )
+from tests.publication_helpers import build_report, build_snapshots, sample_record
 
 
 def settings_for(dsn: str | None, environment: str = "test") -> Settings:
@@ -75,22 +50,19 @@ def test_t04_all_fixtures_load_idempotently_and_round_trip(test_dsn: str) -> Non
         assert get_opportunity(conn, "missing-opportunity") is None
 
 
-def test_t04_loader_refuses_to_overwrite_checked_record(test_dsn: str) -> None:
-    seed = read_seed(CONTENT_DIR / "cgsd-doctoral.yaml")
+def test_t04_loader_refuses_to_overwrite_a_published_record(test_dsn: str) -> None:
+    candidate = sample_record()
+    snapshots = build_snapshots(candidate)
     with psycopg.connect(test_dsn) as conn:
-        assert load_seed(conn, seed)
-        conn.execute(
-            """
-            UPDATE publication_state SET assurance = 'source_checked',
-                source_checked_at = now(), validation_policy_version = '1.0',
-                freshness = 'current'
-            WHERE opportunity_id = %s
-            """,
-            (seed.id,),
+        publish(
+            conn,
+            candidate,
+            build_report(candidate, snapshots),
+            snapshots,
+            approved_hosts=("nserc-crsng.gc.ca",),
         )
-        conn.commit()
         with pytest.raises(ValueError, match="cannot overwrite"):
-            load_seed(conn, seed)
+            load_seed(conn, candidate)
 
 
 def test_t05_dev_read_is_honest_and_production_hides_unpublished(test_dsn: str) -> None:
@@ -104,7 +76,6 @@ def test_t05_dev_read_is_honest_and_production_hides_unpublished(test_dsn: str) 
         body = response.json()
         assert body["opportunity"]["id"] == seed.id
         assert body["opportunity"]["fundingComponents"][0]["amount"] == "24067.80"
-        assert body["opportunity"]["evidence"][0]["verifiedAt"] is None
         assert body["publication"] == {
             "assurance": "insufficient_evidence",
             "sourceCheckedAt": None,

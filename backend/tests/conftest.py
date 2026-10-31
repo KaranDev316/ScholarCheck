@@ -1,10 +1,15 @@
 """Shared fixtures for backend tests."""
 
+import os
 from collections.abc import Iterator
 from datetime import UTC, datetime
+from uuid import uuid4
 
+import psycopg
 import pytest
 from fastapi.testclient import TestClient
+from psycopg import sql
+from psycopg.conninfo import make_conninfo
 
 from app.config import Settings
 from app.domain.enums import (
@@ -25,6 +30,7 @@ from app.domain.models import (
     Round,
 )
 from app.main import create_app
+from app.storage.opportunities import create_schema
 
 RETRIEVED_AT = datetime(2026, 10, 20, 9, 0, tzinfo=UTC)
 
@@ -44,6 +50,28 @@ def settings() -> Settings:
 def client(settings: Settings) -> Iterator[TestClient]:
     with TestClient(create_app(settings)) as test_client:
         yield test_client
+
+
+@pytest.fixture
+def test_dsn() -> Iterator[str]:
+    """A disposable PostgreSQL schema, or skip when no server is configured."""
+
+    base_dsn = os.getenv("SCHOLARCHECK_TEST_DATABASE_URL")
+    if not base_dsn:
+        pytest.skip("SCHOLARCHECK_TEST_DATABASE_URL is not set")
+
+    schema = f"scholarcheck_test_{uuid4().hex}"
+    with psycopg.connect(base_dsn, autocommit=True) as admin:
+        admin.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema)))
+        try:
+            scoped_dsn = make_conninfo(base_dsn, options=f"-csearch_path={schema}")
+            with psycopg.connect(scoped_dsn) as conn:
+                create_schema(conn)
+            yield scoped_dsn
+        finally:
+            admin.execute(
+                sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema))
+            )
 
 
 @pytest.fixture

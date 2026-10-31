@@ -108,3 +108,16 @@ class FundingRelationship(StrEnum):
     LOAN = "loan"
     EMPLOYMENT = "employment"
     NOT_STATED = "not_stated"
+
+
+class PublicationAssurance(StrEnum):
+    """How much a record's facts are backed, as decided by the gate.
+
+    There is no human-verification member on purpose: D-11 removed human
+    review from the product, so ``SOURCE_CHECKED`` is the only assurance a
+    record can hold, and only the publication gate can set it after a
+    validation report and its retained snapshots pass every check.
+    """
+
+    INSUFFICIENT_EVIDENCE = "insufficient_evidence"
+    SOURCE_CHECKED = "source_checked"

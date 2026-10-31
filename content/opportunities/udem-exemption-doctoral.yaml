@@ -1,4 +1,4 @@
-# UdeM exemption — retrieved 2026-10-23, not yet human-verified (see README.md).
+# UdeM exemption — retrieved 2026-10-23, not source-checked for publication (see README.md).
 id: udem-exemption-doctoral
 scheme_name: Bourse d’exemption UdeM pour personnes étudiantes de l’international (3e cycle)
 funder: Université de Montréal
@@ -99,8 +99,6 @@ evidence:
       plein (Équivalent 45 crédits). Année académique 2026-2027. Les montants
       indiqués ci-dessus sont en dollars canadiens.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-udem-eligibility
     url: https://registraire.umontreal.ca/droits-de-scolarite/bourse-exemption/
     passage: >-
@@ -116,8 +114,6 @@ evidence:
       applicable par l'UdeM ne bénéficiez pas d'une source de financement externe
       de la part d'un organisme ou d'une tierce partie.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-udem-duration
     url: https://registraire.umontreal.ca/droits-de-scolarite/bourse-exemption/
     passage: >-
@@ -125,8 +121,6 @@ evidence:
       statut: Doctorat de recherche 6 à 10 (nombre de trimestres d'admissibilité,
       selon la durée normale de scolarité temps plein du programme d'études).
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
   - id: ev-udem-process
     url: https://registraire.umontreal.ca/droits-de-scolarite/bourse-exemption/
     passage: >-
@@ -134,7 +128,4 @@ evidence:
       programme de 3 e cycle de l'UdeM sont éligibles à la bourse d'exemption
       UdeM. Vous n'avez donc pas à faire de demande pour l'obtenir.
     retrieved_at: 2026-10-23T07:00:00Z
-    verified_at: null
-    verified_by: null
 last_retrieved_at: 2026-10-23T07:00:00Z
-last_verified_at: null

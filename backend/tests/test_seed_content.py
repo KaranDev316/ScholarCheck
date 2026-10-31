@@ -8,7 +8,7 @@ import pytest
 import yaml
 
 from app.domain.enums import FundingComponentKind, FundingStatus, FundingRelationship
-from app.domain.models import FundingComponent, Opportunity, Round
+from app.domain.models import Evidence, FundingComponent, Opportunity, Round
 
 CONTENT_DIR = Path(__file__).resolve().parents[2] / "content" / "opportunities"
 SEED_FILES = sorted(CONTENT_DIR.glob("*.yaml"))
@@ -120,13 +120,18 @@ def test_t03_components_with_a_value_are_evidenced(seed_path: Path) -> None:
         assert component.amount is not None or component.period is not None
 
 
-def test_t03_retrieval_and_verification_stay_separate(seed_path: Path) -> None:
-    """Agent checks must not claim optional human verification."""
+def test_t03_fixtures_carry_no_human_verification_fields(seed_path: Path) -> None:
+    """D-11 removed human review; a legacy key would smuggle it back in."""
+
+    raw: dict[str, Any] = _raw(seed_path)
+    assert "last_verified_at" not in raw
+    for entry in raw["evidence"]:
+        assert {"verified_at", "verified_by"} & set(entry) == set()
 
     opportunity = _load(seed_path)
-    assert opportunity.last_verified_at is None
-    assert all(entry.verified_at is None for entry in opportunity.evidence)
-    assert all(entry.verified_by is None for entry in opportunity.evidence)
+    assert set(Evidence.model_fields) == {"id", "url", "passage", "retrieved_at"}
+    assert "last_verified_at" not in Opportunity.model_fields
+    assert opportunity.evidence
 
 
 def test_t03_last_retrieved_at_matches_the_evidence(seed_path: Path) -> None:

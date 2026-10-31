@@ -75,10 +75,9 @@ class DomainModel(BaseModel):
 class Evidence(DomainModel):
     """A checkable source for a decision-critical claim (CONTEXT rule 5).
 
-    ``retrieved_at`` (when the page was fetched) and ``verified_at`` (when a
-    human confirmed the passage) are deliberately separate fields. Nothing here
-    sets ``verified_at`` automatically: an automatic refresh only ever updates
-    ``retrieved_at``.
+    ``retrieved_at`` is when the page was fetched. There is no human-review
+    field: whether the passage supports the claim is decided by the
+    publication gate against the retained snapshot, not by a person.
     """
 
     id: Identifier
@@ -88,27 +87,12 @@ class Evidence(DomainModel):
         description="The supporting text taken from the source.",
     )
     retrieved_at: datetime
-    verified_at: datetime | None = None
-    verified_by: str | None = Field(
-        default=None,
-        description="Name or handle of the human who verified the claim.",
-    )
 
-    @field_validator("retrieved_at", "verified_at")
+    @field_validator("retrieved_at")
     @classmethod
-    def require_timezone(cls, value: datetime | None) -> datetime | None:
-        if value is not None and value.tzinfo is None:
+    def require_timezone(cls, value: datetime) -> datetime:
+        if value.tzinfo is None:
             raise ValueError("timestamps must include a timezone")
-        return value
-
-    @field_validator("verified_at")
-    @classmethod
-    def verified_cannot_precede_retrieved(
-        cls, value: datetime | None, info: ValidationInfo
-    ) -> datetime | None:
-        retrieved_at = info.data.get("retrieved_at")
-        if value is not None and retrieved_at is not None and value < retrieved_at:
-            raise ValueError("verified_at cannot be earlier than retrieved_at")
         return value
 
 
@@ -243,10 +227,6 @@ class Opportunity(DomainModel):
     last_retrieved_at: datetime | None = Field(
         default=None,
         description="Most recent automatic fetch of any source. Not a verification.",
-    )
-    last_verified_at: datetime | None = Field(
-        default=None,
-        description="Most recent human verification of any claim on this record.",
     )
 
 
