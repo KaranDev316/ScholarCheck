@@ -36,17 +36,40 @@ export function fundingTypeLabel(record: Scholarship): string {
   return fundingTypeFor(record.coverage) ?? 'Funding type not established'
 }
 
-/** A round is passed only when its published status says so. */
+/** A round can be marked passed by the source check or by its calendar date. */
 export function isPassedStatus(status: string): boolean {
   return /passed/i.test(status)
 }
 
+function publishedDeadline(dateAsPublished: string): Date | null {
+  if (!/^\d{1,2} [A-Za-z]+ \d{4}$/.test(dateAsPublished)) return null
+  const date = new Date(`${dateAsPublished} 00:00:00 GMT`)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+export function isOpenRound(round: Scholarship['rounds'][number], now = new Date()): boolean {
+  if (round.status !== 'Deadline published') return false
+  const deadline = publishedDeadline(round.dateAsPublished)
+  if (!deadline) return false
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  return deadline.getTime() >= today
+}
+
+export function isPassedRound(round: Scholarship['rounds'][number], now = new Date()): boolean {
+  if (isPassedStatus(round.status)) return true
+  if (round.status !== 'Deadline published') return false
+  const deadline = publishedDeadline(round.dateAsPublished)
+  if (!deadline) return false
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  return deadline.getTime() < today
+}
+
 export function passedRoundDates(record: Scholarship): string[] {
   return record.rounds
-    .filter((round) => isPassedStatus(round.status))
+    .filter((round) => isPassedRound(round))
     .map((round) => round.dateAsPublished)
 }
 
 export function hasOpenRound(record: Scholarship): boolean {
-  return record.rounds.some((round) => !isPassedStatus(round.status))
+  return record.rounds.some((round) => isOpenRound(round))
 }

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { CoverageChip, FactChip, TagChip } from '../components/Chips'
 import { ReportDialog } from '../components/ReportDialog'
 import { applicationAction } from '../data/application'
-import { fundingTypeFor, passedRoundDates } from '../data/funding'
+import { fundingTypeFor, isOpenRound, isPassedRound, passedRoundDates } from '../data/funding'
 import { COVERAGE_KEYS, COVERAGE_LABELS } from '../data/types'
 import type { Scholarship } from '../data/types'
 
@@ -20,7 +20,7 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
   const passed = passedRoundDates(record)
   const datesPassed = passed.length > 0
   const applyAction = applicationAction(record)
-  const upcomingRound = record.rounds.find((round) => round.status === 'Deadline published')
+  const upcomingRound = record.rounds.find((round) => isOpenRound(round))
 
   const dateNote = datesPassed
     ? upcomingRound
@@ -230,7 +230,11 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
                       <td>{round.round}</td>
                       <td>{round.dateAsPublished}</td>
                       <td>
-                        <span className="chip neutral">{round.status}</span>
+                        <span className="chip neutral">
+                          {isPassedRound(round) && round.status === 'Deadline published'
+                            ? 'Date passed'
+                            : round.status}
+                        </span>
                       </td>
                       <td className="mute small">{round.note}</td>
                     </tr>

@@ -43,9 +43,9 @@ export const baseRecord: Scholarship = {
     {
       id: 'example-round',
       round: 'Annual round',
-      dateAsPublished: '17 October',
-      status: 'Not published',
-      note: 'The year is not stated.',
+      dateAsPublished: '18 December 2099',
+      status: 'Deadline published',
+      note: 'Example future deadline.',
     },
   ],
   application: { kind: 'provider', note: 'Apply through the provider.' },

@@ -186,6 +186,29 @@ describe('ScholarshipPage', () => {
     expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
   })
 
+  it('treats a stale published deadline as passed on the detail page', () => {
+    render(
+      <ScholarshipPage
+        record={makeRecord({
+          rounds: [
+            {
+              id: 'stale',
+              round: 'Old round',
+              dateAsPublished: '18 December 2020',
+              status: 'Deadline published',
+              note: '',
+            },
+          ],
+        })}
+        isDevelopment
+      />,
+    )
+
+    expect(screen.getByText(/the published dates \(18 december 2020\) have passed/i)).toBeInTheDocument()
+    expect(screen.getByText('Date passed')).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
+  })
+
   it('matches each catalogue record’s application button to its recorded route', () => {
     const expected: Record<string, string | null> = {
       // Route unconfirmed: the note is shown, but no button.

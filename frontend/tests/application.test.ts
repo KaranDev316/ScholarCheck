@@ -64,6 +64,30 @@ describe('application action', () => {
     ).toBeNull()
   })
 
+  it('withholds the button when no applicable deadline is published', () => {
+    for (const status of ['Not published', 'Year not stated']) {
+      expect(
+        applicationAction(
+          makeRecord({
+            application: { kind: 'provider', note: '' },
+            rounds: [{ ...openRound, status }],
+          }),
+        ),
+      ).toBeNull()
+    }
+  })
+
+  it('withholds the button when a published deadline has elapsed', () => {
+    expect(
+      applicationAction(
+        makeRecord({
+          application: { kind: 'provider', note: '' },
+          rounds: [{ ...openRound, dateAsPublished: '18 December 2020' }],
+        }),
+      ),
+    ).toBeNull()
+  })
+
   it('says Apply for admission when there is no separate scholarship application', () => {
     const action = applicationAction(
       makeRecord({
