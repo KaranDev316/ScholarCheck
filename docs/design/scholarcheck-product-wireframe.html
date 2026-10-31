@@ -163,10 +163,15 @@ function explore(){
 <div><form class="bar" role="search" onsubmit="event.preventDefault();F.q=this.q.value;route()"><input name="q" value="${F.q}" aria-label="Search scholarships" placeholder="Scholarship, university or country"><button class="btn">Search</button></form>${results()}</div></div></section>`}
 function detail(r){
 
- const canApply=r.app[0]==='route',passed=canApply&&r.rd.some(x=>/passed/i.test(x[2]));
+ const canApply=r.app[0]==='route',hasOpen=r.rd.some(x=>!/passed/i.test(x[2]));
+ const passedDates=r.rd.filter(x=>/passed/i.test(x[2])).map(x=>x[1]).join('; ');
+ const nextRound=r.rd.find(x=>x[2]==='Deadline published');
+ const passed=canApply&&passedDates!=='';
  const reqBtn=link('Official page');
- const appBtn=link('Apply now',passed?'':'alt');
- const note=passed?`The published dates (${r.rd[0][1]}) have passed, and the next round isn’t published yet.`:canApply?'':r.app[1];
+ const applyLabel=canApply?(hasOpen?'Apply now':''):(r.app[0]==='none'?'Apply for admission':'');
+ const appBtn=applyLabel?link(applyLabel,applyLabel==='Apply now'?'alt':''):'';
+ const applyNote=applyLabel==='Apply for admission'?'Opens the provider’s admission page.':'Opens the provider’s application page.';
+ const note=!canApply?r.app[1]:passed?`The ${passedDates} deadline has passed. ${nextRound?'Another round has a published deadline; confirm it with the provider before applying.':'The next round isn’t published yet.'}`:'';
  return `<div class="crumbs"><a href="#explore">All scholarships</a> / ${r.t}</div>
 <div class="detail"><div>
 <div class="titlerow"><h1>${r.t}</h1><div class="share"><button class="sharebtn" onclick="copyLink('${r.id}')">Copy link</button><button class="sharebtn" onclick="shareLink('${r.t.replace(/'/g,'’')}')">Share</button></div></div><p class="mute" style="margin-top:8px">${r.p}, ${r.c}</p><div style="margin-top:10px">${r.tags.map(t=>`<span class="chip neutral">${t}</span> `).join('')}</div>
@@ -183,7 +188,7 @@ ${r.comp.map(c=>`<div class="rule"><div style="display:flex;justify-content:spac
 
 <div class="dsec"><h2>Rounds and deadlines</h2><div class="tblwrap"><table class="tbl"><thead><tr><th>Round</th><th>Date as published</th><th>Status</th><th>Note</th></tr></thead><tbody>
 ${r.rd.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td><span class="chip neutral">${x[2]}</span></td><td class="mute small">${x[3]}</td></tr>`).join('')}</tbody></table></div>
-<p class="small mute">A passed date marks that round only. Other rounds stay as they are until a source says otherwise.</p><div class="actionpair"><div class="act">${reqBtn}<p class="small mute">What the official page says about eligibility and funding.</p></div><div class="act">${appBtn}<p class="small mute">Opens the provider’s own application page.</p></div></div></div>
+<p class="small mute">A passed date marks that round only. Other rounds stay as they are until a source says otherwise.</p><div class="actionpair"><div class="act">${reqBtn}<p class="small mute">What the official page says about eligibility and funding.</p></div>${applyLabel?`<div class="act">${appBtn}<p class="small mute">${applyNote}</p></div>`:''}</div></div>
 
 
 </div>

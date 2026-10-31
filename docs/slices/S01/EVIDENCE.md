@@ -113,7 +113,7 @@ a claim about the source.
 
 | Check | Command | Actual result |
 |---|---|---|
-| Frontend tests | `cd frontend && npm test` | 60 passed in 9 files |
+| Frontend tests | `cd frontend && npm test` | 69 passed in 10 files |
 | Typecheck | `npx tsc -b --force` | No errors |
 | Lint | `npm run lint` | No problems |
 | Production build | `npm run build` | Built; no preview data in the bundle (`RMIT` and the fixture amounts are absent from `dist/assets`) |
@@ -127,9 +127,12 @@ What the tests establish, and what they do not:
   from a guessed date.
 - A record shows components separately, without a computed total, and lists the
   eligibility conditions as published. Quoted passages, source addresses and
-  saved dates are no longer shown, and “Read the requirements” is the only
-  route to the official page. Catalogue tests still fail if a retained
-  reference does not resolve.
+  saved dates are no longer shown; the official page link and the application
+  step sit under “Rounds and deadlines”. The application button follows the
+  recorded route and the rounds rather than its styling: an unconfirmed route
+  and a record whose deadlines have all passed get no button, and a record with
+  no separate scholarship application says “Apply for admission”. Catalogue
+  tests still fail if a retained reference does not resolve.
 - Hash routes keep `#cgsd-doctoral` and `#explore?c=Canada` shareable, and an
   unknown id says the record is unavailable instead of inventing one.
 - The report dialog closes and states that nothing was sent, because no

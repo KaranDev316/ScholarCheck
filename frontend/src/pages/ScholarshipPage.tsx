@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { CoverageChip, FactChip, TagChip } from '../components/Chips'
 import { ReportDialog } from '../components/ReportDialog'
+import { applicationAction } from '../data/application'
 import { fundingTypeFor, passedRoundDates } from '../data/funding'
 import { COVERAGE_KEYS, COVERAGE_LABELS } from '../data/types'
 import type { Scholarship } from '../data/types'
@@ -17,8 +18,8 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
 
   const fundingType = fundingTypeFor(record.coverage)
   const passed = passedRoundDates(record)
-  const canApply = record.application.kind === 'provider'
   const datesPassed = passed.length > 0
+  const applyAction = applicationAction(record)
   const upcomingRound = record.rounds.find((round) => round.status === 'Deadline published')
 
   const dateNote = datesPassed
@@ -251,17 +252,19 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
                   What the official page says about eligibility and funding.
                 </p>
               </div>
-              <div className="act">
-                <a
-                  className={canApply && !datesPassed ? 'btn alt' : 'btn'}
-                  href={record.links.portal}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Apply now
-                </a>
-                <p className="small mute">Opens the provider’s application page.</p>
-              </div>
+              {applyAction ? (
+                <div className="act">
+                  <a
+                    className={applyAction.emphasised ? 'btn alt' : 'btn'}
+                    href={applyAction.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {applyAction.label}
+                  </a>
+                  <p className="small mute">{applyAction.note}</p>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

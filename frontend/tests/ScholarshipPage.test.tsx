@@ -132,6 +132,90 @@ describe('ScholarshipPage', () => {
     )
   })
 
+  it('withholds the application button while the route is unconfirmed', () => {
+    render(
+      <ScholarshipPage
+        record={makeRecord({ application: { kind: 'confirm', note: 'No confirmed route yet.' } })}
+        isDevelopment
+      />,
+    )
+
+    expect(screen.getByRole('link', { name: 'Official page' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
+  })
+
+  it('says Apply for admission when there is no separate scholarship application', () => {
+    render(
+      <ScholarshipPage
+        record={makeRecord({
+          application: {
+            kind: 'none',
+            note: 'The source states no separate scholarship application. Apply for admission instead.',
+          },
+        })}
+        isDevelopment
+      />,
+    )
+
+    expect(screen.getByRole('link', { name: 'Apply for admission' })).toHaveAttribute(
+      'href',
+      'https://example.edu/apply',
+    )
+    expect(screen.queryByRole('link', { name: 'Apply now' })).toBeNull()
+  })
+
+  it('withholds the application button once every listed deadline has passed', () => {
+    render(
+      <ScholarshipPage
+        record={makeRecord({
+          rounds: [
+            {
+              id: 'passed',
+              round: 'Annual round',
+              dateAsPublished: '11 September 2026',
+              status: 'Date passed',
+              note: 'Next round not published.',
+            },
+          ],
+        })}
+        isDevelopment
+      />,
+    )
+
+    expect(screen.getByRole('link', { name: 'Official page' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
+  })
+
+  it('matches each catalogue record’s application button to its recorded route', () => {
+    const expected: Record<string, string | null> = {
+      // Route unconfirmed: the note is shown, but no button.
+      'cgsd-doctoral': null,
+      // No separate scholarship application: admission is the next step.
+      'udem-exemption-doctoral': 'Apply for admission',
+      // Every listed deadline has passed: no button until a round is published.
+      'rmit-research-stipend': null,
+      'usyd-rtp-stipend': 'Apply now',
+    }
+
+    expect(developmentCatalogue.map((record) => record.id).sort()).toEqual(Object.keys(expected).sort())
+
+    for (const record of developmentCatalogue) {
+      const { unmount } = render(<ScholarshipPage record={record} isDevelopment />)
+      const label = expected[record.id]
+
+      if (label === null) {
+        expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
+      } else {
+        expect(screen.getByRole('link', { name: label })).toHaveAttribute(
+          'href',
+          record.links.portal,
+        )
+      }
+
+      unmount()
+    }
+  })
+
   it('lists eligibility as a numbered list with no evidence links', () => {
     render(<ScholarshipPage record={makeRecord()} isDevelopment />)
 
