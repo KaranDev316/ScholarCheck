@@ -6,7 +6,9 @@ tests use no network: the fetch and the rules read are injected.
 """
 
 from datetime import UTC, datetime
+from email.message import Message
 from pathlib import Path
+from urllib.request import Request
 
 import pytest
 
@@ -16,7 +18,9 @@ from app.collect.snapshot import (
     FetchFailed,
     FetchRefused,
     Fetched,
+    NoRedirects,
     RobotsDecision,
+    SnapshotExists,
     collect,
     load_artifact,
     snapshot_from,
@@ -52,6 +56,7 @@ def fetched(
     request_url: str | None = None,
     status: int = 200,
     content_type: str = "text/html; charset=utf-8",
+    retrieved_at: datetime = RETRIEVED,
 ) -> Fetched:
     return Fetched(
         request_url=request_url or url,
@@ -60,7 +65,22 @@ def fetched(
         content_type=content_type,
         charset="utf-8",
         payload=html.encode("utf-8"),
+        retrieved_at=retrieved_at,
+    )
+
+
+def redirects_to(url: str, target: str, *, status: int = 302) -> Fetched:
+    """One hop of a redirect chain: no page yet, only the address to check next."""
+
+    return Fetched(
+        request_url=url,
+        url=url,
+        status=status,
+        content_type="text/html; charset=utf-8",
+        charset="utf-8",
+        payload=b"",
         retrieved_at=RETRIEVED,
+        location=target,
     )
 
 
@@ -159,19 +179,96 @@ def test_access_rules_are_checked_before_the_page_is_fetched() -> None:
 
 
 def test_collection_keeps_the_redirect_visible() -> None:
-    """A citation pointing at an old address must not silently follow the site."""
+    """A citation pointing at an old address must show what it was moved to."""
 
     moved = "https://www.example.ca/awards/doctoral"
 
-    artifact = collect(
-        URL,
-        fetcher=lambda url, agent: fetched(url=moved, request_url=url),
-        robots=allowed,
-    )
+    def fetch(url: str, agent: str) -> Fetched:
+        return redirects_to(URL, moved, status=301) if url == URL else fetched(url=moved)
+
+    artifact = collect(URL, fetcher=fetch, robots=allowed)
 
     assert str(artifact.provenance.request_url) == URL
+    assert [str(hop) for hop in artifact.provenance.redirects] == [moved]
     assert str(artifact.provenance.final_url) == moved
     assert str(artifact.snapshot.url) == moved
+
+
+def test_a_redirect_destination_is_checked_before_it_is_fetched() -> None:
+    """The address that answers also gets asked, so its rules are checked too."""
+
+    moved = "https://www.example.ca/awards/doctoral"
+    fetched_urls: list[str] = []
+
+    def fetch(url: str, agent: str) -> Fetched:
+        fetched_urls.append(url)
+        return redirects_to(URL, moved)
+
+    def rules(url: str) -> RobotsDecision:
+        return denied(url) if url == moved else allowed(url)
+
+    with pytest.raises(FetchRefused, match="redirected from"):
+        collect(URL, fetcher=fetch, robots=rules)
+
+    assert fetched_urls == [URL], "the destination must not be fetched at all"
+
+
+def test_every_address_on_the_way_is_checked_in_order() -> None:
+    middle = "https://www.example.ca/moved"
+    final = "https://www.example.edu/current/award"
+    checked: list[str] = []
+
+    def rules(url: str) -> RobotsDecision:
+        checked.append(url)
+        return allowed(url)
+
+    def fetch(url: str, agent: str) -> Fetched:
+        hops = {URL: middle, middle: final}
+        return redirects_to(url, hops[url]) if url in hops else fetched(url=final)
+
+    artifact = collect(URL, fetcher=fetch, robots=rules)
+
+    assert checked == [URL, middle, final]
+    assert [str(hop) for hop in artifact.provenance.redirects] == [middle, final]
+    assert str(artifact.snapshot.url) == final
+
+
+def test_a_redirect_loop_is_refused() -> None:
+    with pytest.raises(FetchFailed, match="redirects more than"):
+        collect(
+            URL,
+            fetcher=lambda url, agent: redirects_to(url, f"{url}/again"),
+            robots=allowed,
+        )
+
+
+def test_a_redirect_outside_the_web_is_refused() -> None:
+    with pytest.raises(FetchFailed, match="not a web address"):
+        collect(
+            URL,
+            fetcher=lambda url, agent: redirects_to(URL, "ftp://files.example.edu/award"),
+            robots=allowed,
+        )
+
+
+def test_a_fetcher_that_follows_redirects_itself_is_refused() -> None:
+    """A hidden hop is an unchecked address, so it cannot be recorded as if it were."""
+
+    moved = "https://www.example.ca/awards/doctoral"
+
+    with pytest.raises(FetchFailed, match="each redirect hop must be reported"):
+        collect(URL, fetcher=lambda url, agent: fetched(url=moved), robots=allowed)
+
+
+def test_the_page_fetcher_leaves_redirects_to_the_collector() -> None:
+    """urllib follows redirects by default; the fetch must not, or no hop is checked."""
+
+    handler = NoRedirects()
+    next_request = handler.redirect_request(
+        Request(URL), None, 302, "Found", Message(), "https://www.example.ca/awards"
+    )
+
+    assert next_request is None
 
 
 def test_artifacts_round_trip_through_disk(tmp_path: Path) -> None:
@@ -182,3 +279,50 @@ def test_artifacts_round_trip_through_disk(tmp_path: Path) -> None:
 
     assert restored == artifact
     assert restored.snapshot.body == artifact.snapshot.body
+
+
+def test_writing_the_same_artifact_twice_is_a_no_op(tmp_path: Path) -> None:
+    artifact = collect(URL, fetcher=lambda url, agent: fetched(), robots=allowed)
+
+    path = write_artifact(artifact, tmp_path)
+
+    assert write_artifact(artifact, tmp_path) == path
+    assert load_artifact(path) == artifact
+
+
+def test_a_repeat_fetch_cannot_replace_retained_provenance(tmp_path: Path) -> None:
+    """The same text fetched later must leave the retained artifact's facts alone."""
+
+    first = collect(URL, fetcher=lambda url, agent: fetched(), robots=allowed)
+    path = write_artifact(first, tmp_path)
+    retained = path.read_text(encoding="utf-8")
+
+    later = datetime(2026, 11, 9, 8, 0, tzinfo=UTC)
+    refetched = collect(
+        URL, fetcher=lambda url, agent: fetched(retrieved_at=later), robots=allowed
+    )
+    assert refetched.snapshot.id == first.snapshot.id, "same text, so the same id"
+    assert refetched.snapshot.retrieved_at != first.snapshot.retrieved_at
+
+    with pytest.raises(SnapshotExists) as refused:
+        write_artifact(refetched, tmp_path)
+
+    assert refused.value.same_text is True
+    assert refused.value.path == path
+    assert "already retains this page text" in str(refused.value)
+    assert path.read_text(encoding="utf-8") == retained
+    assert load_artifact(path).snapshot.retrieved_at == RETRIEVED
+
+
+def test_an_id_collision_never_replaces_a_different_page(tmp_path: Path) -> None:
+    artifact = collect(URL, fetcher=lambda url, agent: fetched(), robots=allowed)
+    path = write_artifact(artifact, tmp_path)
+    other_page = artifact.model_copy(
+        update={"snapshot": artifact.snapshot.model_copy(update={"body": "a different page"})}
+    )
+
+    with pytest.raises(SnapshotExists) as refused:
+        write_artifact(other_page, tmp_path)
+
+    assert refused.value.same_text is False
+    assert load_artifact(path) == artifact

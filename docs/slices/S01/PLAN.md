@@ -76,11 +76,12 @@ as permission to publish.
   `FIRST-PASS-REVIEW.md` for regression. Choose the best-evidenced launch
   records, replacing weak candidates as needed. Retain official-source
   snapshots and map material displayed claims to exact excerpts or table cells.
-  **Started 2 November 2026:** `app/collect/` retains seven pages, all 24 fixture
+  **Started 2 November 2026:** `app/collect/` retains seven pages, all 25 fixture
   passages are verbatim spans of those snapshots, and the recorded routes,
-  rounds and the UdeM condition were corrected from the pages. RMIT stays held
-  (its round calendar is rendered client-side), so the launch set is CGRS D, the
-  UdeM exemption and the Sydney RTP stipend, pending reports.
+  rounds and the UdeM condition were corrected from the pages. RMIT stays held:
+  its 2027 round's international deadlines have passed while the page still
+  invites applications, and its benefit figures are the 2026 round's. The launch
+  set is CGRS D, the UdeM exemption and the Sydney RTP stipend, pending reports.
 - Implement the publication policy gates, decision report, immutable revision
   and atomic publish/hold operation. Use AI to propose and check claims, then
   enforce provider allowlist, exact excerpt match, value/context consistency,

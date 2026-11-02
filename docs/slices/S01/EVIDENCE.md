@@ -47,11 +47,18 @@ validation report.
 
 `backend/app/collect/` collects a page the way the policy requires: read
 `robots.txt` first, refuse a disallowed page without fetching it, fetch once,
-keep the readable text, and write an artifact recording the request URL, the
-final URL after redirects, the HTTP status, the raw-response hash, the retained
+keep the readable text, and write an artifact recording the request URL, every
+redirect hop, the final URL, the HTTP status, the raw-response hash, the retained
 hash, the robots decision, the user agent and the parser version. Snapshot ids
 are content-addressed, so changed text becomes a new snapshot rather than an
-overwrite of evidence a report may already cite.
+overwrite of evidence a report may already cite, and an unchanged page fetched
+again writes nothing: the retained file keeps the time and hashes a report was
+checked against.
+
+Redirects are followed by the collector, not by the HTTP client, so the address
+that answers is checked against its own access rules before it is fetched. A hop
+the rules refuse ends the collection, and a client that hides a hop is an error
+rather than something to record.
 
 Seven pages were retained for the four candidate records. All answered 200, and
 all were permitted by their access rules:
@@ -63,7 +70,7 @@ all were permitted by their access rules:
 | RMIT stipend | stipend page, research-scholarships landing page, HDR terms and conditions |
 | Sydney RTP | international RTP page, RTP overview page |
 
-All 24 passages now occur verbatim in the retained text, and each fixture's
+All 25 passages now occur verbatim in the retained text, and each fixture's
 `retrieved_at` equals the snapshot's. Corrections the real pages forced:
 
 - **CGRS D** recorded only the direct-to-agency route. The page states both
@@ -78,11 +85,12 @@ All 24 passages now occur verbatim in the retained text, and each fixture's
   retained table also lists Research Period 3 and 4, 2027 (deadline 18 December
   2026) and Research Period 1 and 2, 2028 (10 September 2027); all three rounds
   are recorded against that one table.
-- **RMIT** carried a transcribed date table that no page contained. It is
-  removed: the stipend page says its benefit figures are the 2026 round's and
-  that 2027 figures "will be released shortly", and the round calendar is
-  rendered client-side, so the retained text has no dates. The record states no
-  deadline, and the round stays held.
+- **RMIT** now carries the 2027 round with the deadlines the retained table
+  states (international EOI 30 August 2026, full application 30 September 2026).
+  Both have passed, while the same page still says applications for 2027 are
+  open and the stipend page says the 2027 rate had not been released, so the
+  round cannot be presented as open or priced for 2027. The record keeps the
+  published dates and the round stays held.
 
 Holds: three findings were removed only after the corrected claim was re-checked
 against a retained snapshot. The RMIT round stays in
@@ -92,8 +100,12 @@ validation report from the evidence-check pass, which does not exist.
 
 Limits of this pass:
 
-- Extraction is text-only. A page rendered by JavaScript yields chrome and
-  static text, not the rendered table; RMIT's calendar is the case that matters.
+- Extraction is text-only. A page that builds its content in the browser yields
+  chrome and static text instead of the rendered view, and none of these seven
+  pages was checked for that failure mode beyond reading the retained text: if a
+  table is missing from a body, that is a collection gap, not evidence of
+  absence. The RMIT calendar was first read as missing and then found in the
+  retained body; the snapshot-against-fixture check is what caught that error.
 - A snapshot proves what was served, not that the page is right, and not that a
   claim applies to the recorded applicant category, round or rate year. That
   judgement is still the missing evidence-check pass.
@@ -239,8 +251,8 @@ constraints refuse `source_checked` without a revision.
 
 | Check | Command | Actual result |
 |---|---|---|
-| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 162 passed |
-| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 148 passed, 14 skipped |
+| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 171 passed |
+| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 157 passed, 14 skipped |
 
 What the tests establish, and what they do not:
 

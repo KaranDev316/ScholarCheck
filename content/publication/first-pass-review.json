@@ -5,10 +5,10 @@
   "findings": {
     "rmit-research-stipend": [
       {
-        "evidence_id": "ev-rmit-stipend",
-        "evidence_url": "https://www.rmit.edu.au/scholarships/research/research-stipend",
+        "evidence_id": "ev-rmit-round",
+        "evidence_url": "https://www.rmit.edu.au/research/research-degrees/scholarships",
         "result": "unclear",
-        "reason": "the page states its benefit figures are the 2026 round's and that 2027 figures would be released shortly, so the 2027 round recorded here can be neither priced nor dated; the round calendar is rendered client-side and is absent from the retained snapshot of the scholarships page"
+        "reason": "the 2027 round's international deadlines (EOI 30 August 2026, full application 30 September 2026) have both passed, yet the same page still says applications for 2027 are open and the stipend page states the 2027 rate had not been released; presenting the recorded round as open — or pricing it — would assert something the retained pages contradict"
       }
     ]
   }

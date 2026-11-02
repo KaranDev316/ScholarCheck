@@ -130,12 +130,12 @@ review findings are recorded in `content/publication/first-pass-review.json`;
 findings out, and an unreadable register holds every candidate. Seven official
 source pages are retained in `content/snapshots/` by `app/collect/`, every fixture
 passage occurs in its snapshot, and three of the four fixtures now carry no open
-finding. RMIT stays held because its 2027 round cannot be dated or priced from
-the retained text, and no launch record is published yet: publishing still needs
-a validation report.
-Next: build the separate evidence-check pass that supplies reports, capture the
-JavaScript-rendered RMIT calendar, then the published-only catalogue and detail
-journeys. Then monitor one record.
+finding. RMIT stays held because its 2027 round's international deadlines have
+passed while the page still invites applications, and its published benefit
+figures are the 2026 round's; no launch record is published yet, because
+publishing still needs a validation report.
+Next: build the separate evidence-check pass that supplies reports, then the
+published-only catalogue and detail journeys. Then monitor one record.
 
 ## 11. Open (nonblocking) questions
 Hosting and snapshot storage provider; provider allowlist/access policy;

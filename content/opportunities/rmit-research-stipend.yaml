@@ -9,9 +9,10 @@ summary: >-
   Research stipend awards for doctoral candidates at RMIT, awarded through a
   competitive round. International recipients also receive an international
   tuition-fee offset. Applications run in two stages: an expression of interest
-  with a confirmed supervisor, then a full application. The published benefit
-  figures are the 2026 round's; the page states that 2027 figures had not been
-  released when it was retained.
+  with a confirmed supervisor, then a full application. The page lists 2027
+  round deadlines that have already passed while still inviting applications,
+  and its benefit figures are the 2026 round's: 2027 figures had not been
+  released when the page was retained.
 links:
   summary_url: https://www.rmit.edu.au/scholarships/research/research-stipend
   requirements_url: https://www.rmit.edu.au/research/research-degrees/terms-and-conditions
@@ -25,7 +26,7 @@ programmes:
     research_component: true
 rounds:
   - id: rmit-2027-round
-    label: 2027 research scholarship round
+    label: 2027 research scholarship round (international EOI deadline 30 August 2026; full application deadline 30 September 2026)
     intake: "2027"
     route: expression of interest, then full application
 eligibility_rules:
@@ -159,4 +160,20 @@ evidence:
     passage: |-
       3.3.4. If undertaking a research doctorate, a scholarship applicant must not hold a research doctorate or an equivalent research qualification unless they are an Australian and New Zealand citizen undertaking a second PhD in which case they are eligible for the RTP Fee Offset scholarship only.
     retrieved_at: 2026-11-02T14:33:32Z
+  - id: ev-rmit-round
+    url: https://www.rmit.edu.au/research/research-degrees/scholarships
+    passage: |-
+      Information regarding opening and closing dates for the 2027 RMIT Research Funded Scholarship round is available in the table below:
+      Domestic
+      International
+      2027 scholarship round opens for expressions of interest (EOIs).
+      1 June 2026
+      1 June 2026
+      EOI deadline (last day to submit documents for EOI assessment).
+      30 September 2026
+      30 August 2026
+      Full application deadline (last day to submit documents for full applications).
+      30 October 2026
+      30 September 2026
+    retrieved_at: 2026-11-02T14:32:34Z
 last_retrieved_at: 2026-11-02T14:33:32Z

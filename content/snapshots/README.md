@@ -13,7 +13,8 @@ how it was obtained:
 | `snapshot.retrievedAt` | When the fetch happened; fixtures must record the same time. |
 | `snapshot.parserVersion` | Which extractor produced `body` (`html-text/1`). |
 | `provenance.rawSha256`, `rawBytes` | Hash and length of the received response; the raw bytes are not retained. |
-| `provenance.requestUrl`, `finalUrl` | The address asked for and the address that answered. Followed redirects are recorded. |
+| `provenance.requestUrl`, `finalUrl` | The address asked for and the address that answered. |
+| `provenance.redirects` | Addresses asked for and not retained, in order. Each was checked against its own `robots.txt` before it was fetched. |
 | `provenance.robotsAllowed`, `robotsUrl` | The access-rule decision taken before the fetch. |
 | `provenance.userAgent` | The identifying user agent used for the fetch. |
 
@@ -27,7 +28,13 @@ cd backend && PYTHONPATH=. .venv/bin/python -m app.collect.snapshot \
 The collector reads `robots.txt` first and refuses a page it may not fetch. It
 fetches once, keeps the readable text (scripts, styles and page chrome removed),
 and refuses a non-HTML response or a page with too little text to support a
-claim.
+claim. It does not let the HTTP client follow redirects: each destination is
+checked against its own access rules before it is fetched, and the hops are
+recorded.
+
+Nothing retained is ever rewritten: a page whose text is unchanged writes
+nothing and says so, because rewriting would replace the time, status and hashes
+a validation report was checked against.
 
 ## What a snapshot is not
 
@@ -35,9 +42,9 @@ claim.
   served at that time.
 - It is not permission to publish anything: only the gate can do that, and only
   with a validation report checked against these snapshots.
-- It is not the whole of a page. Text‑only extraction loses anything rendered by
-  JavaScript: RMIT's round calendar is exactly such a table, which is why the
-  RMIT record is held (see `content/publication/first-pass-review.json`).
+- It is not the whole of a page, and a missing table is not proof of absence:
+  text-only extraction can lose content a browser would render, so check the
+  retained body before recording a fact as unstated.
 
 Re-collecting a page whose text changed produces a new id and a new file; the
 old snapshot stays, because a report may still refer to it. Do not edit a

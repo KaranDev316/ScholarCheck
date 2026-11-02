@@ -142,9 +142,10 @@ a report that claims support for every entry changes nothing.
 Stage 1 validates a small launch set for a public website. Seven pages behind the
 four fixtures were retained on 2 November 2026, and every passage a fixture
 quotes now occurs in its snapshot. CGRS D, the UdeM exemption and the Sydney RTP
-stipend carry no open finding; RMIT is held because its 2027 round can be
-neither dated nor priced from the retained text. None of them can publish until
-the evidence-check pass produces a report for its revision. Scheduled re-fetch
+stipend carry no open finding; RMIT is held because its 2027 round's international
+deadlines have passed while the page still invites applications, and its benefit
+figures are the 2026 round's. None of them can publish until the evidence-check
+pass produces a report for its revision. Scheduled re-fetch
 is a separate Stage 2 capability: start with one published scholarship, then
 prove that an unchanged page does no work and that a meaningful change is
 updated or held safely without owner intervention. The fixtures remain
