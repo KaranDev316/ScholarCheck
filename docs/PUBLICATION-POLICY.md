@@ -1,10 +1,11 @@
 # Publication policy — autonomous, evidence-first
 
-Status: **gate implemented 31 October 2026; collector and AI passes pending.**
-All publication decisions are automated. No human verification or
-human-verification UI is part of ScholarCheck. The four YAML fixtures are
-candidates, not publishable records: the gate holds each of them for a recorded
-finding (see `slices/S01/EVIDENCE.md` and
+Status: **gate implemented 31 October 2026; HTML collector and retained
+snapshots 2 November 2026; AI evidence-check pass pending.** All publication
+decisions are automated. No human verification or human-verification UI is part
+of ScholarCheck. The four YAML fixtures are candidates, not publishable records:
+RMIT is held for a recorded finding, and the other three have no validation
+report yet (see `slices/S01/EVIDENCE.md` and
 `content/publication/first-pass-review.json`).
 
 ## Assurance and timestamps
@@ -106,6 +107,9 @@ the publication gate, and every check below runs deterministically.
 
 | Module | Responsibility |
 |---|---|
+| `collect/robots.py` | Reads `robots.txt` and decides, per user agent and path, whether a page may be fetched. An unstated restriction is allowed; a stated one is obeyed. |
+| `collect/extract.py` | Turns a page into the text a passage must match: scripts, styles and page chrome removed, block structure kept as line breaks, inline markup never splitting a sentence. |
+| `collect/snapshot.py` | Checks access rules first, fetches once, refuses non-HTML or near-empty pages, and writes an artifact with the request URL, final URL, status, raw and retained hashes, robots decision, user agent and parser version. Ids are content-addressed. |
 | `publication/contracts.py` | `SourceSnapshot` (immutable retained text), `ClaimCheck`, `ValidationReport`, `PublicationDecision`, `PublishedRevision`. No verified-by field and no assurance above `source_checked`. |
 | `publication/policy.py` | `POLICY_VERSION` (`s01.publication.1`) and the approved provider hosts. |
 | `publication/register.py` | Reads `content/publication/first-pass-review.json` into a `FindingsRegister`. Holds the record that names a finding and any record citing the page it was raised on. A register that cannot be read holds everything, so a missing file never reads as “nothing outstanding”. |
@@ -135,18 +139,22 @@ a report that claims support for every entry changes nothing.
 
 ## First publication and monitoring milestone
 
-Stage 1 validates a small launch set for a public website. The four existing
-fixtures are candidates, subject to audit and the open launch-set decision.
-Their source-backed publication decisions use the gates above and retained
-official-source content. Scheduled re-fetch is a separate Stage 2
-capability: start with one published scholarship, then prove that an unchanged
-page does no work and that a meaningful change is updated or held safely
-without owner intervention. The fixtures remain regression inputs, not
-automatically trusted records.
+Stage 1 validates a small launch set for a public website. Seven pages behind the
+four fixtures were retained on 2 November 2026, and every passage a fixture
+quotes now occurs in its snapshot. CGRS D, the UdeM exemption and the Sydney RTP
+stipend carry no open finding; RMIT is held because its 2027 round can be
+neither dated nor priced from the retained text. None of them can publish until
+the evidence-check pass produces a report for its revision. Scheduled re-fetch
+is a separate Stage 2 capability: start with one published scholarship, then
+prove that an unchanged page does no work and that a meaningful change is
+updated or held safely without owner intervention. The fixtures remain
+regression inputs, not automatically trusted records.
 
 The [first-pass review](slices/S01/FIRST-PASS-REVIEW.md) found route, rate-year,
-and deadline issues. Those candidates stay on hold until corrected and
-validated against snapshots. Unresolved conflicts remain held automatically.
+and deadline issues. The 2 November collection corrected the recorded routes,
+removed one transcribed date table the pages do not contain, and left the RMIT
+round held. A candidate leaves hold only when the corrected claim is checked
+against a retained snapshot; unresolved conflicts remain held automatically.
 
 Track automatic-publication rate, unsupported-claim incidents, source failures,
 duplicate rate, stale-record count, and time from source change to safe revision.

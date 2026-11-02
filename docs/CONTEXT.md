@@ -127,12 +127,15 @@ revision, the report and the `source_checked` state in one transaction. Human
 verification has been removed from the model, fixtures and schema. The fixture
 review findings are recorded in `content/publication/first-pass-review.json`;
 `store.publish` loads that register itself, with no argument that could leave the
-findings out, and an unreadable register holds every candidate, so all four
-fixtures stay held and no launch record is published yet.
-Next: correct the held fixtures or replace them with better-evidenced launch
-records, build the collector and the separate evidence-check pass that supply
-reports, then the published-only catalogue and detail journeys. Then monitor
-one record.
+findings out, and an unreadable register holds every candidate. Seven official
+source pages are retained in `content/snapshots/` by `app/collect/`, every fixture
+passage occurs in its snapshot, and three of the four fixtures now carry no open
+finding. RMIT stays held because its 2027 round cannot be dated or priced from
+the retained text, and no launch record is published yet: publishing still needs
+a validation report.
+Next: build the separate evidence-check pass that supplies reports, capture the
+JavaScript-rendered RMIT calendar, then the published-only catalogue and detail
+journeys. Then monitor one record.
 
 ## 11. Open (nonblocking) questions
 Hosting and snapshot storage provider; provider allowlist/access policy;

@@ -20,10 +20,12 @@ RMIT research stipend, and Sydney RTP stipend. Tests cover model parsing,
 unique ids and evidence references, blocking-rule evidence, funding component
 shape, separate retrieval timestamps (the human-verification fields they once
 carried have since been removed), and intentionally unspecified
-values. The 2026-10-23 content pass recorded 13/13 source URLs responding,
-19 passages matching after whitespace normalisation, and six table
-transcriptions checked cell by cell. Those checks establish neither complete
-claim coverage nor eligibility for automatic publication.
+values. The 2026-10-23 content pass recorded 13/13 source URLs responding and
+19 passages matching after whitespace normalisation, plus six table
+transcriptions "checked cell by cell". That last category was the weak point: a
+transcription is not a quotation, so nothing could match it against a page. The
+2026-11-02 collection below replaced every transcribed passage with a verbatim
+span of a retained snapshot.
 
 The [first-pass source review](FIRST-PASS-REVIEW.md) compares all 25 evidence
 entries with official pages and records material route, rate-year, deadline and
@@ -37,8 +39,67 @@ assurance level, `Evidence.verified_at`/`verified_by` and
 `Opportunity.last_verified_at` were removed from the model, the fixtures and
 the schema, and a migration demotes any pre-gate row to
 `insufficient_evidence` with `needs_recheck`. No fixture has
-`source_checked` assurance. The gate that can grant it now exists and every
-fixture is held by a recorded finding.
+`source_checked` assurance. The gate that can grant it now exists; one candidate
+is still held by a recorded finding and the other three cannot publish without a
+validation report.
+
+## Launch candidate collection, 2026-11-02
+
+`backend/app/collect/` collects a page the way the policy requires: read
+`robots.txt` first, refuse a disallowed page without fetching it, fetch once,
+keep the readable text, and write an artifact recording the request URL, the
+final URL after redirects, the HTTP status, the raw-response hash, the retained
+hash, the robots decision, the user agent and the parser version. Snapshot ids
+are content-addressed, so changed text becomes a new snapshot rather than an
+overwrite of evidence a report may already cite.
+
+Seven pages were retained for the four candidate records. All answered 200, and
+all were permitted by their access rules:
+
+| Record | Retained pages |
+|---|---|
+| CGRS D | the funding-opportunity page on `nserc-crsng.canada.ca` (the old `nserc-crsng.gc.ca` address now redirects there) |
+| UdeM exemption | the `registraire.umontreal.ca` exemption page, 3e-cycle section |
+| RMIT stipend | stipend page, research-scholarships landing page, HDR terms and conditions |
+| Sydney RTP | international RTP page, RTP overview page |
+
+All 24 passages now occur verbatim in the retained text, and each fixture's
+`retrieved_at` equals the snapshot's. Corrections the real pages forced:
+
+- **CGRS D** recorded only the direct-to-agency route. The page states both
+  routes, and that the institutional one is "significantly earlier"; the record
+  now carries both rounds and cites the canonical host.
+- **UdeM** recorded the exemption as automatic with admission. The page
+  conditions it on every eligibility bullet — admission offer, CAQ and study
+  permit, full-time enrolment, no other exemption, no external funding — so the
+  route now says "once every eligibility condition is met" and the cited passage
+  is the conditional sentence.
+- **Sydney** recorded only the round whose deadline had already passed. The
+  retained table also lists Research Period 3 and 4, 2027 (deadline 18 December
+  2026) and Research Period 1 and 2, 2028 (10 September 2027); all three rounds
+  are recorded against that one table.
+- **RMIT** carried a transcribed date table that no page contained. It is
+  removed: the stipend page says its benefit figures are the 2026 round's and
+  that 2027 figures "will be released shortly", and the round calendar is
+  rendered client-side, so the retained text has no dates. The record states no
+  deadline, and the round stays held.
+
+Holds: three findings were removed only after the corrected claim was re-checked
+against a retained snapshot. The RMIT round stays in
+`content/publication/first-pass-review.json`, so `publish` holds that record. The
+other three have no open finding, but none can publish yet: publishing needs a
+validation report from the evidence-check pass, which does not exist.
+
+Limits of this pass:
+
+- Extraction is text-only. A page rendered by JavaScript yields chrome and
+  static text, not the rendered table; RMIT's calendar is the case that matters.
+- A snapshot proves what was served, not that the page is right, and not that a
+  claim applies to the recorded applicant category, round or rate year. That
+  judgement is still the missing evidence-check pass.
+- The approved-host list moved from `nserc-crsng.gc.ca` to
+  `nserc-crsng.canada.ca`. A citation that keeps the old address now holds,
+  because the retained snapshot records the address that actually answered.
 
 ## Current F-criterion ledger
 
@@ -48,10 +109,10 @@ fixture is held by a recorded finding.
 | F-02 | Proven | Real PostgreSQL round-trip; the check time is stored separately from retrieval and only set with a revision; migration test demotes `human_verified` and a source check without a revision |
 | F-03 | Proven | API returns structured `opportunity_not_found` 404 |
 | F-04 | Proven | `app/publication/contracts.py` defines `SourceSnapshot`, `ClaimCheck`, `ValidationReport`, `PublicationDecision` and `PublishedRevision`; tests reject invalid states, and no human-verification state can be constructed |
-| F-05 | Proven | `content/publication/first-pass-review.json` records each open finding; `publication/register.py` reads it and `store.publish` loads it itself, so a report claiming support — and no argument that could leave the findings out — still holds the record |
+| F-05 | Proven | `content/publication/first-pass-review.json` records each open finding; `publication/register.py` reads it and `store.publish` loads it itself, so a report claiming support — and no argument that could leave the findings out — still holds the record. Three findings were cleared only after the corrected claim was re-checked against a retained snapshot; the RMIT round remains held |
 | F-06 | Proven | API returns `insufficient_evidence`, null check metadata and `isPublished: false` for a preview; production hides it; after a real publish it returns `source_checked` with the check date |
 | F-07 | Unproven | No source-failure decision contract |
-| F-08 | Partly proven | Gate and atomic publish proven against retained snapshots and reports; the collector, the separate AI evidence-check pass and real launch snapshots are outstanding |
+| F-08 | Partly proven | Gate and atomic publish proven against retained snapshots and reports; an HTML/text collector now retains seven launch-source snapshots with provenance, and every fixture passage is checked against them. The separate AI evidence-check pass, JavaScript-rendered capture and a real publish are outstanding |
 | F-09 | Unproven | Only development/test detail read exists; no public catalogue or filters |
 | F-10 | Partly proven | Local UI tests cover browse, filters, detail, stated eligibility, rounds, the official requirements and application links and shareable hash URLs with no account; the deployed smoke check is outstanding |
 | F-11 | Partly proven | Coverage checklist plus a computed classification that only says “Fully funded” when tuition, living costs and flights are all stated, with tests; no published record exercises it yet |
@@ -178,8 +239,8 @@ constraints refuse `source_checked` without a revision.
 
 | Check | Command | Actual result |
 |---|---|---|
-| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 126 passed |
-| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 112 passed, 14 skipped |
+| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 158 passed |
+| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 144 passed, 14 skipped |
 
 What the tests establish, and what they do not:
 
@@ -208,9 +269,10 @@ What the tests establish, and what they do not:
   cannot prove the surrounding context means what the claim says. That is what
   the separate evidence-check pass is for, and why the review findings are read
   by the gate itself rather than trusted to appear in the report.
-- No launch record is published. Source-failure handling (F-07), the collector,
-  the AI passes, the published-only catalogue API and the deployed smoke check
-  remain outstanding.
+- No launch record is published. Source-failure handling (F-07), the AI
+  evidence-check pass, JavaScript-rendered capture, the published-only catalogue
+  API and the deployed smoke check remain outstanding. The collector and seven
+  retained snapshots now exist (see the collection section above).
 
 ## Public evidence boundary, 2026-11-01
 
