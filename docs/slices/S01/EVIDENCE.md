@@ -239,8 +239,8 @@ constraints refuse `source_checked` without a revision.
 
 | Check | Command | Actual result |
 |---|---|---|
-| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 158 passed |
-| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 144 passed, 14 skipped |
+| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 162 passed |
+| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 148 passed, 14 skipped |
 
 What the tests establish, and what they do not:
 

@@ -48,6 +48,8 @@ flowchart TD
    shows actual check dates and official links. Claim-linked evidence,
    snapshots, validation reports and gate or model details stay in the backend.
 
-The current repository has the PostgreSQL seed loader and a development-only
-detail endpoint. The collector, snapshot store, AI passes, publication gate,
-published-only catalogue API and public listing UI are planned, not built.
+The current repository has the PostgreSQL seed loader, a development-only
+detail endpoint, the publication gate with atomic publish, and an HTML/text
+collector (`backend/app/collect/`) whose retained snapshots sit in
+`content/snapshots/`. The AI passes, JavaScript-rendered capture, the
+published-only catalogue API and the public listing UI are planned, not built.

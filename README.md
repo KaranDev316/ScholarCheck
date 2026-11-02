@@ -27,10 +27,11 @@ and [S01 plan](docs/slices/S01/PLAN.md) describe the revised direction.
 
 ```
 docs/       ARCHITECTURE.md CONTEXT.md PRP.md ROADMAP.md PUBLICATION-POLICY.md slices/S01/
-backend/    app/{api,domain,models,publication,storage} tests/
+backend/    app/{api,collect,domain,models,publication,storage} tests/
 frontend/   src/{pages} tests/
 content/    opportunities/*.yaml (unverified regression fixtures, S01 T03)
-            publication/first-pass-review.json (findings that hold each fixture)
+            snapshots/*.json (retained official-source pages a passage must match)
+            publication/first-pass-review.json (findings that hold a fixture)
 ```
 
 ## Run locally
@@ -85,6 +86,13 @@ Environment variables (never committed): `APP_ENV`, `CORS_ALLOWED_ORIGINS`,
 ```bash
 cd backend  && .venv/bin/python -m pytest
 cd frontend && npm run test && npm run lint && npm run typecheck && npm run build
+```
+
+Retaining an official source page (checks `robots.txt` first, then keeps the
+readable text and its provenance in `content/snapshots/`):
+
+```bash
+cd backend && PYTHONPATH=. .venv/bin/python -m app.collect.snapshot --out ../content/snapshots 'https://www.rmit.edu.au/scholarships/research/research-stipend'
 ```
 
 PostgreSQL integration tests require a disposable database:

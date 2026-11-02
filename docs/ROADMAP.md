@@ -59,8 +59,10 @@ submission and match probabilities remain out of scope.
 
 The React/FastAPI scaffold, four YAML fixtures, PostgreSQL loader, and a
 development-only detail read endpoint exist. The publication contract, gate and
-atomic publish exist; the collector, the AI evidence-check pass, the public
-list/search API, the public listing UI and the source monitor do not yet exist.
+atomic publish exist, and an HTML/text collector with seven retained
+official-source snapshots now backs every fixture passage. The AI
+evidence-check pass, JavaScript-rendered capture, the public list/search API,
+the public listing UI and the source monitor do not yet exist.
 Human-verification fields are gone; material facts still need the
 stated/unspecified/conflicting migration. The S01 evidence ledger records
 completed checks and outstanding proof.

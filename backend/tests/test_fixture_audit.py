@@ -17,9 +17,17 @@ from pathlib import Path
 import pytest
 
 from app.collect.extract import extract_text
+from app.domain.hashing import content_hash
 from app.domain.models import Opportunity
-from app.publication.contracts import CheckResult, DecisionType
+from app.publication.contracts import (
+    CheckResult,
+    ClaimCheck,
+    DecisionType,
+    SourceSnapshot,
+    ValidationReport,
+)
 from app.publication.gates import evaluate
+from app.publication.policy import POLICY_VERSION
 from app.publication.register import load_register
 from app.storage.opportunities import CONTENT_DIR, read_seed
 from tests.publication_helpers import build_report, build_snapshots, load_findings, no_findings
@@ -229,3 +237,76 @@ def test_a_fixture_without_its_page_retained_is_held(path: Path) -> None:
 
     assert decision.decision is DecisionType.HOLD
     assert any(missing in reason for reason in decision.reasons)
+
+
+LAUNCH_CANDIDATES = ("cgsd-doctoral", "udem-exemption-doctoral", "usyd-rtp-stipend")
+
+
+def _retained_snapshots_by_id() -> dict[str, SourceSnapshot]:
+    return {
+        data["snapshot"]["id"]: SourceSnapshot.model_validate(data["snapshot"])
+        for data in _artifacts().values()
+    }
+
+
+def _supported_report(record: Opportunity) -> ValidationReport:
+    """A report claiming support for every entry, checked against real snapshots."""
+
+    retained = _snapshots_by_url()
+    checks = tuple(
+        ClaimCheck(
+            claim=f"{entry.id} passage",
+            evidence_id=entry.id,
+            snapshot_id=retained[str(entry.url)]["id"],
+            excerpt=entry.passage,
+            result=CheckResult.SUPPORTED,
+        )
+        for entry in record.evidence
+    )
+    return ValidationReport(
+        opportunity_id=record.id,
+        content_hash=content_hash(record),
+        policy_version=POLICY_VERSION,
+        checked_at=max(entry.retrieved_at for entry in record.evidence),
+        checks=checks,
+    )
+
+
+@pytest.mark.parametrize("opportunity_id", LAUNCH_CANDIDATES)
+def test_a_launch_candidate_clears_every_structural_gate(opportunity_id: str) -> None:
+    """Hosts, retrieval times, passages and amounts all hold against real pages.
+
+    The report is synthetic, so this proves the deterministic checks only: it
+    does not show the claims are true, which is the evidence-check pass's job,
+    and it publishes nothing.
+    """
+
+    record = read_seed(CONTENT_DIR / f"{opportunity_id}.yaml")
+
+    decision = evaluate(
+        record,
+        _supported_report(record),
+        _retained_snapshots_by_id(),
+        register=load_register(),
+    )
+
+    assert decision.decision is DecisionType.PUBLISH
+    assert decision.reasons == ()
+    assert decision.snapshot_ids
+
+
+def test_the_held_candidate_fails_only_on_its_recorded_finding() -> None:
+    """The held record's other checks pass; the finding is what stops it."""
+
+    record = read_seed(CONTENT_DIR / "rmit-research-stipend.yaml")
+
+    decision = evaluate(
+        record,
+        _supported_report(record),
+        _retained_snapshots_by_id(),
+        register=load_register(),
+    )
+
+    assert decision.decision is DecisionType.HOLD
+    assert len(decision.reasons) == len(FINDINGS["findings"][record.id])
+    assert all("open review finding" in reason for reason in decision.reasons)

@@ -8,7 +8,7 @@ how it was obtained:
 | Field | Meaning |
 |---|---|
 | `snapshot.body` | The readable page text a passage must occur in. |
-| `snapshot.content_hash` | SHA-256 of `body`, computed by the model; the id ends with its first 8 characters. |
+| `snapshot.content_hash` | SHA-256 of `body`, computed by the model when the snapshot is loaded (not stored); the id ends with its first 8 characters. |
 | `snapshot.responseStatus` | The HTTP status the page answered. |
 | `snapshot.retrievedAt` | When the fetch happened; fixtures must record the same time. |
 | `snapshot.parserVersion` | Which extractor produced `body` (`html-text/1`). |
