@@ -4,11 +4,16 @@
 report. Bump it whenever the checks change: a report written under another
 version is re-checked rather than published.
 
-The approved hosts are the official providers the four regression fixtures and
-the first launch set cite. Government portals, universities and established
-scholarship NGOs only (``ARCHITECTURE.md`` boundary 1). The list moves to
-configuration when the collector exists; the gate already takes it as an
-argument so tests can exercise a different set.
+The approved hosts are the official providers the regression fixtures and the
+launch set cite. Government portals, universities and established scholarship
+NGOs only (``ARCHITECTURE.md`` boundary 1). The list moves to configuration when
+the collector exists; the gate already takes it as an argument so tests can
+exercise a different set.
+
+The old NSERC address now redirects to ``nserc-crsng.canada.ca``, so that is the
+host the CGRS D record cites: a snapshot is retained under the URL it was
+actually served from, and the gate refuses a citation and a snapshot that name
+different pages.
 """
 
 from collections.abc import Sequence
@@ -19,7 +24,7 @@ from pydantic import HttpUrl
 POLICY_VERSION = "s01.publication.1"
 
 APPROVED_SOURCE_HOSTS: tuple[str, ...] = (
-    "nserc-crsng.gc.ca",
+    "nserc-crsng.canada.ca",
     "registraire.umontreal.ca",
     "esp.umontreal.ca",
     "rmit.edu.au",

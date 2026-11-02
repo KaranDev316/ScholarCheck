@@ -19,7 +19,8 @@ as permission to publish.
    verification is gone from the model, fixtures and schema, with a migration
    that demotes pre-gate rows. The review findings are machine-readable in
    `content/publication/first-pass-review.json`; `store.publish` reads that
-   register itself, so all four fixtures stay held.
+   register itself. The unresolved RMIT round stays held; the other fixtures
+   still need full validation reports before publication.
 
 ## Delivery sequence
 

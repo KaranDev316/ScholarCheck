@@ -1,44 +1,14 @@
 {
-  "reviewed_at": "2026-10-23",
+  "reviewed_at": "2026-11-02",
   "source": "docs/slices/S01/FIRST-PASS-REVIEW.md",
-  "note": "Machine-readable form of the open findings in the first-pass review. The gate reads this file itself: store.publish has no argument that can omit it, and a register that cannot be read holds every candidate. A finding holds the record it names and any record citing the same page, even when a validation report claims support, so an unresolved discrepancy cannot be published away. Remove an entry only when the finding is corrected and re-checked against a retained snapshot.",
+  "note": "Machine-readable form of the open findings in the first-pass review. The gate reads this file itself: store.publish has no argument that can omit it, and a register that cannot be read holds every candidate. A finding holds the record it names and any record citing the same page, even when a validation report claims support, so an unresolved discrepancy cannot be published away. An entry is removed only when the finding was corrected and the corrected claim was re-checked against a retained snapshot in content/snapshots.",
   "findings": {
-    "cgsd-doctoral": [
-      {
-        "evidence_id": "ev-cgsd-deadline",
-        "evidence_url": "https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp",
-        "result": "unclear",
-        "reason": "the quoted 17 October date is the direct-to-agency deadline; an applicant's own route through a Canadian institution is not settled"
-      }
-    ],
     "rmit-research-stipend": [
       {
         "evidence_id": "ev-rmit-stipend",
         "evidence_url": "https://www.rmit.edu.au/scholarships/research/research-stipend",
         "result": "unclear",
-        "reason": "the quoted rate is the 2026 benefit; the unsupported part-time wording was removed, but the revised claim still needs rechecking against a retained official snapshot"
-      },
-      {
-        "evidence_id": "ev-rmit-dates",
-        "evidence_url": "https://www.rmit.edu.au/research/research-degrees/scholarships",
-        "result": "unclear",
-        "reason": "both published 2027 international deadlines have passed, so the round's availability is unresolved"
-      }
-    ],
-    "udem-exemption-doctoral": [
-      {
-        "evidence_id": "ev-udem-process",
-        "evidence_url": "https://registraire.umontreal.ca/droits-de-scolarite/bourse-exemption/",
-        "result": "unclear",
-        "reason": "the award follows an admission offer only when every condition is met; the recorded route states it unconditionally"
-      }
-    ],
-    "usyd-rtp-stipend": [
-      {
-        "evidence_id": "ev-usyd-deadline",
-        "evidence_url": "https://www.sydney.edu.au/scholarships/australian-government-research-training-program/rtp-international.html",
-        "result": "unclear",
-        "reason": "only the passed Research Period 1-2, 2027 round is recorded; the later 18 December 2026 round is missing"
+        "reason": "the page states its benefit figures are the 2026 round's and that 2027 figures would be released shortly, so the 2027 round recorded here can be neither priced nor dated; the round calendar is rendered client-side and is absent from the retained snapshot of the scholarships page"
       }
     ]
   }

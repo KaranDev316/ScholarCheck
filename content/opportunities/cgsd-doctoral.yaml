@@ -1,4 +1,5 @@
-# CGRS D — retrieved 2026-10-23, not source-checked for publication (see README.md).
+# CGRS D — retrieved 2026-11-02 from nserc-crsng.canada.ca. Passages are verbatim
+# spans of content/snapshots (see README.md); not source-checked for publication.
 id: cgsd-doctoral
 scheme_name: Canada Graduate Research Scholarship – Doctoral (CGRS D)
 funder: Government of Canada (CIHR, NSERC and SSHRC)
@@ -6,13 +7,14 @@ destinations:
   - CA
 summary: >-
   A federal doctoral award of $40,000 per year for 36 months, held while
-  enrolled in a doctoral programme at an eligible Canadian institution. The
-  programme description is a living-support award and does not mention tuition
-  support.
+  enrolled in a doctoral programme at an eligible Canadian institution.
+  Applications go either through the applicant's Canadian institution, which
+  sets a deadline significantly earlier than the agency's, or directly to the
+  agency by 17 October.
 links:
-  summary_url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
-  requirements_url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp#eligibility
-  portal_url: https://www.nserc-crsng.gc.ca/OnlineServices-ServicesEnLigne/index_eng.asp
+  summary_url: https://nserc-crsng.canada.ca/en/funding-opportunity/canada-graduate-research-scholarship-doctoral-program
+  requirements_url: https://nserc-crsng.canada.ca/en/funding-opportunity/canada-graduate-research-scholarship-doctoral-program#eligibility
+  portal_url: https://nserc-crsng.canada.ca/en/funding/online-application-systems-and-tools/online-services
 programmes:
   - id: cgsd-doctoral-programme
     name: Doctoral research programme
@@ -21,10 +23,14 @@ programmes:
     country: CA
     research_component: true
 rounds:
-  - id: cgsd-direct-route
-    label: Direct-to-agency route (annual deadline 17 October)
+  - id: cgsd-institutional-route
+    label: Through a Canadian institution (the institution sets an earlier deadline)
     intake: null
-    route: direct to agency
+    route: through the applicant's Canadian institution
+  - id: cgsd-direct-route
+    label: Direct to the agency (annual deadline 17 October)
+    intake: null
+    route: direct to the agency
 eligibility_rules:
   - id: cgsd-doctoral-enrolment
     requirement: >-
@@ -58,32 +64,28 @@ funding_components:
       - ev-cgsd-value
 evidence:
   - id: ev-cgsd-value
-    url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
-    passage: Value $40,000 per year Duration 36 months
-    retrieved_at: 2026-10-23T07:00:00Z
+    url: https://nserc-crsng.canada.ca/en/funding-opportunity/canada-graduate-research-scholarship-doctoral-program
+    passage: |-
+      Value
+      $40,000 per year
+      Duration
+      36 months
+    retrieved_at: 2026-11-02T14:32:25Z
   - id: ev-cgsd-deadline
-    url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
-    passage: >-
-      Application deadline Through a Canadian institution: Contact your
-      institution (often significantly earlier than the agency’s deadline)
+    url: https://nserc-crsng.canada.ca/en/funding-opportunity/canada-graduate-research-scholarship-doctoral-program
+    passage: |-
+      Application deadline
+      Through a Canadian institution: Contact your institution (often significantly earlier than the agency’s deadline)
       Directly to the agency: October 17
-    retrieved_at: 2026-10-23T07:00:00Z
+    retrieved_at: 2026-11-02T14:32:25Z
   - id: ev-cgsd-international
-    url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
-    passage: >-
-      If you are not a Canadian citizen, permanent resident of Canada or
-      protected person under subsection 95(2) of the Immigration and Refugee
-      Protection Act (Canada), you must be registered in your doctoral program of
-      study at an eligible Canadian institution by the application deadline. Up
-      to 15% of awards will be available to international applicants.
-    retrieved_at: 2026-10-23T07:00:00Z
+    url: https://nserc-crsng.canada.ca/en/funding-opportunity/canada-graduate-research-scholarship-doctoral-program
+    passage: |-
+      If you are not a Canadian citizen, permanent resident of Canada or protected person under subsection 95(2) of the Immigration and Refugee Protection Act (Canada), you must be registered in your doctoral program of study at an eligible Canadian institution by the application deadline. Up to 15% of awards will be available to international applicants.
+    retrieved_at: 2026-11-02T14:32:25Z
   - id: ev-cgsd-study-months
-    url: https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp
-    passage: >-
-      To be eligible to apply to the CGRS D program, you must have completed no
-      more than 36 months of full-time equivalent study in the doctoral program,
-      the PhD portion of the joint professional undergraduate/PhD program or the
-      joint program for which you are requesting funding by December 31 of the
-      calendar year of your application.
-    retrieved_at: 2026-10-23T07:00:00Z
-last_retrieved_at: 2026-10-23T07:00:00Z
+    url: https://nserc-crsng.canada.ca/en/funding-opportunity/canada-graduate-research-scholarship-doctoral-program
+    passage: |-
+      To be eligible to apply to the CGRS D program, you must have completed no more than 36 months of full-time equivalent study in the doctoral program, the PhD portion of the joint professional undergraduate/PhD program or the joint program for which you are requesting funding by December 31 of the calendar year of your application.
+    retrieved_at: 2026-11-02T14:32:25Z
+last_retrieved_at: 2026-11-02T14:32:25Z

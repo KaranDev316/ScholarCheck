@@ -59,7 +59,7 @@ def test_t04_loader_refuses_to_overwrite_a_published_record(test_dsn: str) -> No
             candidate,
             build_report(candidate, snapshots),
             snapshots,
-            approved_hosts=("nserc-crsng.gc.ca",),
+            approved_hosts=("nserc-crsng.canada.ca",),
         )
         with pytest.raises(ValueError, match="cannot overwrite"):
             load_seed(conn, candidate)

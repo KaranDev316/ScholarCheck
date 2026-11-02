@@ -1,16 +1,22 @@
-"""S01 F-05: the first-pass review findings stay enforced as holds.
+"""S01 F-05: recorded review findings stay enforced, and the evidence is real.
 
 The register in ``content/publication/first-pass-review.json`` is the
 machine-readable form of ``FIRST-PASS-REVIEW.md``. The gate reads it itself, so a
 fixture with a recorded finding cannot be published while that finding stands:
 not by a report that claims support for every entry, and not by publishing a copy
 of the record under a new id.
+
+The second half of this file checks the other direction: every passage a fixture
+quotes must occur in the snapshot retained for that page. A citation that names a
+page we never retained, or text the page does not contain, is not evidence.
 """
 
+from datetime import datetime
 from pathlib import Path
 
 import pytest
 
+from app.collect.extract import extract_text
 from app.domain.models import Opportunity
 from app.publication.contracts import CheckResult, DecisionType
 from app.publication.gates import evaluate
@@ -20,11 +26,13 @@ from tests.publication_helpers import build_report, build_snapshots, load_findin
 
 FINDINGS = load_findings()
 SEED_FILES = sorted(CONTENT_DIR.glob("*.yaml"))
+SNAPSHOT_DIR = CONTENT_DIR.parent / "snapshots"
 FINDING_CASES = [
     (opportunity_id, finding)
     for opportunity_id, findings in FINDINGS["findings"].items()
     for finding in findings
 ]
+HELD_IDS = sorted(FINDINGS["findings"])
 
 
 def _record(opportunity_id: str) -> Opportunity:
@@ -35,13 +43,91 @@ def _retained(snapshots):
     return {snapshot.id: snapshot for snapshot in snapshots}
 
 
-def test_the_register_records_every_fixture_and_can_be_read() -> None:
-    """Nothing is launch-ready, and the register is what keeps it that way."""
+def _artifacts() -> dict[str, dict]:
+    import json
+
+    return {
+        path.name: json.loads(path.read_text(encoding="utf-8"))
+        for path in sorted(SNAPSHOT_DIR.glob("*.json"))
+    }
+
+
+def _snapshots_by_url() -> dict[str, dict]:
+    return {data["snapshot"]["url"]: data["snapshot"] for data in _artifacts().values()}
+
+
+def test_the_register_is_readable_and_names_only_real_fixtures() -> None:
+    """A register entry that names no fixture would hold nothing at all."""
 
     register = load_register()
 
     assert register.problem is None
-    assert set(register.entries) == {read_seed(path).id for path in SEED_FILES}
+    assert set(register.entries) <= {read_seed(path).id for path in SEED_FILES}
+
+
+def test_the_unresolved_round_is_recorded_as_a_hold() -> None:
+    """RMIT's 2027 round cannot be dated or priced, so it stays held."""
+
+    assert HELD_IDS == ["rmit-research-stipend"]
+    assert load_register().holds(read_seed(CONTENT_DIR / "rmit-research-stipend.yaml"))
+
+
+@pytest.mark.parametrize("path", SEED_FILES, ids=lambda path: path.stem)
+def test_every_cited_page_was_retained(path: Path) -> None:
+    """A passage can only be checked if the page it came from is still here."""
+
+    record = read_seed(path)
+    retained = _snapshots_by_url()
+
+    for entry in record.evidence:
+        assert str(entry.url) in retained, f"{entry.id} cites a page that was never retained"
+
+
+@pytest.mark.parametrize("path", SEED_FILES, ids=lambda path: path.stem)
+def test_every_passage_occurs_in_its_retained_snapshot(path: Path) -> None:
+    """No paraphrased or transcribed passage can pass as a quotation."""
+
+    record = read_seed(path)
+    retained = _snapshots_by_url()
+
+    for entry in record.evidence:
+        body = retained[str(entry.url)]["body"]
+        quoted = " ".join(entry.passage.split())
+        assert quoted in " ".join(body.split()), (
+            f"{entry.id} quotes text that is not in the retained snapshot"
+        )
+
+
+@pytest.mark.parametrize("path", SEED_FILES, ids=lambda path: path.stem)
+def test_the_fixture_records_the_retrieval_it_was_checked_against(path: Path) -> None:
+    """The gate compares timestamps, so a stale one is a silent hold."""
+
+    record = read_seed(path)
+    retained = _snapshots_by_url()
+
+    for entry in record.evidence:
+        stamped = datetime.fromisoformat(
+            retained[str(entry.url)]["retrievedAt"].replace("Z", "+00:00")
+        )
+        assert entry.retrieved_at == stamped, f"{entry.id} records a different retrieval"
+
+
+def test_retained_snapshots_keep_their_provenance() -> None:
+    """Every artifact says where it came from and whether fetching was allowed."""
+
+    for name, data in _artifacts().items():
+        snapshot = data["snapshot"]
+        provenance = data["provenance"]
+
+        assert name == f"{snapshot['id']}.json"
+        assert snapshot["body"].strip(), f"{name} retained no text"
+        assert provenance["robotsAllowed"] is True
+        assert provenance["httpStatus"] == snapshot["responseStatus"] == 200
+        assert len(provenance["rawSha256"]) == 64
+        assert provenance["parserVersion"] == snapshot["parserVersion"]
+        assert snapshot["body"] == extract_text(snapshot["body"]), (
+            f"{name} is not stable under the current parser; re-collect it"
+        )
 
 
 def test_every_recorded_finding_names_a_real_claim() -> None:
@@ -88,11 +174,11 @@ def test_each_known_finding_fails_the_publication_gate(
     )
 
 
-@pytest.mark.parametrize("path", SEED_FILES, ids=lambda path: path.stem)
-def test_a_held_fixture_cannot_be_published_by_its_own_report(path: Path) -> None:
+@pytest.mark.parametrize("opportunity_id", HELD_IDS)
+def test_a_held_fixture_cannot_be_published_by_its_own_report(opportunity_id: str) -> None:
     """A report claiming support for every entry does not clear a finding."""
 
-    record = read_seed(path)
+    record = read_seed(CONTENT_DIR / f"{opportunity_id}.yaml")
     snapshots = build_snapshots(record)
 
     decision = evaluate(
@@ -107,11 +193,12 @@ def test_a_held_fixture_cannot_be_published_by_its_own_report(path: Path) -> Non
         assert any(finding["reason"] in reason for reason in decision.reasons)
 
 
-@pytest.mark.parametrize("path", SEED_FILES, ids=lambda path: path.stem)
-def test_a_held_fixture_cannot_be_published_under_a_new_id(path: Path) -> None:
+@pytest.mark.parametrize("opportunity_id", HELD_IDS)
+def test_a_held_fixture_cannot_be_published_under_a_new_id(opportunity_id: str) -> None:
     """The hold follows the page, not the identifier someone chose for it."""
 
-    record = read_seed(path).model_copy(update={"id": f"{path.stem}-copy"})
+    held = read_seed(CONTENT_DIR / f"{opportunity_id}.yaml")
+    record = held.model_copy(update={"id": f"{opportunity_id}-copy"})
     snapshots = build_snapshots(record)
 
     decision = evaluate(

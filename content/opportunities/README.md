@@ -27,11 +27,13 @@ cd backend && .venv/bin/python -m pytest tests/test_seed_content.py
    (`per year`, `one-off`, `for the duration of the stipend`). Never convert a
    period into a different unit, and never multiply an amount out.
 5. **Evidence** is required for every claim. `passage` is the supporting text
-   from the page; `url` is the page it came from; `retrieved_at` is when the page
-   was fetched and must include a timezone. Every evidence entry must be
-   referenced by a rule or funding component, except the entry that backs a
-   published date in a round label (`Round` has no reference field in S01); such
-   an entry must quote a deadline.
+   from the page and must be a span of the retained snapshot's text, verbatim
+   (`content/snapshots/`); `url` is the page it came from; `retrieved_at` is
+   when that page was fetched and must include a timezone and equal the
+   snapshot's `retrievedAt`, because the gate compares the two. Every evidence
+   entry must be referenced by a rule or funding component, except the entry
+   that backs a published date in a round label (`Round` has no reference field
+   in S01); such an entry must quote a deadline.
 6. **No human-verification field.** Format v1 seeds carry no `verified_at`,
    `verified_by` or `last_verified_at`; those fields are gone from the model.
    Whether a record may be public is decided only by the publication gate,
@@ -51,26 +53,28 @@ cd backend && .venv/bin/python -m pytest tests/test_seed_content.py
 9. **Blocking rules** (`blocking: true`) are reserved for conditions the source
    states exclude an applicant. Competition or priority statements are
    `blocking: false`.
-10. **Summaries and requirement text are our own words.** `scheme_name`,
-    `funder` and passages are quoted or transcribed; `summary` is written by us.
+10. **Summaries and requirement text are our own words.** `scheme_name` and
+    `funder` are the provider's; passages are exact quotations from the retained
+    snapshot; `summary` and `requirement` are written by us.
 11. **Rounds carry identity only** in S01 (`label`, `intake`, `route`). Deadline
     *status* logic belongs to S02; published dates may appear inside `label` and
     in evidence, not as computed fields.
-12. **Table transcriptions** (pages whose content is a table) are marked
-    `[Table, transcribed]` at the start of the passage. Cell labels are kept and
-    columns are separated by `;`, so a reviewer can re-read the table cell by
-    cell.
+12. **Table passages** preserve the labels and cells in their retained-text
+    order. A passage must occur in the saved snapshot after whitespace
+    normalisation; explanatory table transcriptions are not exact quotations.
 
 ## Fixture register
 
-All four were retrieved on 2026-10-23. **None is source-checked for
-publication.** The
-[first-pass review](../../docs/slices/S01/FIRST-PASS-REVIEW.md) found issues
-that must be corrected or held before the automated gate can pass.
+All four now cite official-source snapshots retrieved on 2026-11-02. Their
+passages and retrieval times match those retained artifacts. **None is
+source-checked for publication.** The historical
+[first-pass review](../../docs/slices/S01/FIRST-PASS-REVIEW.md) led to fixture
+corrections; the unresolved RMIT round remains in the
+[findings register](../publication/first-pass-review.json).
 
 | File | Covers | Official sources |
 |---|---|---|
-| `cgsd-doctoral.yaml` | Enrolment-only doctoral award, living support only | [NSERC CGRS D](https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp) |
+| `cgsd-doctoral.yaml` | Enrolment-only doctoral award; award use is not classified | [NSERC CGRS D](https://nserc-crsng.canada.ca/en/funding-opportunity/canada-graduate-research-scholarship-doctoral-program) |
 | `udem-exemption-doctoral.yaml` | Tuition exemption, tuition reduction not stipend | [UdeM exemption](https://registraire.umontreal.ca/droits-de-scolarite/bourse-exemption/), [ESP funding](https://esp.umontreal.ca/financement/) |
 | `rmit-research-stipend.yaml` | Multi-stage EOI round, stipend plus international tuition offset | [RMIT scholarships](https://www.rmit.edu.au/research/research-degrees/scholarships), [RMIT stipend](https://www.rmit.edu.au/scholarships/research/research-stipend), [RMIT T&Cs](https://www.rmit.edu.au/research/research-degrees/terms-and-conditions) |
 | `usyd-rtp-stipend.yaml` | Stipend plus fee offset, separate components | [RTP overview](https://www.sydney.edu.au/scholarships/australian-government-research-training-program.html), [RTP international](https://www.sydney.edu.au/scholarships/australian-government-research-training-program/rtp-international.html) |

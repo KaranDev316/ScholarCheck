@@ -99,9 +99,10 @@ same snapshot must not create duplicate revisions.
 
 ## Implemented gate (31 October 2026)
 
-`backend/app/publication/` enforces this policy in code. There is no collector,
-no AI pass and no scheduled worker yet, so a caller supplies the retained
-snapshots and the validation report, and every check below runs deterministically.
+`backend/app/publication/` enforces this policy in code. The HTML collector now
+retains official-source snapshots, but there is no AI evidence-check pass or
+scheduled worker yet. A caller supplies the snapshots and validation report to
+the publication gate, and every check below runs deterministically.
 
 | Module | Responsibility |
 |---|---|

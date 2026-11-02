@@ -22,7 +22,7 @@ from tests.publication_helpers import (
     sample_record,
 )
 
-APPROVED = ("nserc-crsng.gc.ca",)
+APPROVED = ("nserc-crsng.canada.ca",)
 RMIT = ("rmit.edu.au",)
 
 

@@ -99,13 +99,14 @@ references (a bare `tsc --noEmit` would check no files).
 The scaffold, four regression fixtures, PostgreSQL loader and development read
 endpoint exist, and `app/publication/` decides publication: a record becomes
 public only through an atomic publish backed by a validation report and the
-retained snapshots it checked. The public catalogue, the collector, the AI
-evidence-check pass, the website journeys and the monitoring worker do **not**
-exist yet. The
+retained snapshots it checked. The HTML collector and seven official-source
+snapshots exist. The public catalogue, AI evidence-check pass, website journeys
+and monitoring worker do **not** exist yet. The
 [first-pass review](docs/slices/S01/FIRST-PASS-REVIEW.md) found material
-route, rate-year and deadline issues; those findings are recorded in
-`content/publication/first-pass-review.json`, which `publish` reads itself, and
-keep the fixtures held, so none is published. The [roadmap](docs/ROADMAP.md) now
+route, rate-year and deadline issues. The fixtures now cite exact retained
+passages; the unresolved RMIT round remains in
+`content/publication/first-pass-review.json`, which `publish` reads itself.
+None of the fixtures has been published. The [roadmap](docs/ROADMAP.md) now
 finishes the best-evidenced public MVP before monitoring one record and then
 adding discovery. Human-verification fields are gone from the model, fixtures and
 schema.

@@ -32,7 +32,7 @@ CHECKED_AT = datetime(2026, 10, 31, 9, 0, tzinfo=UTC)
 RETRIEVED_AT = datetime(2026, 10, 30, 8, 0, tzinfo=UTC)
 PARSER_VERSION = "test-extraction/1"
 SAMPLE_URL = (
-    "https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/sample-award_eng.asp"
+    "https://nserc-crsng.canada.ca/en/funding-opportunity/sample-award"
 )
 SAMPLE_PASSAGE = "The scholarship pays $40,000 per year for 36 months."
 FINDINGS_PATH = REGISTER_PATH

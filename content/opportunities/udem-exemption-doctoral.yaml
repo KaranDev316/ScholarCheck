@@ -1,4 +1,5 @@
-# UdeM exemption — retrieved 2026-10-23, not source-checked for publication (see README.md).
+# UdeM exemption — retrieved 2026-11-02. Passages are verbatim spans of
+# content/snapshots (see README.md); not source-checked for publication.
 id: udem-exemption-doctoral
 scheme_name: Bourse d’exemption UdeM pour personnes étudiantes de l’international (3e cycle)
 funder: Université de Montréal
@@ -8,8 +9,9 @@ summary: >-
   A tuition-exemption award for international students admitted to a doctoral
   research programme at the Université de Montréal. It exempts the supplemental
   tuition fees charged to international students, so the holder pays the Quebec
-  doctoral rate. It is a tuition reduction, not a stipend, and the exemption
-  terms describe no living support.
+  doctoral rate. It is a tuition reduction, not a stipend: the terms state no
+  living support, and they exclude applicants who hold an external funding
+  source.
 links:
   summary_url: https://registraire.umontreal.ca/droits-de-scolarite/bourse-exemption/
   requirements_url: https://esp.umontreal.ca/financement/
@@ -25,7 +27,7 @@ rounds:
   - id: udem-2026-2027
     label: 2026-2027 academic year
     intake: 2026-2027
-    route: awarded automatically with admission
+    route: awarded with admission, without a separate application, once every eligibility condition is met
 eligibility_rules:
   - id: udem-international-applicant
     requirement: >-
@@ -76,7 +78,7 @@ funding_components:
     currency: CAD
     period: per year (three full-time terms, 45 credits, 2026-2027 rates)
     conditions:
-      - The exemption is calculated per credit and applied to the tuition invoice each term.
+      - The exemption is stated per credit, per full-time term (15 credits) and per year (45 credits).
       - Doctoral research programmes are eligible for 6 to 10 terms, depending on the programme's normal full-time length.
       - The value is set from the supplemental fees determined by the Quebec ministry for 2026-2027.
     evidence_refs:
@@ -92,40 +94,40 @@ funding_components:
 evidence:
   - id: ev-udem-amount
     url: https://registraire.umontreal.ca/droits-de-scolarite/bourse-exemption/
-    passage: >-
-      [Table, transcribed, 3e cycle tab] Valeur de la bourse d’exemption UdeM —
-      534,84 $ par crédit; 8 022,60 $ par trimestre, statut temps plein
-      (Équivalent 15 crédits); 24 067,80 $ par année (3 trimestres), statut temps
-      plein (Équivalent 45 crédits). Année académique 2026-2027. Les montants
-      indiqués ci-dessus sont en dollars canadiens.
-    retrieved_at: 2026-10-23T07:00:00Z
+    passage: |-
+      Cette exemption vous permet de bénéficier des mêmes frais de scolarité que les personnes étudiantes québécoises en formation universitaire au 3e cycle. Le montant de l'exemption est basé sur le montant des frais supplémentaires facturés aux personnes étudiantes de 3e cycle, déterminé par le Ministère de l'Éducation et de l'Enseignement supérieur.
+      Par crédit
+      Par trimestre, statut temps plein (Équivalent 15 crédits)
+      Par année (3 trimestres), statut temps plein (Équivalent 45 crédits)
+      534,84 $
+      8 022,60 $
+      24 067,80 $
+      Année académique 2026-2027
+    retrieved_at: 2026-11-02T14:32:37Z
   - id: ev-udem-eligibility
     url: https://registraire.umontreal.ca/droits-de-scolarite/bourse-exemption/
-    passage: >-
-      Vous pouvez obtenir la bourse d'exemption UdeM, si vous : êtes une personne
-      étudiante de l'international (sauf personnes étudiantes françaises et
-      belges francophones) avez reçu une offre d’admission dans un programme
-      d'études offert à l'UdeM possédez des autorisations d'études valides (CAQ
-      et permis d'études) pour l'ensemble des trimestres de votre programme
-      d'études. Obtenez plus d'information sur les démarches d'immigration êtes
-      une personne étudiante inscrite à temps plein pour l'ensemble de votre
-      programme d'études, et ce sans interruption (sauf absence autorisée) ne
-      profitez pas déjà d' une autre forme d’exemption des droits de scolarité
-      applicable par l'UdeM ne bénéficiez pas d'une source de financement externe
-      de la part d'un organisme ou d'une tierce partie.
-    retrieved_at: 2026-10-23T07:00:00Z
+    passage: |-
+      Personnes étudiantes de 3e cycle
+      Vous pouvez obtenir la bourse d'exemption UdeM, si vous :
+      êtes une personne étudiante de l'international (sauf personnes étudiantes françaises et belges francophones)
+      avez reçu une offre d’admission dans un programme d'études offert à l'UdeM
+      possédez des autorisations d'études valides (CAQ et permis d'études) pour l'ensemble des trimestres de votre programme d'études. Obtenez plus d'information sur les démarches d'immigration
+      êtes une personne étudiante inscrite à temps plein pour l'ensemble de votre programme d'études, et ce sans interruption (sauf absence autorisée)
+      ne profitez pas déjà d'une autre forme d’exemption des droits de scolarité applicable par l'UdeM
+      ne bénéficiez pas d'une source de financement externe de la part d'un organisme ou d'une tierce partie.
+    retrieved_at: 2026-11-02T14:32:37Z
   - id: ev-udem-duration
     url: https://registraire.umontreal.ca/droits-de-scolarite/bourse-exemption/
-    passage: >-
-      [Table, transcribed] Durée d'octroi de l'exemption — Programmes facturés au
-      statut: Doctorat de recherche 6 à 10 (nombre de trimestres d'admissibilité,
-      selon la durée normale de scolarité temps plein du programme d'études).
-    retrieved_at: 2026-10-23T07:00:00Z
+    passage: |-
+      Durée d'octroi de l'exemption
+      Programmes facturés au statut
+      Nombre de trimestres d'admissibilité*
+      Doctorat de recherche
+      6 à 10
+    retrieved_at: 2026-11-02T14:32:37Z
   - id: ev-udem-process
     url: https://registraire.umontreal.ca/droits-de-scolarite/bourse-exemption/
-    passage: >-
-      Toutes les personnes étudiantes de l'international admises dans un
-      programme de 3 e cycle de l'UdeM sont éligibles à la bourse d'exemption
-      UdeM. Vous n'avez donc pas à faire de demande pour l'obtenir.
-    retrieved_at: 2026-10-23T07:00:00Z
-last_retrieved_at: 2026-10-23T07:00:00Z
+    passage: |-
+      Tous les dossiers des personnes candidates éligibles à la Bourse d’exemption UdeM seront évalués lors de la demande d'admission. Vous n'avez donc pas à faire une demande pour obtenir cette bourse d'exemption qui sera versée automatiquement au dossier si toutes les conditions d'admissibilité sont remplies.
+    retrieved_at: 2026-11-02T14:32:37Z
+last_retrieved_at: 2026-11-02T14:32:37Z
