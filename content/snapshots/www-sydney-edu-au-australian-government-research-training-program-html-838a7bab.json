@@ -1,0 +1,23 @@
+{
+  "snapshot": {
+    "id": "www-sydney-edu-au-australian-government-research-training-program-html-838a7bab",
+    "url": "https://www.sydney.edu.au/scholarships/australian-government-research-training-program.html",
+    "body": "/content/dam/people/students-in-situ/_33i4957.jpg\n50%\nResearch Training Program (RTP) and equivalent University Scholarships\nScholarships for students pursuing higher degree by research\nm-hero--simple\n1280.1280.jpeg 1280w, 440.293.2x.jpeg 880w, 800.533.2x.jpeg 1600w, 220.147.2x.jpeg 440w\nfalse\nSee documents\n_self\nBe sure to read the related documents before starting your application.\nBefore you apply\nh3\ncmp-callout--informational-blue\nPreliminary requirements\nTitle : Higher degree\nDescription : You must be a commencing or enrolled domestic or international higher degree by research student.\nLink URL:\nIcon: /content/dam/icons/approved-icons/globe-hat.svg\nTitle : Previous experience\nDescription : You must have an outstanding record of academic achievement and previous research experience.\nLink URL:\nIcon: /content/dam/icons/approved-icons/recruitment-cv-resume-star.svg\nHow to apply\nTo be considered for a RTP scholarship and equivalent University scholarships, you must:\nCommencing students\nApply for admission and submit all required documentation for admission to a higher degree by research through Sydney Courses by the deadlines outlined in the 'Application and award timeline' table – these differ for domestic students and international students.\nSubmit the scholarship application form by the deadlines.\nCurrently enrolled students\nBe currently enrolled in a higher degree by research.\nSubmit the scholarship application form by the deadlines.\nispopup: false\nSubmit RTP form\nispopup:\nRelated documents\nPlease read these documents thoroughly before you start your scholarship application.\nHDR scholarship selection process (pdf, 221KB)\nfalse\n/content/dam/icons/approved-icons/project-management.svg\nResearch experience evidence template (doc, 104KB)\nfalse\n/content/dam/icons/approved-icons/pencil-edit-document.svg\nResearch experience information and appendix guide (doc, 66KB)\nfalse\n/content/dam/icons/approved-icons/guide.svg\nFrequently asked questions (FAQs)\nfalse\n/content/dam/icons/approved-icons/question-mark.svg\nStay informed\nKey dates, event invites and more - we’ll keep you in the loop.\nispopup: true\nSubscribe\nispopup: false\nContact us",
+    "responseStatus": 200,
+    "retrievedAt": "2026-11-02T14:32:38Z",
+    "parserVersion": "html-text/1"
+  },
+  "provenance": {
+    "requestUrl": "https://www.sydney.edu.au/scholarships/australian-government-research-training-program.html",
+    "finalUrl": "https://www.sydney.edu.au/scholarships/australian-government-research-training-program.html",
+    "httpStatus": 200,
+    "contentType": "text/html;charset=utf-8",
+    "rawSha256": "6404c6f04b379e2dcf41ce9c17f043684b3fb6e8de53658428f63111a502390f",
+    "rawBytes": 39336,
+    "userAgent": "ScholarCheck/0.1 (evidence collection; +https://github.com/scholarcheck)",
+    "parserVersion": "html-text/1",
+    "robotsUrl": "https://www.sydney.edu.au/robots.txt",
+    "robotsAllowed": true,
+    "robotsDetail": "no matching rule"
+  }
+}
