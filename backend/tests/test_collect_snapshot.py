@@ -30,6 +30,7 @@ from app.collect.snapshot import (
 
 RETRIEVED = datetime(2026, 11, 2, 9, 30, tzinfo=UTC)
 URL = "https://www.example.edu/scholarships/doctoral-award"
+SNAPSHOT_DIR = Path(__file__).resolve().parents[2] / "content" / "snapshots"
 
 PAGE = """
 <html><head><title>ignored</title><style>.x{color:red}</style></head>
@@ -326,3 +327,15 @@ def test_an_id_collision_never_replaces_a_different_page(tmp_path: Path) -> None
 
     assert refused.value.same_text is False
     assert load_artifact(path) == artifact
+
+
+def test_retained_evidence_still_round_trips_through_the_writer(tmp_path: Path) -> None:
+    """Every artifact kept in the repository must still load and still write once."""
+
+    snapshots = sorted(SNAPSHOT_DIR.glob("*.json"))
+    assert snapshots, "no retained snapshots to check"
+
+    for path in snapshots:
+        artifact = load_artifact(path)
+        assert write_artifact(artifact, tmp_path) == tmp_path / path.name
+        assert load_artifact(tmp_path / path.name) == artifact

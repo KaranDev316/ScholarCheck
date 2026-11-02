@@ -109,6 +109,11 @@ Limits of this pass:
 - A snapshot proves what was served, not that the page is right, and not that a
   claim applies to the recorded applicant category, round or rate year. That
   judgement is still the missing evidence-check pass.
+- None of the seven pages redirected, so the hop-by-hop rules check has only been
+  exercised against a local test server, not against a real move between hosts.
+  The NSERC address in the table above is the one that answered; the redirect
+  from the old `.gc.ca` address is a property of the site, not something a
+  snapshot records.
 - The approved-host list moved from `nserc-crsng.gc.ca` to
   `nserc-crsng.canada.ca`. A citation that keeps the old address now holds,
   because the retained snapshot records the address that actually answered.
@@ -251,8 +256,8 @@ constraints refuse `source_checked` without a revision.
 
 | Check | Command | Actual result |
 |---|---|---|
-| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 171 passed |
-| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 157 passed, 14 skipped |
+| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 172 passed |
+| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 158 passed, 14 skipped |
 
 What the tests establish, and what they do not:
 

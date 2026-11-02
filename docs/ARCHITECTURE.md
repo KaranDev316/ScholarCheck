@@ -51,5 +51,7 @@ flowchart TD
 The current repository has the PostgreSQL seed loader, a development-only
 detail endpoint, the publication gate with atomic publish, and an HTML/text
 collector (`backend/app/collect/`) whose retained snapshots sit in
-`content/snapshots/`. The AI passes, JavaScript-rendered capture, the
-published-only catalogue API and the public listing UI are planned, not built.
+`content/snapshots/`. The collector checks access rules for every redirect
+destination before fetching it and never rewrites a retained artifact. The AI
+passes, JavaScript-rendered capture, the published-only catalogue API and the
+public listing UI are planned, not built.
