@@ -46,8 +46,15 @@ as permission to publish.
   status/fields from active contracts; retain migration tests for old data.
 - Model each material fact as stated, unspecified or conflicting. Add
   evidence-backed tuition/living/flights coverage and computed funding type.
+  **Implemented:** `publication/facts.py` holds one fact per obliged field with
+  its state, readings and reason; `publication/candidate.py` derives the state
+  from page readings and refuses a reading that does not line up; the gate
+  requires a fact for every obliged field and re-checks each reading.
 - Define separate extraction and AI evidence-check outputs with snapshot ids,
   exact spans, claim applicability and supported/unsupported/unclear results.
+  **Implemented:** `publication/evidence_check.py` writes the report — one
+  verdict per quoted span, reason required unless supported, applicability
+  required when supported — and cannot publish.
 - Specify publish/hold/reject/stale reasons and retained snapshot references.
   Test serialization and invalid states. No scheduler or live publisher yet.
 

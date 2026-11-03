@@ -134,8 +134,20 @@ finding. RMIT stays held because its 2027 round's international deadlines have
 passed while the page still invites applications, and its published benefit
 figures are the 2026 round's; no launch record is published yet, because
 publishing still needs a validation report.
-Next: build the separate evidence-check pass that supplies reports, then the
-published-only catalogue and detail journeys. Then monitor one record.
+The pieces that produce that report now exist under `app.publication`:
+`facts.py` models every decision-critical field as one material fact with an
+explicit `stated`/`unspecified`/`conflicting` state and the exact span it was
+read from, `candidate.py` turns a page-reading proposal into an
+`ExtractedCandidate` and refuses a reading that does not line up with the
+evidence, the snapshot, its retrieval time or the page, and `evidence_check.py`
+is the separate pass that writes the report — one verdict per quoted span, a
+reason unless supported, applicability required when supported. The gate then
+requires a fact for every field the record obliges and counts a fact as covered
+only when a supported check quotes one of its spans. Policy version is now
+`s01.publication.2`, so reports written under `.1` hold rather than publish.
+Next: run extraction and the evidence-check pass on the three launch records to
+produce real reports, then the published-only catalogue and detail journeys.
+Then monitor one record.
 
 ## 11. Open (nonblocking) questions
 Hosting and snapshot storage provider; provider allowlist/access policy;

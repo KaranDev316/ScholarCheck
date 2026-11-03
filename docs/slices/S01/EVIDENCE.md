@@ -96,7 +96,9 @@ Holds: three findings were removed only after the corrected claim was re-checked
 against a retained snapshot. The RMIT round stays in
 `content/publication/first-pass-review.json`, so `publish` holds that record. The
 other three have no open finding, but none can publish yet: publishing needs a
-validation report from the evidence-check pass, which does not exist.
+validation report for its exact revision, and no extraction run has produced a
+candidate for these fixtures — the passes that would write a report exist in
+`app/publication/`, but no model has been called and no report is retained.
 
 Limits of this pass:
 
@@ -108,7 +110,10 @@ Limits of this pass:
   retained body; the snapshot-against-fixture check is what caught that error.
 - A snapshot proves what was served, not that the page is right, and not that a
   claim applies to the recorded applicant category, round or rate year. That
-  judgement is still the missing evidence-check pass.
+  judgement is what `publication/evidence_check.py` is for: it refuses a verdict
+  that quotes a span the fact does not carry, or that places the quote in a
+  round or degree level the record does not have. It has not been run against
+  these seven pages, so no applicability judgement exists yet.
 - None of the seven pages redirected, so the hop-by-hop rules check has only been
   exercised against a local test server, not against a real move between hosts.
   The NSERC address in the table above is the one that answered; the redirect
@@ -125,11 +130,11 @@ Limits of this pass:
 | F-01 | Partly proven | 36 seed tests parse and check references; material completeness is not proven |
 | F-02 | Proven | Real PostgreSQL round-trip; the check time is stored separately from retrieval and only set with a revision; migration test demotes `human_verified` and a source check without a revision |
 | F-03 | Proven | API returns structured `opportunity_not_found` 404 |
-| F-04 | Proven | `app/publication/contracts.py` defines `SourceSnapshot`, `ClaimCheck`, `ValidationReport`, `PublicationDecision` and `PublishedRevision`; tests reject invalid states, and no human-verification state can be constructed |
+| F-04 | Proven | `app/publication/contracts.py` defines `SourceSnapshot`, `Applicability`, `ClaimCheck`, `ValidationReport`, `PublicationDecision` and `PublishedRevision`, `facts.py` adds the three-state material-fact table and `candidate.py`/`evidence_check.py` the separate extraction and check outputs; tests reject invalid states, and no human-verification state can be constructed |
 | F-05 | Proven | `content/publication/first-pass-review.json` records each open finding; `publication/register.py` reads it and `store.publish` loads it itself, so a report claiming support — and no argument that could leave the findings out — still holds the record. Three findings were cleared only after the corrected claim was re-checked against a retained snapshot; the RMIT round remains held |
 | F-06 | Proven | API returns `insufficient_evidence`, null check metadata and `isPublished: false` for a preview; production hides it; after a real publish it returns `source_checked` with the check date |
 | F-07 | Unproven | No source-failure decision contract |
-| F-08 | Partly proven | Gate and atomic publish proven against retained snapshots and reports; an HTML/text collector now retains seven launch-source snapshots with provenance, and every fixture passage is checked against them. The separate AI evidence-check pass, JavaScript-rendered capture and a real publish are outstanding |
+| F-08 | Partly proven | Gate and atomic publish proven against retained snapshots and reports; an HTML/text collector now retains seven launch-source snapshots with provenance, and every fixture passage is checked against them. The extraction and evidence-check passes exist and are tested against their own refusal cases, but no model run has produced a report for a launch record; JavaScript-rendered capture and a real publish are outstanding |
 | F-09 | Unproven | Only development/test detail read exists; no public catalogue or filters |
 | F-10 | Partly proven | Local UI tests cover browse, filters, detail, stated eligibility, rounds, the official requirements and application links and shareable hash URLs with no account; the deployed smoke check is outstanding |
 | F-11 | Partly proven | Coverage checklist plus a computed classification that only says “Fully funded” when tuition, living costs and flights are all stated, with tests; no published record exercises it yet |
@@ -256,8 +261,8 @@ constraints refuse `source_checked` without a revision.
 
 | Check | Command | Actual result |
 |---|---|---|
-| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 172 passed |
-| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 158 passed, 14 skipped |
+| Backend suite with PostgreSQL | `SCHOLARCHECK_TEST_DATABASE_URL=postgresql:///scholarcheck_test .venv/bin/python -m pytest` | 228 passed |
+| Backend suite without PostgreSQL | `.venv/bin/python -m pytest` | 214 passed, 14 skipped |
 
 What the tests establish, and what they do not:
 
@@ -277,6 +282,17 @@ What the tests establish, and what they do not:
   A register that cannot be read holds every candidate.
 - `evaluate` has no default for `register`, so the check cannot be skipped by a
   caller that simply says nothing; a test asserts the parameter's absence.
+- A fact table that leaves an obliged field out, states a value the record
+  contradicts, quotes a span the retained page lacks, reads from evidence the
+  record does not carry, or names a part the record does not have each stops
+  publication. A stated fact counts as covered only when a supported verdict
+  quotes one of its own spans, and a verdict may not be placed in a round or
+  degree level the record lacks.
+- Every seed fixture carries a fact for every field its record obliges and
+  reaches `publish` against a supporting report with an empty register, so a
+  fixture's hold is always its recorded finding rather than a gap in its facts.
+  Amounts are stated only where the cited passage carries their digits; a rate
+  year, or a deadline the pages do not give, stays `unspecified` with a reason.
 - A publish that fails halfway rolls the snapshot and revision writes back.
 - A pre-gate database is migrated: `human_verified` rows become
   `insufficient_evidence`/`needs_recheck`, and the level can no longer be
@@ -285,11 +301,14 @@ What the tests establish, and what they do not:
   exists, that values match it and that the report covers every claim; it
   cannot prove the surrounding context means what the claim says. That is what
   the separate evidence-check pass is for, and why the review findings are read
-  by the gate itself rather than trusted to appear in the report.
-- No launch record is published. Source-failure handling (F-07), the AI
-  evidence-check pass, JavaScript-rendered capture, the published-only catalogue
-  API and the deployed smoke check remain outstanding. The collector and seven
-  retained snapshots now exist (see the collection section above).
+  by the gate itself rather than trusted to appear in the report. That pass now
+  exists in `publication/evidence_check.py`, but it has never been run against
+  the launch pages, so no report it writes has been reviewed.
+- No launch record is published. Source-failure handling (F-07), a real model
+  run of the extraction and evidence-check passes, JavaScript-rendered capture,
+  the published-only catalogue API and the deployed smoke check remain
+  outstanding. The collector, seven retained snapshots, the material-fact table
+  and both passes now exist (see the collection section above).
 
 ## Public evidence boundary, 2026-11-01
 

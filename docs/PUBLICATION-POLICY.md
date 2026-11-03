@@ -1,9 +1,10 @@
 # Publication policy — autonomous, evidence-first
 
-Status: **gate implemented 31 October 2026; HTML collector and retained
-snapshots 2 November 2026; AI evidence-check pass pending.** All publication
-decisions are automated. No human verification or human-verification UI is part
-of ScholarCheck. The four YAML fixtures are candidates, not publishable records:
+Status: **gate implemented 31 October 2026; material-fact table, candidate
+extraction and the separate evidence-check pass added October 2026; HTML
+collector and retained snapshots 2 November 2026.** All publication decisions
+are automated. No human verification or human-verification UI is part of
+ScholarCheck. The four YAML fixtures are candidates, not publishable records:
 RMIT is held for a recorded finding, and the other three have no validation
 report yet (see `slices/S01/EVIDENCE.md` and
 `content/publication/first-pass-review.json`).
@@ -39,7 +40,7 @@ candidate; it cannot be converted to a positive public claim.
 All checks below must pass. A model confidence score cannot override a failed
 check.
 
-The pipeline may use one AI pass to extract candidate facts and a separate
+The pipeline uses one AI pass to extract candidate facts and a separate
 pass to check whether each claim is supported by the retained source in its
 full context. The verifier must check applicability of the quoted text to the
 same scholarship, applicant category, degree level, round, rate year and
@@ -101,19 +102,24 @@ same snapshot must not create duplicate revisions.
 ## Implemented gate (31 October 2026)
 
 `backend/app/publication/` enforces this policy in code. The HTML collector now
-retains official-source snapshots, but there is no AI evidence-check pass or
-scheduled worker yet. A caller supplies the snapshots and validation report to
-the publication gate, and every check below runs deterministically.
+retains official-source snapshots, and the fact table, extraction and
+evidence-check passes exist, but nothing calls them yet: no extraction run has
+produced a candidate and no worker is scheduled. A caller supplies the snapshots
+and validation report to the publication gate, and every check below runs
+deterministically.
 
 | Module | Responsibility |
 |---|---|
 | `collect/robots.py` | Reads `robots.txt` and decides, per user agent and path, whether a page may be fetched. An unstated restriction is allowed; a stated one is obeyed. |
 | `collect/extract.py` | Turns a page into the text a passage must match: scripts, styles and page chrome removed, block structure kept as line breaks, inline markup never splitting a sentence. |
 | `collect/snapshot.py` | Checks access rules before every fetch, including each redirect destination (the HTTP client is not allowed to follow a redirect itself), refuses non-HTML or near-empty pages, and writes an artifact with the request URL, the redirect chain, final URL, status, raw and retained hashes, robots decision, user agent and parser version. Ids are content-addressed, an existing file is never replaced, and an unchanged page fetched again writes nothing. |
-| `publication/contracts.py` | `SourceSnapshot` (immutable retained text), `ClaimCheck`, `ValidationReport`, `PublicationDecision`, `PublishedRevision`. No verified-by field and no assurance above `source_checked`. |
-| `publication/policy.py` | `POLICY_VERSION` (`s01.publication.1`) and the approved provider hosts. |
+| `publication/contracts.py` | `SourceSnapshot` (immutable retained text), `Applicability`, `ClaimCheck`, `ValidationReport`, `PublicationDecision`, `PublishedRevision`. No verified-by field and no assurance above `source_checked`. |
+| `publication/facts.py` | The material-fact table. One `MaterialFact` per field a record obliges — amount, currency, rate year, funding relationship, intake, route, deadline, stage, eligibility restriction — carrying an explicit `stated`, `unspecified` or `conflicting` state, its readings (evidence id, snapshot id and the exact excerpt) and, when unresolved, why. A bare `None` is never the answer. `fingerprint` ties a report to the table it checked. |
+| `publication/candidate.py` | `extract_candidate()` turns an extraction proposal into an `ExtractedCandidate`. It refuses a reading whose evidence entry, snapshot, retrieval time, page or quoted span does not line up, refuses an amount its quote does not state, and derives each fact's state from the readings: one agreed value is `stated`, no reading plus a reason is `unspecified`, readings that disagree are `conflicting`. Extraction says what the pages say; it never decides support. |
+| `publication/evidence_check.py` | `check_candidate()` writes the `ValidationReport`. One verdict per quoted span of every stated fact, a reason required for anything other than `supported`, applicability required when `supported`, and no verdict about a fact the candidate does not state as stated. A span left unchecked refuses the whole report. It cannot publish: it returns a report for the gate. |
+| `publication/policy.py` | `POLICY_VERSION` (`s01.publication.2`) and the approved provider hosts. |
 | `publication/register.py` | Reads `content/publication/first-pass-review.json` into a `FindingsRegister`. Holds the record that names a finding and any record citing the page it was raised on. A register that cannot be read holds everything, so a missing file never reads as “nothing outstanding”. |
-| `publication/gates.py` | `evaluate()` returns publish, hold or reject with reasons. It requires a report for this exact revision and policy version; a retained snapshot from an approved provider; every cited excerpt and every displayed passage still present in that snapshot; every evidence entry covered; one excerpt per claim; and every stated amount present in the passage backing it. Any open review finding holds the candidate even when the report claims support. `register` is a required keyword argument with no default. |
+| `publication/gates.py` | `evaluate()` returns publish, hold or reject with reasons. It requires a report for this exact revision and policy version; a retained snapshot from an approved provider; every cited excerpt and every displayed passage still present in that snapshot; every evidence entry covered; one excerpt per claim; and every stated amount present in the passage backing it. It also requires a material fact for every field the record obliges, re-checks each fact's own reading against the snapshot it names, holds a fact the record contradicts or a verdict that quotes a span the fact does not carry, and counts a fact as covered only when a supported check quotes one of its spans. A verdict may not place a quote in a round or degree level the record does not have. Any open review finding holds the candidate even when the report claims support. `register` is a required keyword argument with no default. |
 | `publication/store.py` | `publish()` runs the gate first and raises `PublicationBlocked` before touching the database. The findings register is loaded inside `publish()`, not accepted as an argument, so no caller can publish a held candidate by omitting the findings. A passing decision is written in one transaction: snapshots, live facts, an immutable revision with its report and snapshot references, and the `source_checked` state pointing at that revision. A failure rolls every write back, and re-publishing identical facts keeps one revision. |
 
 Snapshots are immutable in the database (a trigger rejects update and delete),
@@ -145,7 +151,10 @@ quotes now occurs in its snapshot. CGRS D, the UdeM exemption and the Sydney RTP
 stipend carry no open finding; RMIT is held because its 2027 round's international
 deadlines have passed while the page still invites applications, and its benefit
 figures are the 2026 round's. None of them can publish until the evidence-check
-pass produces a report for its revision. Scheduled re-fetch
+pass produces a report for its revision. Each fixture already carries a material
+fact for every field its record obliges — a test checks that against the fixture
+files — so no record is held for a missing fact: RMIT's hold is its finding, and
+the other three need only a report. Scheduled re-fetch
 is a separate Stage 2 capability: start with one published scholarship, then
 prove that an unchanged page does no work and that a meaningful change is
 updated or held safely without owner intervention. The fixtures remain

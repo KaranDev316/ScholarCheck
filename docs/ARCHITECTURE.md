@@ -52,6 +52,9 @@ The current repository has the PostgreSQL seed loader, a development-only
 detail endpoint, the publication gate with atomic publish, and an HTML/text
 collector (`backend/app/collect/`) whose retained snapshots sit in
 `content/snapshots/`. The collector checks access rules for every redirect
-destination before fetching it and never rewrites a retained artifact. The AI
-passes, JavaScript-rendered capture, the published-only catalogue API and the
-public listing UI are planned, not built.
+destination before fetching it and never rewrites a retained artifact. The two
+AI passes exist as code in `backend/app/publication/` — `candidate.py` turns a
+proposal into checked facts and `evidence_check.py` writes the report — but
+nothing calls a model yet: no report has been produced for a launch record.
+JavaScript-rendered capture, the published-only catalogue API and the public
+listing UI are planned, not built.

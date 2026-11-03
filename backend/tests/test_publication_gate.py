@@ -22,9 +22,11 @@ from app.publication.facts import (
     MaterialFact,
     MaterialFacts,
     MaterialFactKind,
+    required_fact_keys,
 )
 from app.publication.gates import evaluate
 from app.publication.register import FindingsRegister
+from app.storage.opportunities import CONTENT_DIR, read_seed
 from tests.publication_helpers import (
     RETRIEVED_AT,
     SAMPLE_PASSAGE as PASSAGE,
@@ -143,7 +145,12 @@ def test_a_claim_without_a_retained_snapshot_holds_the_candidate() -> None:
 def test_an_unchecked_evidence_entry_holds_the_candidate() -> None:
     candidate = record(
         evidence=(
-            Evidence(id="ev-value", url=URL, passage=PASSAGE, retrieved_at=RETRIEVED_AT),
+            Evidence(
+                id="ev-value",
+                url=URL,
+                passage=PASSAGE,
+                retrieved_at=RETRIEVED_AT,
+            ),
             Evidence(
                 id="ev-deadline",
                 url=f"{URL}#deadline",
@@ -374,7 +381,6 @@ def test_a_verdict_about_an_unspecified_fact_holds_the_candidate() -> None:
     assert any("has no claim to support" in reason for reason in decision.reasons)
 
 
-
 def test_a_verdict_quoting_text_the_fact_does_not_carry_holds_the_candidate() -> None:
     candidate = record()
     retained = build_snapshots(candidate)
@@ -539,3 +545,26 @@ def test_a_verdict_at_a_degree_level_the_record_lacks_holds_the_candidate() -> N
         "which the record does not offer" in reason for reason in decision.reasons
     )
 
+
+def test_every_seed_fixture_carries_a_fact_for_every_obliged_field() -> None:
+    """The launch fixtures can pass the gate: their holds come from findings.
+
+    RMIT holds in production because the register names it, not because its fact
+    table is incomplete, so every fixture must reach `publish` against a
+    supporting report and an empty register.
+    """
+
+    for path in sorted(CONTENT_DIR.glob("*.yaml")):
+        candidate = read_seed(path)
+        retained = build_snapshots(candidate)
+        report = build_report(candidate, retained)
+        missing = [
+            key
+            for key in required_fact_keys(candidate)
+            if report.facts.find(key) is None
+        ]
+
+        decision = decide(candidate, snapshots=retained, report=report)
+
+        assert missing == [], f"{path.name} states no fact for {missing}"
+        assert decision.decision is DecisionType.PUBLISH, path.name
