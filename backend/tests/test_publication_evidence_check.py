@@ -330,4 +330,3 @@ def test_a_candidate_that_states_no_fact_gets_no_report() -> None:
 
     with pytest.raises(EvidenceCheckRefused, match="states no material fact"):
         check_candidate(extracted, [], checked_at=CHECKED_AT)
-
