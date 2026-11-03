@@ -8,9 +8,21 @@ register alone.
 import inspect
 from datetime import timedelta
 
-from app.domain.enums import PublicationAssurance
+from app.domain.enums import DegreeLevel, PublicationAssurance
 from app.domain.models import Evidence, Opportunity
-from app.publication.contracts import CheckResult, DecisionType
+from app.publication.contracts import (
+    Applicability,
+    CheckResult,
+    ClaimCheck,
+    DecisionType,
+    ValidationReport,
+)
+from app.publication.facts import (
+    FactState,
+    MaterialFact,
+    MaterialFacts,
+    MaterialFactKind,
+)
 from app.publication.gates import evaluate
 from app.publication.register import FindingsRegister
 from tests.publication_helpers import (
