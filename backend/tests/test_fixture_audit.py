@@ -30,7 +30,14 @@ from app.publication.gates import evaluate
 from app.publication.policy import POLICY_VERSION
 from app.publication.register import load_register
 from app.storage.opportunities import CONTENT_DIR, read_seed
-from tests.publication_helpers import build_report, build_snapshots, load_findings, no_findings
+from tests.publication_helpers import (
+    build_facts,
+    build_report,
+    build_snapshots,
+    fact_checks,
+    load_findings,
+    no_findings,
+)
 
 FINDINGS = load_findings()
 SEED_FILES = sorted(CONTENT_DIR.glob("*.yaml"))
@@ -249,26 +256,42 @@ def _retained_snapshots_by_id() -> dict[str, SourceSnapshot]:
     }
 
 
-def _supported_report(record: Opportunity) -> ValidationReport:
-    """A report claiming support for every entry, checked against real snapshots."""
+def _retained_snapshots_by_url() -> dict[str, SourceSnapshot]:
+    return {
+        data["snapshot"]["url"]: SourceSnapshot.model_validate(data["snapshot"])
+        for data in _artifacts().values()
+    }
 
-    retained = _snapshots_by_url()
-    checks = tuple(
+
+def _supported_report(record: Opportunity) -> ValidationReport:
+    """A report claiming support for every entry and every stated fact.
+
+    The snapshots are the ones retained under ``content/snapshots``, so the
+    deterministic checks run against real pages. The verdicts are synthetic: this
+    proves the gate, not that the claims are true.
+    """
+
+    retained = _retained_snapshots_by_url()
+    snapshots = tuple(retained.values())
+    facts = build_facts(record, snapshots=snapshots)
+    checks = [
         ClaimCheck(
             claim=f"{entry.id} passage",
             evidence_id=entry.id,
-            snapshot_id=retained[str(entry.url)]["id"],
+            snapshot_id=retained[str(entry.url)].id,
             excerpt=entry.passage,
             result=CheckResult.SUPPORTED,
         )
         for entry in record.evidence
-    )
+    ]
+    checks.extend(fact_checks(record, facts))
     return ValidationReport(
         opportunity_id=record.id,
         content_hash=content_hash(record),
         policy_version=POLICY_VERSION,
         checked_at=max(entry.retrieved_at for entry in record.evidence),
-        checks=checks,
+        facts=facts,
+        checks=tuple(checks),
     )
 
 

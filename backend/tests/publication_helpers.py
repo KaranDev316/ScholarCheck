@@ -167,6 +167,7 @@ def build_snapshots(
 def build_facts(
     record: Opportunity,
     *,
+    snapshots: tuple[SourceSnapshot, ...] | None = None,
     excerpts: dict[str, str] | None = None,
 ) -> MaterialFacts:
     """One fact per decision-critical field, read from the record's citations.
@@ -176,114 +177,90 @@ def build_facts(
     rate year, or a dated deadline — is recorded as unspecified with the reason,
     because inventing a reading for it would be exactly what the fact table
     exists to prevent. Support for each stated fact is decided in
-    ``build_report``, not here.
+    ``fact_checks``, not here.
+
+    ``snapshots`` names the pages the caller will hand the gate: a reading must
+    cite the same snapshot id the gate will look up, so a test that retains real
+    artifacts passes them here instead of relying on the derived id.
     """
 
     overrides = excerpts or {}
+    ids_by_url = {str(entry.url): entry.id for entry in snapshots or ()}
     facts: list[MaterialFact] = []
+
+    def fact(
+        prefix: str,
+        kind: MaterialFactKind,
+        value: str | None,
+        refs: tuple[str, ...],
+        reason: str | None = None,
+    ) -> MaterialFact:
+        return _fact(record, prefix, kind, value, refs, overrides, ids_by_url, reason)
+
     for component in record.funding_components:
         prefix = subject("component", component.id)
         facts.append(
-            _fact(
-                record,
+            fact(
                 prefix,
                 MaterialFactKind.AMOUNT,
                 None if component.amount is None else f"{component.amount:f}",
                 component.evidence_refs,
-                overrides,
-                "the record publishes no amount for this component",
             )
         )
         facts.append(
-            _fact(
-                record,
+            fact(
                 prefix,
                 MaterialFactKind.CURRENCY,
                 component.currency,
                 component.evidence_refs,
-                overrides,
-                "the record publishes no currency for this component",
             )
         )
         facts.append(
-            _fact(
-                record,
+            fact(
                 prefix,
                 MaterialFactKind.FUNDING_RELATIONSHIP,
-                None
-                if component.relationship is FundingRelationship.NOT_STATED
-                else component.relationship.value,
+                (
+                    None
+                    if component.relationship is FundingRelationship.NOT_STATED
+                    else component.relationship.value
+                ),
                 component.evidence_refs,
-                overrides,
-                "the record publishes no funding relationship for this component",
             )
         )
         facts.append(
-            _fact(
-                record,
-                prefix,
-                MaterialFactKind.RATE_YEAR,
-                None,
-                component.evidence_refs,
-                overrides,
-                "the record publishes no rate year for this component",
-            )
+            fact(prefix, MaterialFactKind.RATE_YEAR, None, component.evidence_refs)
         )
     for round_entry in record.rounds:
         prefix = subject("round", round_entry.id)
+        facts.append(fact(prefix, MaterialFactKind.INTAKE, round_entry.intake, ()))
         facts.append(
-            _fact(
-                record,
-                prefix,
-                MaterialFactKind.INTAKE,
-                round_entry.intake,
-                (),
-                overrides,
-                "the round is published without a dated intake",
-            )
+            fact(prefix, MaterialFactKind.APPLICATION_ROUTE, round_entry.route, ())
         )
         facts.append(
-            _fact(
-                record,
-                prefix,
-                MaterialFactKind.APPLICATION_ROUTE,
-                round_entry.route,
-                (),
-                overrides,
-                "the round is published without an application route",
-            )
-        )
-        facts.append(
-            _fact(
-                record,
+            fact(
                 prefix,
                 MaterialFactKind.DEADLINE,
                 None,
                 (),
-                overrides,
                 "the seed keeps this round's dates in its label, not as a dated fact",
             )
         )
         facts.append(
-            _fact(
-                record,
+            fact(
                 prefix,
                 MaterialFactKind.STAGE,
                 None,
                 (),
-                overrides,
                 "the seed does not say which stage this round's date belongs to",
             )
         )
     for rule in record.eligibility_rules:
         facts.append(
-            _fact(
-                record,
+            fact(
                 subject("rule", rule.id),
                 MaterialFactKind.ELIGIBILITY_RESTRICTION,
                 rule.requirement if rule.evidence_refs else None,
                 rule.evidence_refs,
-                overrides,
                 "the record states this requirement without a citation",
             )
         )
@@ -297,14 +274,15 @@ def _fact(
     value: str | None,
     evidence_ids: tuple[str, ...],
     overrides: dict[str, str],
-    reason: str,
+    ids_by_url: dict[str, str],
+    reason: str | None,
 ) -> MaterialFact:
     if value is None:
         return MaterialFact(
             kind=kind,
             subject=prefix,
             state=FactState.UNSPECIFIED,
-            reason=reason,
+            reason=reason or _unstated(prefix, kind),
         )
     entry = _reading_entry(record, value, evidence_ids)
     return MaterialFact(
@@ -316,11 +294,19 @@ def _fact(
             FactReading(
                 value=value,
                 evidence_id=entry.id,
-                snapshot_id=snapshot_id(str(entry.url)),
+                snapshot_id=ids_by_url.get(str(entry.url))
+                or snapshot_id(str(entry.url)),
                 excerpt=overrides.get(entry.id, entry.passage),
             ),
         ),
     )
+
+
+def _unstated(prefix: str, kind: MaterialFactKind) -> str:
+    """Why a field has no stated value: the record does not publish one."""
+
+    field = kind.value.replace("_", " ")
+    return f"the record publishes no {field} for this {prefix.partition(':')[0]}"
 
 
 def _reading_entry(
@@ -338,6 +324,7 @@ def _reading_entry(
     return (matches or pool)[0]
 
 
+def build_report(
     record: Opportunity,
     snapshots: tuple[SourceSnapshot, ...],
     *,
@@ -346,7 +333,13 @@ def _reading_entry(
     excerpts: dict[str, str] | None = None,
     policy_version: str = POLICY_VERSION,
 ) -> ValidationReport:
-    """A report claiming support for every evidence entry a snapshot covers."""
+    """A report claiming support for every entry and every stated fact.
+
+    ``results`` and ``reasons`` are keyed by evidence id, so a test can make one
+    page unsupported and watch both the evidence check and the facts read from
+    that page fail. The report is written by a test, not by the evidence-check
+    pass: it says what a supporting checker would have said.
+    """
 
     by_url = {str(snapshot.url): snapshot for snapshot in snapshots}
     checks = []
@@ -364,6 +357,8 @@ def _reading_entry(
                 reason=(reasons or {}).get(entry.id),
             )
         )
+    facts = build_facts(record, snapshots=snapshots, excerpts=excerpts)
+    checks.extend(fact_checks(record, facts, results=results, reasons=reasons))
     if not checks:
         raise AssertionError(f"no snapshot covers {record.id}")
     return ValidationReport(
@@ -371,8 +366,50 @@ def _reading_entry(
         content_hash=content_hash(record),
         policy_version=policy_version,
         checked_at=CHECKED_AT,
+        facts=facts,
         checks=tuple(checks),
     )
+
+
+def fact_checks(
+    record: Opportunity,
+    facts: MaterialFacts,
+    *,
+    results: dict[str, CheckResult] | None = None,
+    reasons: dict[str, str] | None = None,
+) -> list[ClaimCheck]:
+    """One verdict per quoted span of every stated fact.
+
+    The verdict carries the fact's key and the claim it was applied to, so the
+    gate can tell a span that supports a fact from a span quoted about something
+    else entirely.
+    """
+
+    checks: list[ClaimCheck] = []
+    for fact in facts.stated:
+        rounds = (
+            (fact.subject.split(":", 1)[1],) if fact.subject.startswith("round:") else ()
+        )
+        for reading in fact.readings:
+            checks.append(
+                ClaimCheck(
+                    claim=f"{fact.kind.value.replace('_', ' ')} for {fact.subject}",
+                    evidence_id=reading.evidence_id,
+                    snapshot_id=reading.snapshot_id,
+                    excerpt=reading.excerpt,
+                    result=(results or {}).get(
+                        reading.evidence_id, CheckResult.SUPPORTED
+                    ),
+                    reason=(reasons or {}).get(reading.evidence_id),
+                    fact=fact.key,
+                    applies_to=Applicability(
+                        scholarship=record.scheme_name,
+                        rounds=rounds,
+                        note="the record's own citation states this field",
+                    ),
+                )
+            )
+    return checks
 
 
 def load_findings() -> dict[str, Any]:
