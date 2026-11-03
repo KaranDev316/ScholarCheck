@@ -4,6 +4,12 @@
 report. Bump it whenever the checks change: a report written under another
 version is re-checked rather than published.
 
+The version moved to ``s01.publication.2`` when the gate began requiring the
+candidate's material-fact table: a report now has to state what the source says
+about each decision-critical field, back each statement with its own quoted span,
+and agree with the values the record displays. A report written for
+``s01.publication.1`` carries no fact table and is held rather than published.
+
 The approved hosts are the official providers the regression fixtures and the
 launch set cite. Government portals, universities and established scholarship
 NGOs only (``ARCHITECTURE.md`` boundary 1). The list moves to configuration when
@@ -21,7 +27,7 @@ from urllib.parse import urlsplit
 
 from pydantic import HttpUrl
 
-POLICY_VERSION = "s01.publication.1"
+POLICY_VERSION = "s01.publication.2"
 
 APPROVED_SOURCE_HOSTS: tuple[str, ...] = (
     "nserc-crsng.canada.ca",

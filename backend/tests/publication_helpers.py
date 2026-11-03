@@ -20,11 +20,21 @@ from app.domain.enums import (
 from app.domain.hashing import content_hash
 from app.domain.models import Evidence, FundingComponent, OfficialLinks, Opportunity
 from app.publication.contracts import (
+    Applicability,
     CheckResult,
     ClaimCheck,
     SourceSnapshot,
     ValidationReport,
 )
+from app.publication.facts import (
+    FactReading,
+    FactState,
+    MaterialFact,
+    MaterialFactKind,
+    MaterialFacts,
+    subject,
+)
+from app.publication.gates import digits_only
 from app.publication.policy import POLICY_VERSION
 from app.publication.register import REGISTER_PATH, Finding, FindingsRegister
 
@@ -154,7 +164,180 @@ def build_snapshots(
     )
 
 
-def build_report(
+def build_facts(
+    record: Opportunity,
+    *,
+    excerpts: dict[str, str] | None = None,
+) -> MaterialFacts:
+    """One fact per decision-critical field, read from the record's citations.
+
+    A field the record displays is stated with a passage the record cites for
+    it, so the gate can compare the two. A field the seed does not publish — a
+    rate year, or a dated deadline — is recorded as unspecified with the reason,
+    because inventing a reading for it would be exactly what the fact table
+    exists to prevent. Support for each stated fact is decided in
+    ``build_report``, not here.
+    """
+
+    overrides = excerpts or {}
+    facts: list[MaterialFact] = []
+    for component in record.funding_components:
+        prefix = subject("component", component.id)
+        facts.append(
+            _fact(
+                record,
+                prefix,
+                MaterialFactKind.AMOUNT,
+                None if component.amount is None else f"{component.amount:f}",
+                component.evidence_refs,
+                overrides,
+                "the record publishes no amount for this component",
+            )
+        )
+        facts.append(
+            _fact(
+                record,
+                prefix,
+                MaterialFactKind.CURRENCY,
+                component.currency,
+                component.evidence_refs,
+                overrides,
+                "the record publishes no currency for this component",
+            )
+        )
+        facts.append(
+            _fact(
+                record,
+                prefix,
+                MaterialFactKind.FUNDING_RELATIONSHIP,
+                None
+                if component.relationship is FundingRelationship.NOT_STATED
+                else component.relationship.value,
+                component.evidence_refs,
+                overrides,
+                "the record publishes no funding relationship for this component",
+            )
+        )
+        facts.append(
+            _fact(
+                record,
+                prefix,
+                MaterialFactKind.RATE_YEAR,
+                None,
+                component.evidence_refs,
+                overrides,
+                "the record publishes no rate year for this component",
+            )
+        )
+    for round_entry in record.rounds:
+        prefix = subject("round", round_entry.id)
+        facts.append(
+            _fact(
+                record,
+                prefix,
+                MaterialFactKind.INTAKE,
+                round_entry.intake,
+                (),
+                overrides,
+                "the round is published without a dated intake",
+            )
+        )
+        facts.append(
+            _fact(
+                record,
+                prefix,
+                MaterialFactKind.APPLICATION_ROUTE,
+                round_entry.route,
+                (),
+                overrides,
+                "the round is published without an application route",
+            )
+        )
+        facts.append(
+            _fact(
+                record,
+                prefix,
+                MaterialFactKind.DEADLINE,
+                None,
+                (),
+                overrides,
+                "the seed keeps this round's dates in its label, not as a dated fact",
+            )
+        )
+        facts.append(
+            _fact(
+                record,
+                prefix,
+                MaterialFactKind.STAGE,
+                None,
+                (),
+                overrides,
+                "the seed does not say which stage this round's date belongs to",
+            )
+        )
+    for rule in record.eligibility_rules:
+        facts.append(
+            _fact(
+                record,
+                subject("rule", rule.id),
+                MaterialFactKind.ELIGIBILITY_RESTRICTION,
+                rule.requirement if rule.evidence_refs else None,
+                rule.evidence_refs,
+                overrides,
+                "the record states this requirement without a citation",
+            )
+        )
+    return MaterialFacts(facts=tuple(facts))
+
+
+def _fact(
+    record: Opportunity,
+    prefix: str,
+    kind: MaterialFactKind,
+    value: str | None,
+    evidence_ids: tuple[str, ...],
+    overrides: dict[str, str],
+    reason: str,
+) -> MaterialFact:
+    if value is None:
+        return MaterialFact(
+            kind=kind,
+            subject=prefix,
+            state=FactState.UNSPECIFIED,
+            reason=reason,
+        )
+    entry = _reading_entry(record, value, evidence_ids)
+    return MaterialFact(
+        kind=kind,
+        subject=prefix,
+        state=FactState.STATED,
+        value=value,
+        readings=(
+            FactReading(
+                value=value,
+                evidence_id=entry.id,
+                snapshot_id=snapshot_id(str(entry.url)),
+                excerpt=overrides.get(entry.id, entry.passage),
+            ),
+        ),
+    )
+
+
+def _reading_entry(
+    record: Opportunity, value: str, evidence_ids: tuple[str, ...]
+) -> Evidence:
+    """The cited page that reads the value, or the first page the record cites."""
+
+    cited = [entry for entry in record.evidence if entry.id in evidence_ids]
+    pool = cited or list(record.evidence)
+    digits = digits_only(value)
+    if digits:
+        matches = [entry for entry in pool if digits in digits_only(entry.passage)]
+    else:
+        matches = [entry for entry in pool if value.casefold() in entry.passage.casefold()]
+    return (matches or pool)[0]
+
+
     record: Opportunity,
     snapshots: tuple[SourceSnapshot, ...],
     *,

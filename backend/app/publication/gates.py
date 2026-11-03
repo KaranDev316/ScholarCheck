@@ -33,7 +33,7 @@ from decimal import Decimal
 
 from app.domain.enums import FundingRelationship, PublicationAssurance
 from app.domain.hashing import content_hash
-from app.domain.models import Opportunity
+from app.domain.models import Evidence, Opportunity
 from app.publication.contracts import (
     CheckResult,
     ClaimCheck,
