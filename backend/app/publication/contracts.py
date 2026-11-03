@@ -16,8 +16,9 @@ from enum import StrEnum
 
 from pydantic import Field, HttpUrl, field_validator, model_validator
 
-from app.domain.enums import PublicationAssurance
+from app.domain.enums import DegreeLevel, PublicationAssurance
 from app.domain.models import DomainModel, Identifier
+from app.publication.facts import FactKey, MaterialFacts
 
 
 class CheckResult(StrEnum):
@@ -65,12 +66,47 @@ class SourceSnapshot(DomainModel):
         return hashlib.sha256(self.body.encode("utf-8")).hexdigest()
 
 
+class Applicability(DomainModel):
+    """Which claim the checked span is being applied to.
+
+    The policy requires the verifier to show that a quotation applies to the
+    same scholarship, applicant category, degree level, round, rate year and
+    application route, not merely that the words occur on the page. The gate
+    re-checks the parts it can decide: every named round must exist on the
+    record, a round's own facts must be checked against that round, a named
+    degree level must be one the record offers, and a named rate year must
+    match the rate year the fact table records.
+    """
+
+    scholarship: str | None = Field(
+        default=None, max_length=200, description="The scheme the quote governs."
+    )
+    rounds: tuple[Identifier, ...] = Field(
+        default=(), description="The rounds the quote governs; empty means unstated."
+    )
+    applicant_category: str | None = Field(
+        default=None, max_length=200, description="e.g. 'international applicants'."
+    )
+    degree_level: DegreeLevel | None = None
+    rate_year: str | None = Field(
+        default=None, max_length=40, description="e.g. '2026' or '2026-2027'."
+    )
+    application_route: str | None = Field(default=None, max_length=200)
+    note: str = Field(
+        min_length=1,
+        max_length=400,
+        description="How the checker established the quote applies here.",
+    )
+
+
 class ClaimCheck(DomainModel):
     """One evidence-check result for one claim in the candidate record.
 
     ``excerpt`` is the quoted span the checker relied on. The gate re-checks
     that it occurs in the named snapshot, so a checker cannot cite text that
-    was not retained.
+    was not retained. ``fact`` ties the verdict to a material fact in the
+    report's fact table; a supported verdict on a fact must also state which
+    claim the span was applied to.
     """
 
     claim: str = Field(min_length=1, description="What is being checked, in our words.")
@@ -82,11 +118,27 @@ class ClaimCheck(DomainModel):
         default=None,
         description="Why the check returned this result; required when not supported.",
     )
+    fact: FactKey | None = Field(
+        default=None,
+        description="The material fact this verdict is about, e.g. 'round:x.deadline'.",
+    )
+    applies_to: Applicability | None = Field(
+        default=None,
+        description="The claim the span was applied to; required for a fact verdict.",
+    )
 
     @model_validator(mode="after")
     def unresolved_results_state_a_reason(self) -> "ClaimCheck":
         if self.result is not CheckResult.SUPPORTED and not self.reason:
             raise ValueError("an unsupported or unclear claim must state a reason")
+        if (
+            self.result is CheckResult.SUPPORTED
+            and self.fact is not None
+            and self.applies_to is None
+        ):
+            raise ValueError(
+                "a supported fact check must state which claim the span applies to"
+            )
         return self
 
 
@@ -94,14 +146,19 @@ class ValidationReport(DomainModel):
     """The evidence check over one exact candidate revision.
 
     ``content_hash`` pins the report to a revision: a report written for one
-    version of the facts cannot publish a different one. ``policy_version``
-    pins it to the gate that produced it.
+    version of the facts cannot publish a different one. ``facts`` is the
+    material-fact table the checks were made against, so the report is
+    self-contained evidence of what was checked and with which spans.
+    ``policy_version`` pins it to the gate that produced it.
     """
 
     opportunity_id: Identifier
     content_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     policy_version: str = Field(min_length=1)
     checked_at: datetime
+    facts: MaterialFacts = Field(
+        description="Material facts this report checked, with their field-level evidence.",
+    )
     checks: tuple[ClaimCheck, ...] = Field(min_length=1)
 
     @field_validator("checked_at")
@@ -150,6 +207,7 @@ class PublishedRevision(DomainModel):
 
 
 __all__ = [
+    "Applicability",
     "CheckResult",
     "ClaimCheck",
     "DecisionType",
