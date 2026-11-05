@@ -27,7 +27,7 @@ from urllib.parse import urlsplit
 
 from pydantic import HttpUrl
 
-POLICY_VERSION = "s01.publication.2"
+POLICY_VERSION = "s01.publication.3"
 
 APPROVED_SOURCE_HOSTS: tuple[str, ...] = (
     "nserc-crsng.canada.ca",

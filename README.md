@@ -63,9 +63,11 @@ export DATABASE_URL='postgresql://localhost/scholarcheck'
 ```
 
 The loader is repeatable and refuses to overwrite a source-checked record.
-Fixtures remain unpublished: `GET /api/v1/opportunities/{id}` shows them
-with `insufficient_evidence` assurance in development/test only. Production
-returns 404 until a future publication gate has approved a revision.
+Fixtures remain unpublished. Every public opportunity endpoint reads only
+published revisions, including in development. To publish the audited CGRS D
+candidate in a configured database, run `.venv/bin/python -m app.manage
+publish-launch` from `backend`. RMIT remains held. See [deployment and
+monitoring instructions](docs/DEPLOYMENT.md).
 
 ### Frontend (port 5173)
 
@@ -75,8 +77,9 @@ npm install
 npm run dev
 ```
 
-The dev server proxies `/api` to `http://127.0.0.1:8000` for future public
-catalogue calls. The current landing page does not call the API.
+The dev server proxies `/api` to `http://127.0.0.1:8000`. Screens load the
+published catalogue by default. Set `VITE_PREVIEW_DATA=true` only for explicitly
+marked development previews. Production builds never use those fixtures.
 
 Environment variables (never committed): `APP_ENV`, `CORS_ALLOWED_ORIGINS`,
 `DATABASE_URL` for the backend.
@@ -104,17 +107,16 @@ references (a bare `tsc --noEmit` would check no files).
 
 ## Current status
 
-The scaffold, four regression fixtures, PostgreSQL loader and development read
-endpoint exist, and `app/publication/` decides publication: a record becomes
-public only through an atomic publish backed by a validation report and the
-retained snapshots it checked. The HTML collector and seven official-source
-snapshots exist. The public catalogue, AI evidence-check pass, website journeys
-and monitoring worker do **not** exist yet. The
-[first-pass review](docs/slices/S01/FIRST-PASS-REVIEW.md) found material
-route, rate-year and deadline issues. The fixtures now cite exact retained
-passages; the unresolved RMIT round remains in
-`content/publication/first-pass-review.json`, which `publish` reads itself.
-None of the fixtures has been published. The [roadmap](docs/ROADMAP.md) now
-finishes the best-evidenced public MVP before monitoring one record and then
-adding discovery. Human-verification fields are gone from the model, fixtures and
-schema.
+The validation pipeline, stricter publication gate, published-only catalogue
+and detail APIs, connected website, protected problem reports and one-record
+monitor are implemented. CGRS D has a retained proposal, separate evidence
+adjudications and a passing report; real PostgreSQL tests cover publication,
+unsupported-claim rejection and changed-source monitoring. RMIT remains held.
+The public contract excludes evidence passages, snapshot IDs, policy and revision
+metadata. Source-check dates and official links are public.
+
+The production frontend build and local HTTP smoke test pass. A real hosting
+origin, contact address and deployed smoke test remain outstanding. The built-in
+model adapter needs runtime API credentials and explicit model IDs; its live
+provider call has not been executed. See [release instructions](docs/DEPLOYMENT.md)
+and the [evidence ledger](docs/slices/S01/EVIDENCE.md).

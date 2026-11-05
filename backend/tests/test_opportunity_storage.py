@@ -72,17 +72,7 @@ def test_t05_dev_read_is_honest_and_production_hides_unpublished(test_dsn: str) 
 
     with TestClient(create_app(settings_for(test_dsn))) as client:
         response = client.get(f"/api/v1/opportunities/{seed.id}")
-        assert response.status_code == 200
-        body = response.json()
-        assert body["opportunity"]["id"] == seed.id
-        assert body["opportunity"]["fundingComponents"][0]["amount"] == "24067.80"
-        assert body["publication"] == {
-            "assurance": "insufficient_evidence",
-            "sourceCheckedAt": None,
-            "validationPolicyVersion": None,
-            "freshness": "not_checked",
-        }
-        assert body["isPublished"] is False
+        assert response.status_code == 404
         missing = client.get("/api/v1/opportunities/unknown-id")
         assert missing.status_code == 404
         assert missing.json()["code"] == "opportunity_not_found"

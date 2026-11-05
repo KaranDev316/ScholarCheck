@@ -59,7 +59,7 @@ export function ExplorePage({
     <section className="wrap explorepage">
       <h1 className="h-section">Find scholarships</h1>
       <p className="mute intro">
-        Filter by destination, study level and funding. Open any record to read the evidence.
+        Filter by destination, study level and funding. Open any record for funding details, stated requirements and official links.
       </p>
 
       <div className="explore">

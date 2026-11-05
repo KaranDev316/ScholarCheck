@@ -339,3 +339,13 @@ def test_retained_evidence_still_round_trips_through_the_writer(tmp_path: Path) 
         artifact = load_artifact(path)
         assert write_artifact(artifact, tmp_path) == tmp_path / path.name
         assert load_artifact(tmp_path / path.name) == artifact
+
+
+def test_registered_collection_refuses_unapproved_redirect_before_fetching():
+    fetched_urls = []
+    def fetch(url, agent):
+        fetched_urls.append(url)
+        return redirects_to(url, 'https://unapproved.example/award')
+    with pytest.raises(FetchRefused, match='not registered'):
+        collect(URL, fetcher=fetch, robots=allowed, allowed_hosts=('example.edu',))
+    assert fetched_urls == [URL]

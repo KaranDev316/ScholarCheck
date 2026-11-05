@@ -37,19 +37,19 @@ describe('HomePage', () => {
     render(<HomePage records={[makeRecord(), fullyFundedRecord]} isDevelopment />)
 
     expect(screen.getByRole('heading', { level: 3, name: /example doctoral award/i })).toBeVisible()
-    expect(screen.getAllByRole('link', { name: /see evidence and details/i })).toHaveLength(2)
+    expect(screen.getAllByRole('link', { name: /see scholarship details/i })).toHaveLength(2)
     expect(screen.getAllByText('CA$20,000').length).toBeGreaterThan(0)
     expect(screen.getAllByText(/not source checked yet/i)).toHaveLength(1)
-    expect(screen.getByText(/checked .+ against the official page/i)).toBeInTheDocument()
+    expect(screen.getByText(/source checked 27 October 2026/i)).toBeInTheDocument()
   })
 
-  it('shows the catalogue record in the hero with its official wording', () => {
+  it('shows the catalogue record without internal quotations', () => {
     render(<HomePage records={[makeRecord()]} isDevelopment />)
 
     const hero = screen.getByLabelText('Example record from the catalogue')
     expect(within(hero).getByText(/example university, canada/i)).toBeInTheDocument()
-    expect(within(hero).getByText(/from the official page/i)).toBeInTheDocument()
-    expect(within(hero).getByText(/a stipend of ca\$20,000 per year\./i)).toBeInTheDocument()
+    expect(within(hero).queryByText(/from the official page/i)).toBeNull()
+    expect(within(hero).queryByText(/a stipend of ca\$20,000 per year\./i)).toBeNull()
   })
 
   it('offers quick filters that lead to a filtered search', () => {

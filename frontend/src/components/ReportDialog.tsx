@@ -1,19 +1,17 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 
 interface ReportDialogProps {
   scholarshipTitle: string
   open: boolean
   onClose: () => void
-  onSend: () => void
+  onSend: (reason: string, details: string) => Promise<void> | void
 }
 
-/**
- * Report dialog. The feedback endpoint does not exist yet, so sending only
- * closes the dialog and tells the visitor the report was not sent — it never
- * pretends a report was received.
- */
+/** Submit a problem report; preserve user input when delivery fails. */
 export function ReportDialog({ scholarshipTitle, open, onClose, onSend }: ReportDialogProps) {
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
@@ -36,10 +34,18 @@ export function ReportDialog({ scholarshipTitle, open, onClose, onSend }: Report
     }
   }, [open])
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    event.currentTarget.reset()
-    onSend()
+    const form = event.currentTarget
+    const data = new FormData(form)
+    setSending(true)
+    setError('')
+    try {
+      await onSend(String(data.get('reason')), String(data.get('details') ?? ''))
+      form.reset()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not send your report. Please try again.')
+    } finally { setSending(false) }
   }
 
   return (
@@ -61,12 +67,13 @@ export function ReportDialog({ scholarshipTitle, open, onClose, onSend }: Report
 
         <label className="rl">
           Details (optional)
-          <textarea name="details" rows={4} />
+          <textarea name="details" rows={4} maxLength={2000} />
         </label>
 
+        {error ? <p role="alert">{error}</p> : null}
         <div className="actionrow dialogactions">
-          <button className="btn" type="submit">
-            Send report
+          <button className="btn" type="submit" disabled={sending}>
+            {sending ? 'Sending…' : 'Send report'}
           </button>
           <button className="btn alt" type="button" onClick={onClose}>
             Cancel

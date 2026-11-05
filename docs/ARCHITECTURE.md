@@ -48,13 +48,17 @@ flowchart TD
    shows actual check dates and official links. Claim-linked evidence,
    snapshots, validation reports and gate or model details stay in the backend.
 
-The current repository has the PostgreSQL seed loader, a development-only
-detail endpoint, the publication gate with atomic publish, and an HTML/text
-collector (`backend/app/collect/`) whose retained snapshots sit in
-`content/snapshots/`. The collector checks access rules for every redirect
-destination before fetching it and never rewrites a retained artifact. The two
-AI passes exist as code in `backend/app/publication/` — `candidate.py` turns a
-proposal into checked facts and `evidence_check.py` writes the report — but
-nothing calls a model yet: no report has been produced for a launch record.
-JavaScript-rendered capture, the published-only catalogue API and the public
-listing UI are planned, not built.
+The repository now implements these boundaries: retained snapshots, the two-pass
+validation pipeline, policy `.3`, atomic immutable publication, a published-only
+API, the connected public website, problem reports and one-record monitoring.
+The pipeline supports separate command adapters or stateless Responses API calls.
+CGRS D has a recorded source review and passing report, proven through PostgreSQL;
+RMIT remains private. Public responses are projected from immutable published
+revisions, not the mutable seed tables.
+
+One FastAPI process serves the API and production frontend build. PostgreSQL
+stores reports, publication and monitoring state; private `var/` artifacts hold
+model outputs and changed snapshots. The monitor runs separately on a schedule,
+with database locks, retries and last-known-good retention. Production hosting,
+real contact configuration, deployed smoke proof and a live model-provider run
+remain pending. See [deployment instructions](DEPLOYMENT.md).

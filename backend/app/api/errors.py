@@ -22,6 +22,7 @@ from app.domain.models import DomainModel
 class ErrorCode(StrEnum):
     """Codes the client may branch on. Additions need a contract note."""
 
+    INVALID_REQUEST = "invalid_request"
     VALIDATION_ERROR = "validation_error"
     OPPORTUNITY_NOT_FOUND = "opportunity_not_found"
     INVALID_PROFILE = "invalid_profile"

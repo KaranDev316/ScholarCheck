@@ -107,7 +107,7 @@ export interface Scholarship {
   eligibility: readonly EligibilityStatement[]
   rounds: readonly RoundView[]
   application: ApplicationRoute
-  evidence: readonly EvidenceEntry[]
+  evidence?: readonly EvidenceEntry[]
   links: OfficialLinks
   /** Null until a source check has passed; shown as "Not published". */
   sourceCheck: SourceCheck | null

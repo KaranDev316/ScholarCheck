@@ -31,7 +31,7 @@ export function HomePage({ records, isDevelopment }: HomePageProps) {
             <div>
               <h1>Find funding. Check the evidence. Decide for yourself.</h1>
               <p className="lead">
-                Every amount and deadline sits beside the official wording it came from.
+                Find source-checked funding details, published deadlines and links to the official provider.
               </p>
               <form className="search" role="search" onSubmit={submitSearch}>
                 <input
@@ -63,12 +63,7 @@ export function HomePage({ records, isDevelopment }: HomePageProps) {
                     <div className="sm">{sample.headline.basis}</div>
                   </div>
                 ) : null}
-                {sample.evidence[0] ? (
-                  <div className="sq">
-                    <span className="sl">From the official page</span>
-                    <em>“{sample.evidence[0].passage}”</em>
-                  </div>
-                ) : null}
+                {sample.sourceCheck ? <p className="small">Source checked {new Date(sample.sourceCheck.checkedAt).toLocaleDateString('en-GB', { timeZone: 'UTC' })}</p> : null}
                 <ul className="slist list-plain">
                   {COVERAGE_KEYS.map((key) => (
                     <li key={key}>

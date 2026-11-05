@@ -225,6 +225,11 @@ def test_the_fields_the_record_obliges_are_named_and_the_rest_reported() -> None
     candidate = extract(amount_fact(amount_reading()))
 
     assert candidate.missing_fact_keys == (
+        "record.summary",
+        "component:fund-living.description",
+        "component:fund-living.conditions",
+        "component:fund-living.period",
+        "component:fund-living.coverage",
         "component:fund-living.currency",
         "component:fund-living.funding_relationship",
         "component:fund-living.rate_year",

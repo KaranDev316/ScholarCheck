@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import health, opportunities
+from app.api.limits import ReportBodyLimit
 from app.api.errors import register_exception_handlers
 from app.config import Settings, load_settings
 
@@ -33,9 +34,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_methods=["GET", "POST"],
         allow_headers=["Content-Type"],
     )
+    app.add_middleware(ReportBodyLimit)
     register_exception_handlers(app)
     app.include_router(health.router, prefix=API_PREFIX)
     app.include_router(opportunities.router, prefix=API_PREFIX)
+    @app.get('/api/site')
+    def site_info():
+        return {"name": "ScholarCheck", "contactEmail": resolved.contact_email}
+
+    if resolved.frontend_dist:
+        from fastapi.staticfiles import StaticFiles
+        app.mount('/', StaticFiles(directory=resolved.frontend_dist, html=True), name='website')
     return app
 
 

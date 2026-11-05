@@ -11,6 +11,7 @@ assurance level above ``source_checked``.
 """
 
 import hashlib
+import json
 from datetime import datetime
 from enum import StrEnum
 
@@ -64,6 +65,10 @@ class SourceSnapshot(DomainModel):
     @property
     def content_hash(self) -> str:
         return hashlib.sha256(self.body.encode("utf-8")).hexdigest()
+
+    @property
+    def fingerprint(self) -> str:
+        return hashlib.sha256(json.dumps(self.model_dump(mode="json"), sort_keys=True).encode()).hexdigest()
 
 
 class Applicability(DomainModel):
@@ -159,6 +164,8 @@ class ValidationReport(DomainModel):
     facts: MaterialFacts = Field(
         description="Material facts this report checked, with their field-level evidence.",
     )
+    facts_hash: str = Field(default="", pattern=r"^(|[0-9a-f]{64})$")
+    snapshot_hashes: dict[str, str] = Field(default_factory=dict)
     checks: tuple[ClaimCheck, ...] = Field(min_length=1)
 
     @field_validator("checked_at")

@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { SiteFooter } from './components/SiteFooter'
 import { SiteHeader } from './components/SiteHeader'
-import { findScholarship, getCatalogue } from './data/catalogue'
+import { findScholarship, getCatalogue, loadCatalogue } from './data/catalogue'
 import { ExplorePage } from './pages/ExplorePage'
 import { HomePage } from './pages/HomePage'
 import { NotFoundPage } from './pages/NotFoundPage'
@@ -10,10 +10,22 @@ import { ScholarshipPage } from './pages/ScholarshipPage'
 import { exploreHref, routeKey } from './routing/routes'
 import { useHashRoute } from './routing/useHashRoute'
 
-const catalogue = getCatalogue()
+const preview = getCatalogue()
 
 function App() {
   const route = useHashRoute()
+  const [catalogue, setCatalogue] = useState(preview)
+  const [loading, setLoading] = useState(!preview.isDevelopment)
+  const [error, setError] = useState('')
+  const [attempt, setAttempt] = useState(0)
+  useEffect(() => {
+    if (preview.isDevelopment) return
+    const controller = new AbortController()
+    loadCatalogue(controller.signal).then(setCatalogue).catch((err: unknown) => {
+      if (!controller.signal.aborted) setError(err instanceof Error ? err.message : 'Could not load scholarships.')
+    }).finally(() => { if (!controller.signal.aborted) setLoading(false) })
+    return () => controller.abort()
+  }, [attempt])
   const mainRef = useRef<HTMLElement>(null)
   const firstRender = useRef(true)
   const current = routeKey(route)
@@ -66,7 +78,9 @@ function App() {
       </button>
       <SiteHeader current={section} />
       <main id="main" ref={mainRef} tabIndex={-1}>
-        {view}
+        {loading ? <div className="wrap" role="status">Loading scholarships…</div> : error ? (
+          <div className="wrap" role="alert"><p>{error}</p><button className="btn" onClick={() => { setLoading(true); setError(''); setAttempt(attempt + 1) }}>Try again</button></div>
+        ) : view}
       </main>
       <SiteFooter />
     </>

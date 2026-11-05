@@ -55,16 +55,21 @@ remain later work. The first release displays **stated eligibility**; it does
 not decide whether a particular visitor qualifies. Automatic application
 submission and match probabilities remain out of scope.
 
-## Current implementation
+## Current implementation — 5 November 2026
 
-The React/FastAPI scaffold, four YAML fixtures, PostgreSQL loader, and a
-development-only detail read endpoint exist. The publication contract, gate and
-atomic publish exist, and an HTML/text collector with seven retained
-official-source snapshots now backs every fixture passage. The material-fact
-table, the candidate extraction pass and the separate evidence-check pass are
-implemented and tested, but no model run has produced a report for a launch
-record. JavaScript-rendered capture, the public list/search API, the public
-listing UI and the source monitor do not yet exist.
-Human-verification fields are gone and material facts are stated, unspecified or
-conflicting rather than possibly null. The S01 evidence ledger records
-completed checks and outstanding proof.
+Stage 1's validation, publication, public API/UI and problem-report implementation
+is complete locally. CGRS D passes policy `.3` with auditable proposal/check
+artifacts and PostgreSQL publication/rejection tests. RMIT remains held. Public
+responses omit internal evidence; loading, retry and report-delivery errors are
+implemented. The production build and local HTTP smoke test pass.
+
+Stage 2's one-record worker and PostgreSQL acceptance tests now cover unchanged
+content, changed content held or published, failed fetches, retries and preserved
+published history. The optional Compose monitoring service supplies scheduling.
+
+Outstanding launch work is operational: supply the real contact and hosting
+origin, build/deploy on that target, run the deployed smoke check and activate
+monitoring there. Configure model credentials and model IDs (or external
+commands) for unattended validation; the built-in provider adapter has tests but
+has not been called against a live model account. JavaScript-rendered capture
+and broader discovery remain outside this HTML-source launch proof.

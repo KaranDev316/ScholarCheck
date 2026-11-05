@@ -59,6 +59,13 @@ class FactState(StrEnum):
 class MaterialFactKind(StrEnum):
     """The fields the policy requires a fact and a passage for (gate 2)."""
 
+    SUMMARY = "summary"
+    DESCRIPTION = "description"
+    CONDITIONS = "conditions"
+    PROGRAMME = "programme"
+    LABEL = "label"
+    PERIOD = "period"
+    COVERAGE = "coverage"
     AMOUNT = "amount"
     CURRENCY = "currency"
     RATE_YEAR = "rate_year"
@@ -81,6 +88,10 @@ class DeadlineStage(StrEnum):
 
 
 COMPONENT_FACT_KINDS: tuple[MaterialFactKind, ...] = (
+    MaterialFactKind.DESCRIPTION,
+    MaterialFactKind.CONDITIONS,
+    MaterialFactKind.PERIOD,
+    MaterialFactKind.COVERAGE,
     MaterialFactKind.AMOUNT,
     MaterialFactKind.CURRENCY,
     MaterialFactKind.FUNDING_RELATIONSHIP,
@@ -88,6 +99,7 @@ COMPONENT_FACT_KINDS: tuple[MaterialFactKind, ...] = (
 )
 
 ROUND_FACT_KINDS: tuple[MaterialFactKind, ...] = (
+    MaterialFactKind.LABEL,
     MaterialFactKind.INTAKE,
     MaterialFactKind.APPLICATION_ROUTE,
     MaterialFactKind.DEADLINE,
@@ -115,7 +127,7 @@ class FactReading(DomainModel):
     are the field-level evidence the gate re-checks.
     """
 
-    value: str = Field(min_length=1, max_length=400)
+    value: str = Field(min_length=1, max_length=4000)
     evidence_id: Identifier
     snapshot_id: Identifier
     excerpt: str = Field(
@@ -136,7 +148,7 @@ class MaterialFact(DomainModel):
     kind: MaterialFactKind
     subject: Subject
     state: FactState
-    value: str | None = Field(default=None, max_length=400)
+    value: str | None = Field(default=None, max_length=4000)
     readings: tuple[FactReading, ...] = ()
     reason: str | None = Field(
         default=None,
@@ -255,7 +267,8 @@ def required_fact_keys(record: Opportunity) -> tuple[str, ...]:
     what the source does about them instead of dropping what it read.
     """
 
-    keys: list[str] = []
+    keys: list[str] = ["record.summary"]
+    keys.extend(f"programme:{p.id}.programme" for p in record.programmes)
     for component in record.funding_components:
         keys.extend(
             f"{subject('component', component.id)}.{kind.value}"
@@ -288,3 +301,8 @@ __all__ = [
     "required_fact_keys",
     "subject",
 ]
+
+
+def programme_value(programme) -> str:
+    """Canonical displayed programme claims checked as a single structured field."""
+    return programme.model_dump_json(exclude={"id"})

@@ -7,16 +7,9 @@ export interface Catalogue {
   isDevelopment: boolean
 }
 
-/**
- * The catalogue the screens render.
- *
- * Roadmap Stage 1, step 2 builds the shell ahead of publication, so development
- * previews stand in for records. They are marked as unpublished on every screen
- * and never reach a production build: outside `vite dev` the public catalogue is
- * honestly empty until the published-only API exists.
- */
+/** Development previews require explicit opt-in; ordinary runs use the API. */
 export function getCatalogue(): Catalogue {
-  if (import.meta.env.DEV) {
+  if (import.meta.env.DEV && import.meta.env.VITE_PREVIEW_DATA === 'true') {
     return { records: developmentCatalogue, isDevelopment: true }
   }
 
@@ -28,4 +21,19 @@ export function findScholarship(
   id: string,
 ): Scholarship | undefined {
   return records.find((record) => record.id === id)
+}
+
+export async function loadCatalogue(signal?: AbortSignal): Promise<Catalogue> {
+  const records: Scholarship[] = []
+  let total = 1
+  while (records.length < total) {
+    const response = await fetch(`/api/v1/opportunities?limit=100&offset=${records.length}`, { signal })
+    if (!response.ok) throw new Error('Could not load scholarships. Please try again.')
+    const body = await response.json() as { records: Scholarship[]; total: number }
+    if (!Array.isArray(body.records) || typeof body.total !== 'number') throw new Error('The catalogue response was invalid.')
+    total = body.total
+    if (!body.records.length) break
+    records.push(...body.records)
+  }
+  return { records, isDevelopment: false }
 }

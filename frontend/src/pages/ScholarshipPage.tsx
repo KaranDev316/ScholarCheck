@@ -55,9 +55,14 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
     await copyLink()
   }
 
-  function sendReport() {
+  async function sendReport(reason: string, details: string) {
+    if (isDevelopment) throw new Error('Development previews cannot receive reports.')
+    const response = await fetch(`/api/v1/opportunities/${encodeURIComponent(record.id)}/reports`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason, details }),
+    })
+    if (!response.ok) throw new Error(response.status === 429 ? 'Too many reports. Please try again later.' : 'Could not send your report. Please try again.')
     setReportOpen(false)
-    announce('Reports are not being collected yet, so nothing was sent.')
+    announce('Report received. Thank you.')
   }
 
   return (
@@ -276,6 +281,7 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
         <aside className="side" aria-label="Scholarship details">
           <div className="panel">
             <h3>At a glance</h3>
+            {record.sourceCheck ? <p className="small">Source checked {new Date(record.sourceCheck.checkedAt).toLocaleDateString('en-GB', { timeZone: 'UTC' })}. Matches the official source.</p> : null}
             <dl>
               <div>
                 <dt>Provider</dt>
@@ -298,7 +304,7 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
 
           <div className="panel">
             <h3>See something wrong?</h3>
-            <p className="small mute">Feedback is not collected yet.</p>
+            <p className="small mute">Tell us about an incorrect amount, deadline, requirement or link.</p>
             <button className="btn alt sm" type="button" onClick={() => setReportOpen(true)}>
               Report a problem
             </button>

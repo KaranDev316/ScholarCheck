@@ -1,5 +1,40 @@
 # Evidence — S01 foundation
 
+## Latest acceptance result — 5 November 2026
+
+This section supersedes the implementation-status claims in the historical
+entries below. Those entries record what was proven under earlier policies.
+
+| Requirement | Current proof |
+|---|---|
+| Structured validation and auditing | Policy `.3`: explicit fact states; evidence per field and reading; separate extraction/checking adapters; candidate, fact-table and full snapshot fingerprints; retained proposals, adjudications, reports and decisions |
+| Publication correctness | Decimal/token amount checks reject misleading substrings, misplaced decimals, negative values and percentages; currency, period, rate year, route, associated source row, conflicts and coverage checks; public prose/programme/round-label fact coverage |
+| One real publication | CGRS D proposal and source-context adjudications in `content/publication/cgrs-d/complete-run/`; real PostgreSQL publication, unsupported-claim hold and immutable revision tests; RMIT still returns 404 |
+| Public API/UI | Published-only list/search/filter/detail in all environments; explicit response allowlist; public API omits evidence, snapshot/report/policy/revision metadata; browser loads real records; loading/retry/report-failure UI tested |
+| Launch reporting | Problem reports persist in PostgreSQL with origin checks, input bounds, an 8 KiB body cap and five-per-hour address-hash limit; source-check dates and official links shown |
+| One-record monitoring | Real PostgreSQL tests for unchanged content, unsupported changed amount held, supported changed amount published, duplicate fetch skipped, failure/retry scheduling and prior-revision preservation |
+
+Executed checks:
+
+- Backend: `SCHOLARCHECK_TEST_DATABASE_URL=postgresql://127.0.0.1:55439/postgres .venv/bin/python -m pytest --tb=short` — **257 passed**, no skips. Two existing/test-only warnings: FastAPI's httpx deprecation and a deliberate malformed URL model-copy serializer warning.
+- Frontend: typecheck, ESLint and production build passed. **76 Vitest tests passed**, including API loading/retry and report delivery/failure. Homepage wording and actual check-date assertions follow the public evidence boundary.
+- Local production HTTP smoke: `python3 scripts/smoke.py http://127.0.0.1:8017 --report` — **passed**, including one accepted persisted report, public catalogue/detail, empty search, and RMIT's 404. Contact was not configured and `--require-contact` was not asserted.
+- Native Safari walkthrough against that production build: homepage showed the real CGRS D record and actual check date; Canada filter returned one record; detail showed unspecified currency, yearless agency deadline with “Confirm with provider”, official link and no internal quotations; report submission closed the dialog and showed **“Report received. Thank you.”**
+- CGRS D was published into disposable PostgreSQL. The final local revision is 2 because the initial run was followed by the expanded public-prose audit. Fresh isolated integration schemas publish it as revision 1. This is local proof, not an internet release.
+
+Important limits:
+
+- `complete-run` uses explicit extraction and independent source-context checking outputs produced during this Codex source review. No paid/live Responses API call is claimed. The built-in adapter has injected transport/refusal tests; production requires API credentials and explicitly selected model IDs, or configured command adapters.
+- No hosting target/domain or real public contact address has been supplied. The contact UI is configurable; no address was fabricated. A public deployment and deployed smoke check remain outstanding.
+- Docker is not installed in this workspace. Dockerfile/Compose and the optional scheduled monitor service are supplied, but their container build has not been executed here. The native production build was executed.
+- The gate intentionally holds unsupported currency abbreviations, ambiguous source-table associations or unrecognized qualifier formats. A held candidate needs better retained evidence or extraction, not a relaxed assertion.
+
+See [deployment and monitoring instructions](../../DEPLOYMENT.md). The
+`first-pass-review.json` RMIT finding has not been removed or weakened.
+
+## Historical evidence
+
+
 Status: **in progress under D-09..D-11**. Personal assessment criteria
 AC-01..AC-14 are deferred. Current S01 criteria F-01..F-12 are in
 `VERIFICATION.md`. This file preserves completed scaffold and fixture checks

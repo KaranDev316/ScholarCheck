@@ -30,6 +30,8 @@ Nothing here can be satisfied by a confidence score or by a person's approval.
 
 from collections.abc import Mapping, Sequence
 from decimal import Decimal
+import re
+from app.publication.values import amount_in_text, same_amount, value_in_text
 
 from app.domain.enums import FundingRelationship, PublicationAssurance
 from app.domain.hashing import content_hash
@@ -48,6 +50,7 @@ from app.publication.facts import (
     MaterialFactKind,
     MaterialFacts,
     required_fact_keys,
+    programme_value,
     subject,
 )
 from app.publication.policy import (
@@ -85,13 +88,6 @@ def digits_only(text: str) -> str:
     return "".join(character for character in text if character.isdigit())
 
 
-def amount_in_text(amount: Decimal, text: str) -> bool:
-    """True when the published amount's digits occur in the given text."""
-
-    wanted = digits_only(f"{amount:f}")
-    return bool(wanted) and wanted in digits_only(text)
-
-
 def evaluate(
     record: Opportunity,
     report: ValidationReport,
@@ -121,17 +117,34 @@ def evaluate(
             f"the gate runs {policy_version}"
         )
 
+    if report.facts_hash != report.facts.fingerprint:
+        held.append("report material facts changed after checking")
+    referenced = {c.snapshot_id for c in report.checks} | {r.snapshot_id for f in report.facts.facts for r in f.readings}
+    for identifier in referenced:
+        snapshot = snapshots.get(identifier)
+        if snapshot is not None:
+            if report.snapshot_hashes.get(identifier) != snapshot.fingerprint:
+                held.append(f"{identifier}: report does not bind this exact snapshot")
+            if snapshot.response_status != 200:
+                held.append(f"{identifier}: source fetch did not succeed")
+            if report.checked_at < snapshot.retrieved_at:
+                held.append(f"{identifier}: check predates retrieval")
     evidence_by_id = {entry.id: entry for entry in record.evidence}
     covered: dict[str, SourceSnapshot] = {}
     excerpts_by_claim: dict[tuple[str, str | None], str] = {}
     cited: set[str] = set()
     hosts = tuple(approved_hosts)
+    for url in record.links.model_dump().values():
+        if not is_approved_source(url, hosts):
+            held.append("official action link is not on an approved provider host")
     subjects = _subjects_on_record(record)
 
     for key in required_fact_keys(record):
         if report.facts.find(key) is None:
             held.append(f"{key}: the candidate records no material fact for this field")
     for fact in report.facts.facts:
+        if fact.state is FactState.CONFLICTING:
+            held.append(f"{fact.key}: conflicting material fact")
         if fact.subject not in subjects:
             rejected.append(
                 f"{fact.key}: the record has no {fact.subject} to state a fact about"
@@ -178,7 +191,7 @@ def evaluate(
         cited.add(check.evidence_id)
         claim = (check.evidence_id, check.fact)
         previous = excerpts_by_claim.get(claim)
-        if previous is not None and normalise(previous) != normalise(check.excerpt):
+        if check.fact is None and previous is not None and normalise(previous) != normalise(check.excerpt):
             held.append(f"{label}: two different excerpts cite one claim")
         else:
             excerpts_by_claim[claim] = check.excerpt
@@ -213,18 +226,19 @@ def evaluate(
             )
 
     settled = {
-        (check.fact, check.snapshot_id)
+        (check.fact, check.snapshot_id, check.evidence_id, normalise(check.excerpt))
         for check in report.checks
         if check.fact is not None and check.result is CheckResult.SUPPORTED
     }
     for fact in report.facts.stated:
         for reading in fact.readings:
-            if (fact.key, reading.snapshot_id) not in settled:
+            if (fact.key, reading.snapshot_id, reading.evidence_id, normalise(reading.excerpt)) not in settled:
                 held.append(
                     f"{fact.key}: no supported check quotes the span from "
                     f"{reading.snapshot_id}"
                 )
     held.extend(_record_fact_disagreements(record, report.facts))
+    held.extend(_qualifier_problems(record, report.facts))
 
     if rejected:
         decision = DecisionType.REJECT
@@ -303,14 +317,10 @@ def _fact_problems(
             held.append(f"{fact.key}: the snapshot was retrieved at a different time")
         if not excerpt_in_text(snapshot.body, reading.excerpt):
             held.append(f"{fact.key}: the quoted span is not in the retained snapshot")
-    if fact.kind is MaterialFactKind.AMOUNT and fact.value is not None:
-        wanted = digits_only(fact.value)
+    if fact.value is not None:
         for reading in fact.readings:
-            if not wanted or wanted not in digits_only(reading.excerpt):
-                held.append(
-                    f"{fact.key}: the amount {fact.value} is not stated in the span "
-                    "that carries it"
-                )
+            if not value_in_text(fact.kind.value, fact.value, reading.excerpt):
+                held.append(f"{fact.key}: value {fact.value!r} is not stated in the span that carries it")
     return rejected, held
 
 
@@ -330,7 +340,7 @@ def _verdict_problems(
         return [f"{fact.key}: a {fact.state.value} fact has no claim to support"]
     problems: list[str] = []
     spans = [
-        reading for reading in fact.readings if reading.snapshot_id == check.snapshot_id
+        reading for reading in fact.readings if reading.snapshot_id == check.snapshot_id and reading.evidence_id == check.evidence_id
     ]
     if not spans:
         problems.append(
@@ -341,17 +351,29 @@ def _verdict_problems(
         normalise(reading.excerpt) == normalise(check.excerpt) for reading in spans
     ):
         problems.append(f"{fact.key}: the verdict quotes a span this fact does not carry")
-    problems.extend(_applicability_problems(check, record))
+    problems.extend(_applicability_problems(check, record, facts))
     return problems
 
 
-def _applicability_problems(check: ClaimCheck, record: Opportunity) -> list[str]:
+def _applicability_problems(check: ClaimCheck, record: Opportunity, facts: MaterialFacts) -> list[str]:
     """The claim a span was applied to must be one this record actually makes."""
 
     applies_to = check.applies_to
     if applies_to is None:
         return []
     problems: list[str] = []
+    if applies_to.scholarship != record.scheme_name:
+        problems.append(f"{check.fact}: applicability must name this scholarship")
+    about = (check.fact or "").partition(".")[0]
+    year = facts.find(f"{about}.rate_year")
+    expected_year = year.value if year and year.state is FactState.STATED else None
+    if applies_to.rate_year != expected_year:
+        problems.append(f"{check.fact}: applicability rate year disagrees with the fact")
+    route = next((r.route for r in record.rounds if about == f"round:{r.id}"), None)
+    if applies_to.application_route != route:
+        problems.append(f"{check.fact}: applicability route disagrees with the round")
+    if applies_to.applicant_category and applies_to.applicant_category.casefold() not in check.excerpt.casefold():
+        problems.append(f"{check.fact}: applicant category is not in the checked span")
     round_ids = {round_entry.id for round_entry in record.rounds}
     levels = {programme.degree_level for programme in record.programmes}
     unknown = [round_id for round_id in applies_to.rounds if round_id not in round_ids]
@@ -366,7 +388,7 @@ def _applicability_problems(check: ClaimCheck, record: Opportunity) -> list[str]
             f"{applies_to.degree_level.value}, which the record does not offer"
         )
     about = (check.fact or "").partition(".")[0]
-    if about.startswith("round:") and applies_to.rounds:
+    if about.startswith("round:"):
         own = about.split(":", 1)[1]
         if own not in applies_to.rounds:
             problems.append(
@@ -379,13 +401,21 @@ def _applicability_problems(check: ClaimCheck, record: Opportunity) -> list[str]
 def _displayed_facts(record: Opportunity) -> dict[str, str]:
     """The fields the record itself displays, keyed the way facts are keyed."""
 
-    displayed: dict[str, str] = {}
+    displayed: dict[str, str] = {"record.summary": record.summary}
+    for programme in record.programmes:
+        displayed[f"programme:{programme.id}.programme"] = programme_value(programme)
     for component in record.funding_components:
         prefix = subject("component", component.id)
+        if component.description:
+            displayed[f"{prefix}.description"] = component.description
+        if component.conditions:
+            displayed[f"{prefix}.conditions"] = "\n".join(component.conditions)
         if component.amount is not None:
             displayed[
                 f"{prefix}.{MaterialFactKind.AMOUNT.value}"
             ] = f"{component.amount:f}"
+        if component.period is not None:
+            displayed[f"{prefix}.period"] = component.period
         if component.currency is not None:
             displayed[f"{prefix}.{MaterialFactKind.CURRENCY.value}"] = component.currency
         if component.relationship is not FundingRelationship.NOT_STATED:
@@ -394,12 +424,15 @@ def _displayed_facts(record: Opportunity) -> dict[str, str]:
             ] = component.relationship.value
     for round_entry in record.rounds:
         prefix = subject("round", round_entry.id)
+        displayed[f"{prefix}.label"] = round_entry.label
         if round_entry.intake is not None:
             displayed[f"{prefix}.{MaterialFactKind.INTAKE.value}"] = round_entry.intake
         if round_entry.route is not None:
             displayed[
                 f"{prefix}.{MaterialFactKind.APPLICATION_ROUTE.value}"
             ] = round_entry.route
+    for rule in record.eligibility_rules:
+        displayed[f"rule:{rule.id}.eligibility_restriction"] = rule.requirement
     return displayed
 
 
@@ -426,6 +459,39 @@ def _same_reading(key: str, shown: str, stated: str) -> bool:
     """Compare a displayed value with a fact's value the way each field is read."""
 
     if key.endswith(f".{MaterialFactKind.AMOUNT.value}"):
-        shown_digits = digits_only(shown)
-        return bool(shown_digits) and shown_digits == digits_only(stated)
+        return same_amount(shown, stated)
     return normalise(shown.replace("_", " ")) == normalise(stated.replace("_", " "))
+
+
+def _qualifier_problems(record: Opportunity, facts: MaterialFacts) -> list[str]:
+    held = []
+    for component in record.funding_components:
+        prefix = f"component:{component.id}"
+        amount = facts.find(f"{prefix}.amount")
+        year = facts.find(f"{prefix}.rate_year")
+        coverage = facts.find(f"{prefix}.coverage")
+        if coverage and coverage.state is FactState.STATED:
+            expected = {"tuition": "full tuition", "living_support": "living costs", "travel": "flights"}.get(component.kind.value)
+            if coverage.value != expected or component.status.value != 'specified':
+                held.append(f"{prefix}: coverage disagrees with component kind or partial status")
+            if component.relationship.value in {'loan', 'employment', 'not_stated'}:
+                held.append(f"{prefix}: funding coverage cannot be inferred from this relationship")
+        if component.period and re.search(r'\b20\d{2}\b', component.period):
+            if not year or year.state is not FactState.STATED or year.value not in component.period:
+                held.append(f"{prefix}: displayed rate year lacks a stated year fact")
+        if component.amount is not None and amount and amount.state is FactState.STATED:
+            for reading in amount.readings:
+                lines = [line for line in reading.excerpt.splitlines() if amount_in_text(component.amount, line)]
+                if (not year or year.state is not FactState.STATED) and any(re.search(r'\b20\d{2}\b', line) for line in lines):
+                    held.append(f"{prefix}: source amount has a year but the fact leaves it unspecified")
+                if not any((not component.currency or value_in_text('currency', component.currency, line))
+                           and (not component.period or value_in_text('period', component.period, line))
+                           and (not year or year.state is not FactState.STATED or year.value in line)
+                           for line in lines):
+                    held.append(f"{prefix}: amount, currency, period and rate year are not associated in one source row")
+    for round_entry in record.rounds:
+        deadline = facts.find(f"round:{round_entry.id}.deadline")
+        stage = facts.find(f"round:{round_entry.id}.stage")
+        if deadline and deadline.state is FactState.STATED and (not stage or stage.state is not FactState.STATED):
+            held.append(f"round:{round_entry.id}: deadline has no supported stage")
+    return held

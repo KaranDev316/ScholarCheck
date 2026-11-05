@@ -274,10 +274,8 @@ describe('ScholarshipPage', () => {
     const dialog = screen.getByRole('dialog', { name: /report a problem/i })
     await user.click(within(dialog).getByRole('button', { name: /send report/i }))
 
-    expect(screen.queryByRole('dialog')).toBeNull()
-    expect(screen.getByRole('status')).toHaveTextContent(
-      /reports are not being collected yet, so nothing was sent/i,
-    )
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByRole('alert')).toHaveTextContent(/development previews cannot receive reports/i)
   })
 })
 

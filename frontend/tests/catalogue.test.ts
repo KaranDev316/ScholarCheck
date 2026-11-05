@@ -25,7 +25,7 @@ describe('development catalogue', () => {
     for (const record of developmentCatalogue) {
       expect(record.sourceCheck, record.id).toBeNull()
 
-      const numbers = new Set(record.evidence.map((item) => item.number))
+      const numbers = new Set((record.evidence ?? []).map((item) => item.number))
       const referenced = [
         ...record.components.map((component) => component.evidenceNumber),
         ...record.eligibility.map((statement) => statement.evidenceNumber),
@@ -40,7 +40,7 @@ describe('development catalogue', () => {
 
   it('keeps an evidence passage for every numbered source', () => {
     for (const record of developmentCatalogue) {
-      for (const item of record.evidence) {
+      for (const item of (record.evidence ?? [])) {
         expect(item.passage.trim(), `${record.id} evidence ${item.number}`).not.toBe('')
         expect(item.url, `${record.id} evidence ${item.number}`).toMatch(/^https:\/\//)
         expect(item.savedAt, `${record.id} evidence ${item.number}`).toMatch(/^\d{4}-\d{2}-\d{2}T/)

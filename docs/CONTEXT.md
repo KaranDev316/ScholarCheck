@@ -10,7 +10,7 @@
 - **Purpose:** Help students find funding through facts checked against official sources. The evidence trail stays in the backend; automated monitoring and discovery grow the catalogue after the public MVP. [D-10, D-11, D-13]
 - **Target user:** International applicants seeking funded **bachelor's, master's or doctoral (PhD)** degrees. First test profile: Malawian national, resident in India, three-year BCA. [ASSUMED D-08; the source audit covered research master's only]
 - **Problem:** Aggregator listings blur funding (tuition exemption shown as "fully funded"), flatten multi-stage deadlines into one date, bury blocking eligibility conditions, and label article links "Apply Now". [SOURCE]
-- **Status:** S01 scaffold, four unverified seed fixtures, PostgreSQL loader and a development-only read endpoint exist; public publication and monitoring are not implemented.
+- **Status:** Public publication/API/UI, problem reports and one-record monitoring are implemented and tested locally; production contact/hosting and deployed smoke proof remain pending.
 - **Nature:** Portfolio project built and maintained by one person, designed so it could become a real product. [ASSUMED D-01]
 
 ## 2. MVP boundary
@@ -119,35 +119,21 @@ Constraint: link to official sources; write own summaries.
 | D-12 | Source-to-website architecture with collector and AI validation | Accept government, university and approved scholarship NGO sources; retain snapshots; code gates publication between AI proposals and published revisions/API | Owner architecture diagram, 24 Oct 2026 |
 
 ## 10. Current status / next action
-S01 scaffold, fixtures, PostgreSQL storage and development read endpoint exist.
-The publication gate is implemented: a record becomes public only through
-`app.publication.store.publish`, which needs a validation report for the exact
-revision and the retained snapshots that report checked, then writes the
-revision, the report and the `source_checked` state in one transaction. Human
-verification has been removed from the model, fixtures and schema. The fixture
-review findings are recorded in `content/publication/first-pass-review.json`;
-`store.publish` loads that register itself, with no argument that could leave the
-findings out, and an unreadable register holds every candidate. Seven official
-source pages are retained in `content/snapshots/` by `app/collect/`, every fixture
-passage occurs in its snapshot, and three of the four fixtures now carry no open
-finding. RMIT stays held because its 2027 round's international deadlines have
-passed while the page still invites applications, and its published benefit
-figures are the 2026 round's; no launch record is published yet, because
-publishing still needs a validation report.
-The pieces that produce that report now exist under `app.publication`:
-`facts.py` models every decision-critical field as one material fact with an
-explicit `stated`/`unspecified`/`conflicting` state and the exact span it was
-read from, `candidate.py` turns a page-reading proposal into an
-`ExtractedCandidate` and refuses a reading that does not line up with the
-evidence, the snapshot, its retrieval time or the page, and `evidence_check.py`
-is the separate pass that writes the report — one verdict per quoted span, a
-reason unless supported, applicability required when supported. The gate then
-requires a fact for every field the record obliges and counts a fact as covered
-only when a supported check quotes one of its spans. Policy version is now
-`s01.publication.2`, so reports written under `.1` hold rather than publish.
-Next: run extraction and the evidence-check pass on the three launch records to
-produce real reports, then the published-only catalogue and detail journeys.
-Then monitor one record.
+
+Policy `s01.publication.3` hardens numeric and qualifier checks, binds reports to
+candidate/fact/snapshot fingerprints, and holds conflicts. CGRS D has an audited
+launch proposal and separate adjudications, with successful PostgreSQL
+publication and unsupported-claim rejection tests. RMIT remains held.
+
+Published-only list/search/filter/detail APIs feed the UI. Problem reports persist
+through a bounded, rate-limited endpoint. The worker preserves the last supported
+revision on failures and uncertain changes and publishes supported changes
+through the same gate. The local production build and HTTP smoke test pass.
+
+Next: provide real deployment/contact configuration, run the smoke test at the
+public origin, configure the model adapters and enable the one-record schedule.
+See `DEPLOYMENT.md` and the newest section of `slices/S01/EVIDENCE.md`; earlier
+ledger sections are historical results under earlier policies.
 
 ## 11. Open (nonblocking) questions
 Hosting and snapshot storage provider; provider allowlist/access policy;

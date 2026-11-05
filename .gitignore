@@ -24,3 +24,7 @@ npm-debug.log*
 # Editors
 .vscode/
 .idea/
+
+# Runtime audit artifacts (curated publication evidence lives under content/)
+var/
+backend/var/

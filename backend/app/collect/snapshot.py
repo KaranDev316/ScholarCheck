@@ -269,6 +269,7 @@ def collect(
     fetcher: Callable[[str, str], Fetched] | None = None,
     robots: Callable[[str], RobotsDecision] | None = None,
     user_agent: str = USER_AGENT,
+    allowed_hosts: Sequence[str] | None = None,
 ) -> SnapshotArtifact:
     """Check the access rules at every hop, fetch, and retain what answered.
 
@@ -284,6 +285,10 @@ def collect(
     target = url
     redirects: list[str] = []
     while True:
+        if allowed_hosts is not None:
+            from app.publication.policy import is_approved_source
+            if not is_approved_source(target, allowed_hosts):
+                raise FetchRefused("redirect or source host is not registered for collection")
         decision = read(target)
         if not decision.allowed:
             came_from = f" (redirected from {url})" if redirects else ""

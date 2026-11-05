@@ -1,13 +1,21 @@
 # Publication policy — autonomous, evidence-first
 
-Status: **gate implemented 31 October 2026; material-fact table, candidate
-extraction and the separate evidence-check pass added October 2026; HTML
-collector and retained snapshots 2 November 2026.** All publication decisions
-are automated. No human verification or human-verification UI is part of
-ScholarCheck. The four YAML fixtures are candidates, not publishable records:
-RMIT is held for a recorded finding, and the other three have no validation
-report yet (see `slices/S01/EVIDENCE.md` and
-`content/publication/first-pass-review.json`).
+Status: **policy `s01.publication.3` implemented; local publication and
+monitoring acceptance tests complete (5 November 2026).** CGRS D has a retained
+proposal, separate source-context adjudications and a passing report in
+`content/publication/cgrs-d/complete-run/`. It has been published in disposable
+PostgreSQL. RMIT remains held. Production deployment and live model-provider
+execution are still outstanding; see `DEPLOYMENT.md`.
+
+The implementation below supersedes the historical `.1` and `.2` gate notes.
+Currency, units, rate years and routes now have conservative value checks;
+amounts use decimal parsing with token boundaries, and source rows must associate
+amount, currency, period and any stated rate year. Unsupported or ambiguous
+formats hold rather than receive a guessed interpretation. Public prose,
+programme details and round labels also require material-fact coverage.
+Reports bind the candidate content hash, fact-table fingerprint and full snapshot
+fingerprints (including source identity, text, retrieval time, status and parser).
+Every stated reading requires its own supported verdict; conflicts always hold.
 
 ## Assurance and timestamps
 
@@ -99,73 +107,57 @@ checks, candidate/revision IDs, and machine-readable reasons. Publishing is
 atomic with the revision and its validation report. Repeated processing of the
 same snapshot must not create duplicate revisions.
 
-## Implemented gate (31 October 2026)
+## Implemented publication path
 
-`backend/app/publication/` enforces this policy in code. The HTML collector now
-retains official-source snapshots, and the fact table, extraction and
-evidence-check passes exist, but nothing calls them yet: no extraction run has
-produced a candidate and no worker is scheduled. A caller supplies the snapshots
-and validation report to the publication gate, and every check below runs
-deterministically.
+`publication/pipeline.py` runs extraction and checking separately, retains their
+raw and validated outputs, then evaluates the gate. It accepts configured
+commands or the built-in `model_pass.py` adapter. Models cannot publish. An
+incomplete response, invalid output or refusal cannot become a supported claim.
+The committed launch inputs came from the Codex source review, not a live
+Responses API invocation; transport behavior is tested with injected responses.
 
-| Module | Responsibility |
-|---|---|
-| `collect/robots.py` | Reads `robots.txt` and decides, per user agent and path, whether a page may be fetched. An unstated restriction is allowed; a stated one is obeyed. |
-| `collect/extract.py` | Turns a page into the text a passage must match: scripts, styles and page chrome removed, block structure kept as line breaks, inline markup never splitting a sentence. |
-| `collect/snapshot.py` | Checks access rules before every fetch, including each redirect destination (the HTTP client is not allowed to follow a redirect itself), refuses non-HTML or near-empty pages, and writes an artifact with the request URL, the redirect chain, final URL, status, raw and retained hashes, robots decision, user agent and parser version. Ids are content-addressed, an existing file is never replaced, and an unchanged page fetched again writes nothing. |
-| `publication/contracts.py` | `SourceSnapshot` (immutable retained text), `Applicability`, `ClaimCheck`, `ValidationReport`, `PublicationDecision`, `PublishedRevision`. No verified-by field and no assurance above `source_checked`. |
-| `publication/facts.py` | The material-fact table. One `MaterialFact` per field a record obliges — amount, currency, rate year, funding relationship, intake, route, deadline, stage, eligibility restriction — carrying an explicit `stated`, `unspecified` or `conflicting` state, its readings (evidence id, snapshot id and the exact excerpt) and, when unresolved, why. A bare `None` is never the answer. `fingerprint` ties a report to the table it checked. |
-| `publication/candidate.py` | `extract_candidate()` turns an extraction proposal into an `ExtractedCandidate`. It refuses a reading whose evidence entry, snapshot, retrieval time, page or quoted span does not line up, refuses an amount its quote does not state, and derives each fact's state from the readings: one agreed value is `stated`, no reading plus a reason is `unspecified`, readings that disagree are `conflicting`. Extraction says what the pages say; it never decides support. |
-| `publication/evidence_check.py` | `check_candidate()` writes the `ValidationReport`. One verdict per quoted span of every stated fact, a reason required for anything other than `supported`, applicability required when `supported`, and no verdict about a fact the candidate does not state as stated. A span left unchecked refuses the whole report. It cannot publish: it returns a report for the gate. |
-| `publication/policy.py` | `POLICY_VERSION` (`s01.publication.2`) and the approved provider hosts. |
-| `publication/register.py` | Reads `content/publication/first-pass-review.json` into a `FindingsRegister`. Holds the record that names a finding and any record citing the page it was raised on. A register that cannot be read holds everything, so a missing file never reads as “nothing outstanding”. |
-| `publication/gates.py` | `evaluate()` returns publish, hold or reject with reasons. It requires a report for this exact revision and policy version; a retained snapshot from an approved provider; every cited excerpt and every displayed passage still present in that snapshot; every evidence entry covered; one excerpt per claim; and every stated amount present in the passage backing it. It also requires a material fact for every field the record obliges, re-checks each fact's own reading against the snapshot it names, holds a fact the record contradicts or a verdict that quotes a span the fact does not carry, and counts a fact as covered only when a supported check quotes one of its spans. A verdict may not place a quote in a round or degree level the record does not have. Any open review finding holds the candidate even when the report claims support. `register` is a required keyword argument with no default. |
-| `publication/store.py` | `publish()` runs the gate first and raises `PublicationBlocked` before touching the database. The findings register is loaded inside `publish()`, not accepted as an argument, so no caller can publish a held candidate by omitting the findings. A passing decision is written in one transaction: snapshots, live facts, an immutable revision with its report and snapshot references, and the `source_checked` state pointing at that revision. A failure rolls every write back, and re-publishing identical facts keeps one revision. |
+`candidate.py` validates proposals against retained spans and derives fact
+states. `evidence_check.py` requires one adjudication per stated reading; multiple
+readings on a page must identify evidence and excerpt explicitly. `gates.py`
+checks required facts, snapshot binding, excerpt presence, values and associated
+qualifiers, applicability, conflict states, official action hosts and open review
+findings. The gate also checks that public fields agree with the fact table.
 
-Snapshots are immutable in the database (a trigger rejects update and delete),
-`revision_snapshots` links each revision to the snapshots it was checked
-against, and the `publication_state.revision` foreign key and check constraint
-make it impossible to store `source_checked` without the revision behind it.
+`store.publish` loads the findings register itself, locks publication of the
+record, evaluates the gate and atomically stores snapshots, facts, report,
+immutable revision and assurance. Identical candidate/report/snapshot processing
+reuses the revision and its original check timestamp. A changed report or
+snapshot set remains auditable as a new revision. SQL triggers prohibit changes
+to retained snapshots, published revisions and revision-to-snapshot links.
 
-Clearing a hold is an edit to the register, not to the report. Remove an entry
-only after the fixture is corrected and re-checked against a retained snapshot;
-a report that claims support for every entry changes nothing.
+`models/public.py` is an explicit public allowlist. The APIs read only the
+published revision, including in development; neither held candidates nor mutable
+seed data can appear through them. Funding labels derive from supported coverage
+facts. Full tuition requires explicit full coverage, living support a supported
+living-cost fact, and flights an explicit flight benefit. Partial tuition or a
+relocation allowance cannot produce a full-coverage category. Unknown-year dates
+are displayed without inferring that applications are open.
 
-## Operational contracts (to be designed and implemented)
+`api/opportunities.py` implements published list/search/filter/detail and
+protected problem-report ingestion. Internal passages, snapshot references,
+reports, policy version, revision IDs and caller hashes are omitted. Source-check
+dates and official links remain public.
 
-| Contract | Responsibility |
-|---|---|
-| `Source` | Official organization, URL, permission and monitoring schedule. |
-| `SourceSnapshot` | Immutable content/hash, fetch time, response status, parser version. |
-| `ExtractedCandidate` | Proposed `Opportunity` plus field-level evidence references. |
-| `ValidationReport` | Deterministic checks, conflicts, source and policy versions. |
-| `PublicationDecision` | Publish/hold/reject/stale with reasons and assurance. |
-| `OpportunityRevision` | Immutable published version and change history. |
-| `SourceHealth` | Last success, failures, retries and anomalies. |
+## Operational state and monitoring
 
-## First publication and monitoring milestone
+The published revision's linked official URLs form the one-record monitor's
+source registry. `monitor_state` stores due times, failure counts and the last
+observed hashes; `monitor_runs` records each attempted outcome. Retained files
+keep collection provenance. The worker checks the approved host before each
+redirect fetch and follows the source's access rules.
 
-Stage 1 validates a small launch set for a public website. Seven pages behind the
-four fixtures were retained on 2 November 2026, and every passage a fixture
-quotes now occurs in its snapshot. CGRS D, the UdeM exemption and the Sydney RTP
-stipend carry no open finding; RMIT is held because its 2027 round's international
-deadlines have passed while the page still invites applications, and its benefit
-figures are the 2026 round's. None of them can publish until the evidence-check
-pass produces a report for its revision. Each fixture already carries a material
-fact for every field its record obliges — a test checks that against the fixture
-files — so no record is held for a missing fact: RMIT's hold is its finding, and
-the other three need only a report. Scheduled re-fetch
-is a separate Stage 2 capability: start with one published scholarship, then
-prove that an unchanged page does no work and that a meaningful change is
-updated or held safely without owner intervention. The fixtures remain
-regression inputs, not automatically trusted records.
+Unchanged source text invokes neither AI pass and creates no revision. Changed
+text runs the same pipeline, or is held if model configuration is absent. A
+failed fetch or uncertain check preserves the last supported revision and its
+check timestamp, records stale/recheck state, and schedules a retry. Test
+coverage includes a material amount change held on unsupported evidence and then
+published on a supported check, without modifying the prior revision.
 
-The [first-pass review](slices/S01/FIRST-PASS-REVIEW.md) found route, rate-year,
-and deadline issues. The 2 November collection corrected the recorded routes,
-removed one transcribed date table the pages do not contain, and left the RMIT
-round held. A candidate leaves hold only when the corrected claim is checked
-against a retained snapshot; unresolved conflicts remain held automatically.
-
-Track automatic-publication rate, unsupported-claim incidents, source failures,
-duplicate rate, stale-record count, and time from source change to safe revision.
-Set numeric targets only after a baseline exists.
+The launch milestone is proven locally with CGRS D. Production release still
+requires a real contact address, hosting origin and a smoke test at that origin.
+See `DEPLOYMENT.md` for configuration, publication replay and monitoring commands.

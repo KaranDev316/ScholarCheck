@@ -237,5 +237,5 @@ def test_required_fact_keys_names_every_field_the_record_obliges() -> None:
     assert "round:round-2027.deadline" in keys
     assert "round:round-2027.stage" in keys
     assert "rule:enrolment.eligibility_restriction" in keys
-    assert not any(key.startswith("programme:") for key in keys)
+    assert "programme:phd-engineering.programme" in keys
     assert len(keys) == len(set(keys))

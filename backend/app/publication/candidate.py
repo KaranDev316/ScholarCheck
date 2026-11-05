@@ -29,7 +29,8 @@ from app.publication.facts import (
     normalise,
     required_fact_keys,
 )
-from app.publication.gates import digits_only, excerpt_in_text
+from app.publication.gates import excerpt_in_text
+from app.publication.values import value_in_text
 
 
 class ExtractionRefused(ValueError):
@@ -39,7 +40,7 @@ class ExtractionRefused(ValueError):
 class ReadingProposal(DomainModel):
     """One proposed reading: a value and the exact span that states it."""
 
-    value: str = Field(min_length=1, max_length=400)
+    value: str = Field(min_length=1, max_length=4000)
     evidence_id: Identifier
     snapshot_id: Identifier
     excerpt: str = Field(min_length=1)
@@ -78,6 +79,7 @@ class ExtractedCandidate(DomainModel):
 
     opportunity: Opportunity
     facts: MaterialFacts
+    snapshot_hashes: dict[str, str] = Field(default_factory=dict)
 
     @property
     def content_hash(self) -> str:
@@ -106,7 +108,7 @@ def extract_candidate(
         _build_fact(proposed, evidence_by_id, snapshots, subjects)
         for proposed in proposal.facts
     )
-    return ExtractedCandidate(opportunity=record, facts=MaterialFacts(facts=facts))
+    return ExtractedCandidate(opportunity=record, facts=MaterialFacts(facts=facts), snapshot_hashes={key: value.fingerprint for key, value in snapshots.items()})
 
 
 def _subject_index(record: Opportunity) -> dict[str, object]:
@@ -205,8 +207,7 @@ def _build_reading(
             f"{label}: the quoted span is not in the retained snapshot"
         )
     if kind is MaterialFactKind.AMOUNT:
-        wanted = digits_only(reading.value)
-        if not wanted or wanted not in digits_only(reading.excerpt):
+        if not value_in_text(kind.value, reading.value, reading.excerpt):
             raise ExtractionRefused(
                 f"{label}: the reading states {reading.value!r}, which its quote does not"
             )

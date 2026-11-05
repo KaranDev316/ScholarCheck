@@ -48,10 +48,10 @@ def store_snapshot(conn: psycopg.Connection, snapshot: SourceSnapshot) -> bool:
 
 def _store_snapshot(conn: psycopg.Connection, snapshot: SourceSnapshot) -> bool:
     row = conn.execute(
-        "SELECT content_hash FROM source_snapshots WHERE id = %s", (snapshot.id,)
+        "SELECT content_hash, url, retrieved_at, parser_version, response_status FROM source_snapshots WHERE id = %s", (snapshot.id,)
     ).fetchone()
     if row is not None:
-        if row[0] != snapshot.content_hash:
+        if tuple(row) != (snapshot.content_hash, str(snapshot.url), snapshot.retrieved_at, snapshot.parser_version, snapshot.response_status):
             raise SnapshotConflict(
                 f"snapshot {snapshot.id} is already retained with different content"
             )
@@ -132,6 +132,7 @@ def publish(
 
     digest = content_hash(record)
     with conn.transaction():
+        conn.execute("SELECT pg_advisory_xact_lock(hashtext(%s))", (record.id,))
         for snapshot in snapshots:
             _store_snapshot(conn, snapshot)
         _require_retained_content(conn, decision, by_id)
@@ -141,13 +142,13 @@ def publish(
             """
             UPDATE publication_state
             SET assurance = 'source_checked',
-                source_checked_at = %s,
+                source_checked_at = (SELECT checked_at FROM opportunity_revisions WHERE opportunity_id = %s AND revision = %s),
                 validation_policy_version = %s,
                 freshness = 'current',
                 revision = %s
             WHERE opportunity_id = %s
             """,
-            (report.checked_at, decision.policy_version, revision, record.id),
+            (record.id, revision, decision.policy_version, revision, record.id),
         )
 
     return PublishedRevision(
@@ -188,12 +189,12 @@ def _write_revision(
 
     latest = conn.execute(
         """
-        SELECT revision, content_hash FROM opportunity_revisions
+        SELECT revision, content_hash, report FROM opportunity_revisions
         WHERE opportunity_id = %s ORDER BY revision DESC LIMIT 1
         """,
         (record.id,),
     ).fetchone()
-    if latest is not None and latest[1] == digest:
+    if latest is not None and latest[1] == digest and {k:v for k,v in latest[2].items() if k != "checked_at"} == report.model_dump(mode="json", by_alias=False, exclude={"checked_at"}):
         return int(latest[0])
 
     revision = (int(latest[0]) if latest is not None else 0) + 1

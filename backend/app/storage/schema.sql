@@ -148,3 +148,35 @@ ALTER TABLE publication_state
     ADD CONSTRAINT publication_state_revision_fkey
         FOREIGN KEY (opportunity_id, revision)
         REFERENCES opportunity_revisions(opportunity_id, revision);
+
+-- Published history and its evidence links cannot be rewritten.
+DROP TRIGGER IF EXISTS opportunity_revisions_immutable ON opportunity_revisions;
+CREATE TRIGGER opportunity_revisions_immutable BEFORE UPDATE OR DELETE ON opportunity_revisions
+FOR EACH ROW EXECUTE FUNCTION reject_source_snapshot_change();
+DROP TRIGGER IF EXISTS revision_snapshots_immutable ON revision_snapshots;
+CREATE TRIGGER revision_snapshots_immutable BEFORE UPDATE OR DELETE ON revision_snapshots
+FOR EACH ROW EXECUTE FUNCTION reject_source_snapshot_change();
+
+CREATE TABLE IF NOT EXISTS problem_reports (
+ id uuid PRIMARY KEY,
+ opportunity_id text NOT NULL REFERENCES opportunities(id),
+ reason text NOT NULL CHECK (length(reason) BETWEEN 1 AND 80),
+ details text NOT NULL CHECK (length(details) <= 2000),
+ client_hash text NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS problem_reports_rate ON problem_reports(client_hash, created_at);
+CREATE TABLE IF NOT EXISTS monitor_runs (
+ id uuid PRIMARY KEY,
+ opportunity_id text NOT NULL,
+ attempted_at timestamptz NOT NULL DEFAULT now(),
+ outcome text NOT NULL,
+ detail text NOT NULL,
+ snapshot_hashes jsonb NOT NULL DEFAULT '{}'
+);
+CREATE TABLE IF NOT EXISTS monitor_state (
+ opportunity_id text PRIMARY KEY REFERENCES opportunities(id),
+ next_run_at timestamptz NOT NULL DEFAULT now(),
+ failures integer NOT NULL DEFAULT 0,
+ last_hashes jsonb NOT NULL DEFAULT '{}'
+);

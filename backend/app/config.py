@@ -18,6 +18,9 @@ class Settings:
     app_env: str
     cors_allowed_origins: tuple[str, ...]
     database_url: str | None
+    report_hash_key: str | None = None
+    contact_email: str | None = None
+    frontend_dist: str | None = None
 
 
 def _split_origins(raw: str | None) -> tuple[str, ...]:
@@ -34,4 +37,7 @@ def load_settings(environ: dict[str, str] | None = None) -> Settings:
         app_env=source.get("APP_ENV", "development"),
         cors_allowed_origins=_split_origins(source.get("CORS_ALLOWED_ORIGINS")),
         database_url=source.get("DATABASE_URL"),
+        report_hash_key=source.get("REPORT_HASH_KEY"),
+        contact_email=source.get("CONTACT_EMAIL"),
+        frontend_dist=source.get("FRONTEND_DIST"),
     )

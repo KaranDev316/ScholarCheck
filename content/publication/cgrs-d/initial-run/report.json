@@ -1,0 +1,470 @@
+{
+  "opportunity_id": "cgsd-doctoral",
+  "content_hash": "d7665d2e8df51bd869913821b7f8a5b1c39d7e3114b4be58b2b8526de3bcc1e1",
+  "policy_version": "s01.publication.3",
+  "checked_at": "2026-11-03T18:30:59.648911Z",
+  "facts": {
+    "facts": [
+      {
+        "kind": "amount",
+        "subject": "component:cgsd-living-support",
+        "state": "stated",
+        "value": "40000",
+        "readings": [
+          {
+            "value": "40000",
+            "evidence_id": "ev-cgsd-value",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "Value\n$40,000 per year\nDuration\n36 months"
+          }
+        ],
+        "reason": null
+      },
+      {
+        "kind": "period",
+        "subject": "component:cgsd-living-support",
+        "state": "stated",
+        "value": "per year",
+        "readings": [
+          {
+            "value": "per year",
+            "evidence_id": "ev-cgsd-value",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "Value\n$40,000 per year\nDuration\n36 months"
+          }
+        ],
+        "reason": null
+      },
+      {
+        "kind": "currency",
+        "subject": "component:cgsd-living-support",
+        "state": "unspecified",
+        "value": null,
+        "readings": [],
+        "reason": "The retained source uses $ and does not explicitly name a currency."
+      },
+      {
+        "kind": "funding_relationship",
+        "subject": "component:cgsd-living-support",
+        "state": "stated",
+        "value": "grant",
+        "readings": [
+          {
+            "value": "grant",
+            "evidence_id": "ev-cgsd-scheme",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "The Canada Graduate Research Scholarship – Doctoral (CGRS D) is a scholarship in the Canada Research Training Awards Suite (CRTAS) administered by the Canadian Institutes of Health Research (CIHR), the Natural Sciences and Engineering Research Council of Canada (NSERC) and the Social Sciences and Humanities Research Council (SSHRC)."
+          }
+        ],
+        "reason": null
+      },
+      {
+        "kind": "rate_year",
+        "subject": "component:cgsd-living-support",
+        "state": "unspecified",
+        "value": null,
+        "readings": [],
+        "reason": "The overview states the award value without a rate year."
+      },
+      {
+        "kind": "coverage",
+        "subject": "component:cgsd-living-support",
+        "state": "unspecified",
+        "value": null,
+        "readings": [],
+        "reason": "The source does not designate full tuition, living costs or flights coverage."
+      },
+      {
+        "kind": "application_route",
+        "subject": "round:cgsd-institutional-route",
+        "state": "stated",
+        "value": "Through a Canadian institution",
+        "readings": [
+          {
+            "value": "Through a Canadian institution",
+            "evidence_id": "ev-cgsd-deadline",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "Application deadline\nThrough a Canadian institution: Contact your institution (often significantly earlier than the agency’s deadline)\nDirectly to the agency: October 17"
+          }
+        ],
+        "reason": null
+      },
+      {
+        "kind": "intake",
+        "subject": "round:cgsd-institutional-route",
+        "state": "unspecified",
+        "value": null,
+        "readings": [],
+        "reason": "No intake year is attached to these route instructions."
+      },
+      {
+        "kind": "deadline",
+        "subject": "round:cgsd-institutional-route",
+        "state": "unspecified",
+        "value": null,
+        "readings": [],
+        "reason": "Each institution sets its own deadline; no universal date is stated."
+      },
+      {
+        "kind": "stage",
+        "subject": "round:cgsd-institutional-route",
+        "state": "stated",
+        "value": "scholarship",
+        "readings": [
+          {
+            "value": "scholarship",
+            "evidence_id": "ev-cgsd-deadline",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "Application deadline\nThrough a Canadian institution: Contact your institution (often significantly earlier than the agency’s deadline)\nDirectly to the agency: October 17"
+          }
+        ],
+        "reason": null
+      },
+      {
+        "kind": "application_route",
+        "subject": "round:cgsd-direct-route",
+        "state": "stated",
+        "value": "Directly to the agency",
+        "readings": [
+          {
+            "value": "Directly to the agency",
+            "evidence_id": "ev-cgsd-deadline",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "Application deadline\nThrough a Canadian institution: Contact your institution (often significantly earlier than the agency’s deadline)\nDirectly to the agency: October 17"
+          }
+        ],
+        "reason": null
+      },
+      {
+        "kind": "intake",
+        "subject": "round:cgsd-direct-route",
+        "state": "unspecified",
+        "value": null,
+        "readings": [],
+        "reason": "No intake year is attached to these route instructions."
+      },
+      {
+        "kind": "deadline",
+        "subject": "round:cgsd-direct-route",
+        "state": "stated",
+        "value": "October 17",
+        "readings": [
+          {
+            "value": "October 17",
+            "evidence_id": "ev-cgsd-deadline",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "Application deadline\nThrough a Canadian institution: Contact your institution (often significantly earlier than the agency’s deadline)\nDirectly to the agency: October 17"
+          }
+        ],
+        "reason": null
+      },
+      {
+        "kind": "stage",
+        "subject": "round:cgsd-direct-route",
+        "state": "stated",
+        "value": "scholarship",
+        "readings": [
+          {
+            "value": "scholarship",
+            "evidence_id": "ev-cgsd-deadline",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "Application deadline\nThrough a Canadian institution: Contact your institution (often significantly earlier than the agency’s deadline)\nDirectly to the agency: October 17"
+          }
+        ],
+        "reason": null
+      },
+      {
+        "kind": "eligibility_restriction",
+        "subject": "rule:cgsd-doctoral-enrolment",
+        "state": "stated",
+        "value": "Applicants who are not Canadian citizens, permanent residents or protected persons must be registered in a doctoral programme at an eligible Canadian institution by the application deadline.",
+        "readings": [
+          {
+            "value": "Applicants who are not Canadian citizens, permanent residents or protected persons must be registered in a doctoral programme at an eligible Canadian institution by the application deadline.",
+            "evidence_id": "ev-cgsd-international",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "If you are not a Canadian citizen, permanent resident of Canada or protected person under subsection 95(2) of the Immigration and Refugee Protection Act (Canada), you must be registered in your doctoral program of study at an eligible Canadian institution by the application deadline. Up to 15% of awards will be available to international applicants."
+          }
+        ],
+        "reason": null
+      },
+      {
+        "kind": "eligibility_restriction",
+        "subject": "rule:cgsd-study-months",
+        "state": "stated",
+        "value": "No more than 36 months of full-time equivalent doctoral study completed by 31 December of the calendar year of application.",
+        "readings": [
+          {
+            "value": "No more than 36 months of full-time equivalent doctoral study completed by 31 December of the calendar year of application.",
+            "evidence_id": "ev-cgsd-study-months",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "To be eligible to apply to the CGRS D program, you must have completed no more than 36 months of full-time equivalent study in the doctoral program, the PhD portion of the joint professional undergraduate/PhD program or the joint program for which you are requesting funding by December 31 of the calendar year of your application."
+          }
+        ],
+        "reason": null
+      },
+      {
+        "kind": "eligibility_restriction",
+        "subject": "rule:cgsd-other-restrictions",
+        "state": "stated",
+        "value": "Only one CRTAS application per academic year and at most three CGRS D applications are permitted. Previous recipients of a CIHR, NSERC or SSHRC doctoral scholarship, including Vanier, are not eligible.",
+        "readings": [
+          {
+            "value": "Only one CRTAS application per academic year and at most three CGRS D applications are permitted. Previous recipients of a CIHR, NSERC or SSHRC doctoral scholarship, including Vanier, are not eligible.",
+            "evidence_id": "ev-cgsd-restrictions",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "You can apply to only one CRTAS program per academic year through CIHR, NSERC or SSHRC. If you apply to more than one program, only the first eligible application submitted to the agencies will be retained.\nYou can apply a maximum of three times to the CGRS D program.\nYou cannot have already received a doctoral-level scholarship from CIHR, NSERC or SSHRC (including a Vanier Canada Graduate Scholarship)."
+          }
+        ],
+        "reason": null
+      },
+      {
+        "kind": "eligibility_restriction",
+        "subject": "rule:cgsd-route-rule",
+        "state": "stated",
+        "value": "Apply through the channel determined by your registration status and the institution’s quota for the chosen agency; the wrong channel causes rejection.",
+        "readings": [
+          {
+            "value": "Apply through the channel determined by your registration status and the institution’s quota for the chosen agency; the wrong channel causes rejection.",
+            "evidence_id": "ev-cgsd-route",
+            "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+            "excerpt": "You must apply either through a Canadian institution or directly to the appropriate agency, depending on your registration status on the application deadline date and/or your registration status during the calendar year of application. Where you intend to hold the award has no impact on the channel through which you must apply. If you fail to submit your application through the correct channel, your application will be rejected."
+          }
+        ],
+        "reason": null
+      }
+    ]
+  },
+  "facts_hash": "cbdea2021bc8328a4e5dba32cf90fe0f504b8e52845aad35545fc5e849c726de",
+  "snapshot_hashes": {
+    "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661": "5b799c3dc654e8ad4d5fcba0a924e8e3d8c1a5577a877c6ed3ecb2dc8ae12c7d"
+  },
+  "checks": [
+    {
+      "claim": "amount for component:cgsd-living-support",
+      "evidence_id": "ev-cgsd-value",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "Value\n$40,000 per year\nDuration\n36 months",
+      "result": "supported",
+      "reason": "The overview explicitly assigns $40,000 to CGRS D; the later $5,000 supplement is a different award and is not used.",
+      "fact": "component:cgsd-living-support.amount",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": null,
+        "note": "The overview explicitly assigns $40,000 to CGRS D; the later $5,000 supplement is a different award and is not used."
+      }
+    },
+    {
+      "claim": "period for component:cgsd-living-support",
+      "evidence_id": "ev-cgsd-value",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "Value\n$40,000 per year\nDuration\n36 months",
+      "result": "supported",
+      "reason": "The same overview line states per year; 36 months is duration, not a monthly payment basis.",
+      "fact": "component:cgsd-living-support.period",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": null,
+        "note": "The same overview line states per year; 36 months is duration, not a monthly payment basis."
+      }
+    },
+    {
+      "claim": "funding relationship for component:cgsd-living-support",
+      "evidence_id": "ev-cgsd-scheme",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "The Canada Graduate Research Scholarship – Doctoral (CGRS D) is a scholarship in the Canada Research Training Awards Suite (CRTAS) administered by the Canadian Institutes of Health Research (CIHR), the Natural Sciences and Engineering Research Council of Canada (NSERC) and the Social Sciences and Humanities Research Council (SSHRC).",
+      "result": "supported",
+      "reason": "The description calls CGRS D a scholarship, not employment or a repayable loan. No full-coverage claim is made.",
+      "fact": "component:cgsd-living-support.funding_relationship",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": null,
+        "note": "The description calls CGRS D a scholarship, not employment or a repayable loan. No full-coverage claim is made."
+      }
+    },
+    {
+      "claim": "application route for round:cgsd-institutional-route",
+      "evidence_id": "ev-cgsd-deadline",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "Application deadline\nThrough a Canadian institution: Contact your institution (often significantly earlier than the agency’s deadline)\nDirectly to the agency: October 17",
+      "result": "supported",
+      "reason": "Both channels appear in the overview. The separate route restriction explains that registration and the agency quota determine which channel applies; neither channel is represented as universally available.",
+      "fact": "round:cgsd-institutional-route.application_route",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [
+          "cgsd-institutional-route"
+        ],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": "Through a Canadian institution",
+        "note": "Both channels appear in the overview. The separate route restriction explains that registration and the agency quota determine which channel applies; neither channel is represented as universally available."
+      }
+    },
+    {
+      "claim": "stage for round:cgsd-institutional-route",
+      "evidence_id": "ev-cgsd-deadline",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "Application deadline\nThrough a Canadian institution: Contact your institution (often significantly earlier than the agency’s deadline)\nDirectly to the agency: October 17",
+      "result": "supported",
+      "reason": "The overview is explicitly the scholarship application deadline, not admission or an offer date.",
+      "fact": "round:cgsd-institutional-route.stage",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [
+          "cgsd-institutional-route"
+        ],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": "Through a Canadian institution",
+        "note": "The overview is explicitly the scholarship application deadline, not admission or an offer date."
+      }
+    },
+    {
+      "claim": "application route for round:cgsd-direct-route",
+      "evidence_id": "ev-cgsd-deadline",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "Application deadline\nThrough a Canadian institution: Contact your institution (often significantly earlier than the agency’s deadline)\nDirectly to the agency: October 17",
+      "result": "supported",
+      "reason": "Both channels appear in the overview. The separate route restriction explains that registration and the agency quota determine which channel applies; neither channel is represented as universally available.",
+      "fact": "round:cgsd-direct-route.application_route",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [
+          "cgsd-direct-route"
+        ],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": "Directly to the agency",
+        "note": "Both channels appear in the overview. The separate route restriction explains that registration and the agency quota determine which channel applies; neither channel is represented as universally available."
+      }
+    },
+    {
+      "claim": "deadline for round:cgsd-direct-route",
+      "evidence_id": "ev-cgsd-deadline",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "Application deadline\nThrough a Canadian institution: Contact your institution (often significantly earlier than the agency’s deadline)\nDirectly to the agency: October 17",
+      "result": "supported",
+      "reason": "October 17 is the agency deadline. No year is supplied or inferred; the UI must not call the round open. The full source separately specifies weekend treatment and ET time, so visitors are directed to confirm those details.",
+      "fact": "round:cgsd-direct-route.deadline",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [
+          "cgsd-direct-route"
+        ],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": "Directly to the agency",
+        "note": "October 17 is the agency deadline. No year is supplied or inferred; the UI must not call the round open. The full source separately specifies weekend treatment and ET time, so visitors are directed to confirm those details."
+      }
+    },
+    {
+      "claim": "stage for round:cgsd-direct-route",
+      "evidence_id": "ev-cgsd-deadline",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "Application deadline\nThrough a Canadian institution: Contact your institution (often significantly earlier than the agency’s deadline)\nDirectly to the agency: October 17",
+      "result": "supported",
+      "reason": "The overview is explicitly the scholarship application deadline, not admission or an offer date.",
+      "fact": "round:cgsd-direct-route.stage",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [
+          "cgsd-direct-route"
+        ],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": "Directly to the agency",
+        "note": "The overview is explicitly the scholarship application deadline, not admission or an offer date."
+      }
+    },
+    {
+      "claim": "eligibility restriction for rule:cgsd-doctoral-enrolment",
+      "evidence_id": "ev-cgsd-international",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "If you are not a Canadian citizen, permanent resident of Canada or protected person under subsection 95(2) of the Immigration and Refugee Protection Act (Canada), you must be registered in your doctoral program of study at an eligible Canadian institution by the application deadline. Up to 15% of awards will be available to international applicants.",
+      "result": "supported",
+      "reason": "Checked against the full Eligibility and Application sections; this is a stated restriction, not an individual eligibility determination. Other provider conditions remain applicable.",
+      "fact": "rule:cgsd-doctoral-enrolment.eligibility_restriction",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": null,
+        "note": "Checked against the full Eligibility and Application sections; this is a stated restriction, not an individual eligibility determination. Other provider conditions remain applicable."
+      }
+    },
+    {
+      "claim": "eligibility restriction for rule:cgsd-study-months",
+      "evidence_id": "ev-cgsd-study-months",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "To be eligible to apply to the CGRS D program, you must have completed no more than 36 months of full-time equivalent study in the doctoral program, the PhD portion of the joint professional undergraduate/PhD program or the joint program for which you are requesting funding by December 31 of the calendar year of your application.",
+      "result": "supported",
+      "reason": "Checked against the full Eligibility and Application sections; this is a stated restriction, not an individual eligibility determination. Other provider conditions remain applicable.",
+      "fact": "rule:cgsd-study-months.eligibility_restriction",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": null,
+        "note": "Checked against the full Eligibility and Application sections; this is a stated restriction, not an individual eligibility determination. Other provider conditions remain applicable."
+      }
+    },
+    {
+      "claim": "eligibility restriction for rule:cgsd-other-restrictions",
+      "evidence_id": "ev-cgsd-restrictions",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "You can apply to only one CRTAS program per academic year through CIHR, NSERC or SSHRC. If you apply to more than one program, only the first eligible application submitted to the agencies will be retained.\nYou can apply a maximum of three times to the CGRS D program.\nYou cannot have already received a doctoral-level scholarship from CIHR, NSERC or SSHRC (including a Vanier Canada Graduate Scholarship).",
+      "result": "supported",
+      "reason": "Checked against the full Eligibility and Application sections; this is a stated restriction, not an individual eligibility determination. Other provider conditions remain applicable.",
+      "fact": "rule:cgsd-other-restrictions.eligibility_restriction",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": null,
+        "note": "Checked against the full Eligibility and Application sections; this is a stated restriction, not an individual eligibility determination. Other provider conditions remain applicable."
+      }
+    },
+    {
+      "claim": "eligibility restriction for rule:cgsd-route-rule",
+      "evidence_id": "ev-cgsd-route",
+      "snapshot_id": "nserc-crsng-canada-ca-canada-graduate-research-scholarship-doctoral-pr-dcfbf661",
+      "excerpt": "You must apply either through a Canadian institution or directly to the appropriate agency, depending on your registration status on the application deadline date and/or your registration status during the calendar year of application. Where you intend to hold the award has no impact on the channel through which you must apply. If you fail to submit your application through the correct channel, your application will be rejected.",
+      "result": "supported",
+      "reason": "Checked against the full Eligibility and Application sections; this is a stated restriction, not an individual eligibility determination. Other provider conditions remain applicable.",
+      "fact": "rule:cgsd-route-rule.eligibility_restriction",
+      "applies_to": {
+        "scholarship": "Canada Graduate Research Scholarship – Doctoral (CGRS D)",
+        "rounds": [],
+        "applicant_category": null,
+        "degree_level": null,
+        "rate_year": null,
+        "application_route": null,
+        "note": "Checked against the full Eligibility and Application sections; this is a stated restriction, not an individual eligibility determination. Other provider conditions remain applicable."
+      }
+    }
+  ]
+}

@@ -567,4 +567,4 @@ def test_every_seed_fixture_carries_a_fact_for_every_obliged_field() -> None:
         decision = decide(candidate, snapshots=retained, report=report)
 
         assert missing == [], f"{path.name} states no fact for {missing}"
-        assert decision.decision is DecisionType.PUBLISH, path.name
+        assert decision.decision is DecisionType.HOLD, path.name  # synthetic endorsements cannot prove qualifiers

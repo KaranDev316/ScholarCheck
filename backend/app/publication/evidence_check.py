@@ -46,6 +46,8 @@ class Adjudication(DomainModel):
     snapshot_id: Identifier = Field(
         description="The retained snapshot whose span the checker read."
     )
+    evidence_id: Identifier | None = None
+    excerpt: str | None = None
     result: CheckResult
     reason: str | None = Field(
         default=None, description="Required when the result is not supported."
@@ -93,7 +95,7 @@ def check_candidate(
         programme.degree_level for programme in record.programmes
     }
     checks: list[ClaimCheck] = []
-    covered: set[tuple[str, str]] = set()
+    covered: set[tuple[str, str, str, str]] = set()
 
     for adjudication in adjudications:
         fact = candidate.facts.find(adjudication.fact)
@@ -106,20 +108,18 @@ def check_candidate(
                 f"{fact.key}: a {fact.state.value} fact cannot be marked "
                 f"{adjudication.result.value}"
             )
-        reading = next(
-            (
-                reading
-                for reading in fact.readings
-                if reading.snapshot_id == adjudication.snapshot_id
-            ),
-            None,
-        )
+        readings = [r for r in fact.readings if r.snapshot_id == adjudication.snapshot_id
+                    and (adjudication.evidence_id is None or r.evidence_id == adjudication.evidence_id)
+                    and (adjudication.excerpt is None or r.excerpt == adjudication.excerpt)]
+        if len(readings) > 1:
+            raise EvidenceCheckRefused(f"{fact.key}: multiple spans; identify evidence_id and excerpt explicitly")
+        reading = readings[0] if readings else None
         if reading is None:
             raise EvidenceCheckRefused(
                 f"{fact.key}: no reading of this fact comes from snapshot "
                 f"{adjudication.snapshot_id}"
             )
-        span = (fact.key, adjudication.snapshot_id)
+        span = (fact.key, adjudication.snapshot_id, reading.evidence_id, reading.excerpt)
         if span in covered:
             raise EvidenceCheckRefused(
                 f"{fact.key}: snapshot {adjudication.snapshot_id} was already checked"
@@ -143,7 +143,7 @@ def check_candidate(
         f"{fact.key} in {reading.snapshot_id}"
         for fact in candidate.facts.stated
         for reading in fact.readings
-        if (fact.key, reading.snapshot_id) not in covered
+        if (fact.key, reading.snapshot_id, reading.evidence_id, reading.excerpt) not in covered
     ]
     if unchecked:
         raise EvidenceCheckRefused("no evidence check covers: " + ", ".join(unchecked))
@@ -158,6 +158,8 @@ def check_candidate(
         policy_version=policy_version,
         checked_at=checked_at,
         facts=candidate.facts,
+        facts_hash=candidate.facts.fingerprint,
+        snapshot_hashes=candidate.snapshot_hashes,
         checks=tuple(checks),
     )
 

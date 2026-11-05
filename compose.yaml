@@ -1,0 +1,47 @@
+services:
+  database:
+    restart: unless-stopped
+    image: postgres:18
+    environment:
+      POSTGRES_DB: scholarcheck
+      POSTGRES_USER: scholarcheck
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U scholarcheck"]
+      interval: 5s
+      retries: 10
+  web:
+    restart: unless-stopped
+    build: .
+    ports: ["127.0.0.1:8000:8000"]
+    environment:
+      DATABASE_URL: postgresql://scholarcheck:${POSTGRES_PASSWORD}@database/scholarcheck
+      APP_ENV: production
+      CORS_ALLOWED_ORIGINS: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:?Set CONTACT_EMAIL}
+      REPORT_HASH_KEY: ${REPORT_HASH_KEY:?Set REPORT_HASH_KEY}
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - audits:/srv/backend/var
+  monitor:
+    restart: unless-stopped
+    profiles: [monitoring]
+    build: .
+    command: [python, -m, app.monitoring.worker, cgsd-doctoral, --loop]
+    environment:
+      DATABASE_URL: postgresql://scholarcheck:${POSTGRES_PASSWORD}@database/scholarcheck
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      EXTRACT_MODEL: ${EXTRACT_MODEL:-}
+      CHECK_MODEL: ${CHECK_MODEL:-}
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - audits:/srv/backend/var
+volumes:
+  postgres:
+  audits:

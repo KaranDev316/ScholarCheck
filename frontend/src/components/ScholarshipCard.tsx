@@ -1,6 +1,6 @@
 import { TagChip } from './Chips'
 import { fundingTypeFor } from '../data/funding'
-import { formatCheckedAgo } from '../data/format'
+import { formatDate } from '../data/format'
 import type { Scholarship } from '../data/types'
 import { scholarshipHref } from '../routing/routes'
 
@@ -56,12 +56,12 @@ export function ScholarshipCard({ record, isDevelopment }: ScholarshipCardProps)
           )}
           <div className="small mute checkedline">
             {record.sourceCheck
-              ? `Checked ${formatCheckedAgo(record.sourceCheck.checkedAt)} against the official page`
+              ? `Source checked ${formatDate(record.sourceCheck.checkedAt)}`
               : 'Not source checked yet'}
           </div>
         </div>
         <a className="btn alt sm" href={href}>
-          See evidence and details
+          See scholarship details
         </a>
       </div>
     </article>

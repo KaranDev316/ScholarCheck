@@ -135,13 +135,10 @@ def test_a_published_record_is_served_with_its_check_date(test_dsn: str) -> None
 
     assert response.status_code == 200
     body = response.json()
-    assert body["isPublished"] is True
-    assert body["publication"]["assurance"] == "source_checked"
-    assert body["publication"]["sourceCheckedAt"] is not None
-    assert (
-        body["publication"]["validationPolicyVersion"]
-        == build_report(candidate, snapshots).policy_version
-    )
+    assert body["sourceCheck"]["result"] == "matches"
+    assert body["sourceCheck"]["checkedAt"] is not None
+    assert "publication" not in body
+    assert "evidence" not in body
 
 
 def test_publishing_the_same_facts_twice_keeps_one_revision(test_dsn: str) -> None:
@@ -288,7 +285,7 @@ def test_the_database_refuses_a_source_check_without_a_revision(test_dsn: str) -
             snapshots,
             approved_hosts=APPROVED,
         )
-        with pytest.raises(psycopg.errors.ForeignKeyViolation):
+        with pytest.raises(psycopg.errors.RaiseException, match="immutable"):
             conn.execute(
                 "DELETE FROM opportunity_revisions WHERE opportunity_id = %s",
                 (candidate.id,),

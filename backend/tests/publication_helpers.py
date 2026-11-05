@@ -33,6 +33,7 @@ from app.publication.facts import (
     MaterialFactKind,
     MaterialFacts,
     subject,
+    programme_value,
 )
 from app.publication.gates import digits_only
 from app.publication.policy import POLICY_VERSION
@@ -44,7 +45,7 @@ PARSER_VERSION = "test-extraction/1"
 SAMPLE_URL = (
     "https://nserc-crsng.canada.ca/en/funding-opportunity/sample-award"
 )
-SAMPLE_PASSAGE = "The scholarship pays $40,000 per year for 36 months."
+SAMPLE_PASSAGE = "The scholarship pays CAD $40,000 per year for 36 months."
 FINDINGS_PATH = REGISTER_PATH
 
 
@@ -197,8 +198,15 @@ def build_facts(
     ) -> MaterialFact:
         return _fact(record, prefix, kind, value, refs, overrides, ids_by_url, reason)
 
+    facts.append(fact("record", MaterialFactKind.SUMMARY, record.summary, ()))
+    for programme in record.programmes:
+        facts.append(fact(f"programme:{programme.id}", MaterialFactKind.PROGRAMME, programme_value(programme), ()))
     for component in record.funding_components:
         prefix = subject("component", component.id)
+        facts.append(fact(prefix, MaterialFactKind.DESCRIPTION, component.description, component.evidence_refs))
+        facts.append(fact(prefix, MaterialFactKind.CONDITIONS, "\n".join(component.conditions) or None, component.evidence_refs))
+        facts.append(fact(prefix, MaterialFactKind.PERIOD, component.period, component.evidence_refs))
+        facts.append(fact(prefix, MaterialFactKind.COVERAGE, None, component.evidence_refs))
         facts.append(
             fact(
                 prefix,
@@ -232,6 +240,7 @@ def build_facts(
         )
     for round_entry in record.rounds:
         prefix = subject("round", round_entry.id)
+        facts.append(fact(prefix, MaterialFactKind.LABEL, round_entry.label, ()))
         facts.append(fact(prefix, MaterialFactKind.INTAKE, round_entry.intake, ()))
         facts.append(
             fact(prefix, MaterialFactKind.APPLICATION_ROUTE, round_entry.route, ())
@@ -367,6 +376,8 @@ def build_report(
         policy_version=policy_version,
         checked_at=CHECKED_AT,
         facts=facts,
+        facts_hash=facts.fingerprint,
+        snapshot_hashes={s.id: s.fingerprint for s in snapshots},
         checks=tuple(checks),
     )
 
@@ -405,6 +416,7 @@ def fact_checks(
                     applies_to=Applicability(
                         scholarship=record.scheme_name,
                         rounds=rounds,
+                        application_route=next((r.route for r in record.rounds if f"round:{r.id}" == fact.subject), None),
                         note="the record's own citation states this field",
                     ),
                 )
