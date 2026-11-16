@@ -8,6 +8,8 @@ register alone.
 import inspect
 from datetime import timedelta
 
+from pydantic import HttpUrl
+
 from app.domain.enums import DegreeLevel, PublicationAssurance
 from app.domain.models import Evidence, Opportunity
 from app.publication.contracts import (
@@ -244,7 +246,10 @@ def test_a_citation_and_snapshot_from_different_pages_are_held() -> None:
     candidate = record()
     retained = build_snapshots(candidate)
     report = build_report(candidate, retained)
-    elsewhere = retained[0].model_copy(update={"url": f"{URL}#other"})
+
+    elsewhere = retained[0].model_copy(
+        update={"url": HttpUrl(f"{URL}#other")}
+    )
 
     decision = decide(candidate, snapshots=(elsewhere,), report=report)
 
