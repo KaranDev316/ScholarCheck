@@ -132,13 +132,27 @@ does not depend on those inputs first. Never invent addresses or credentials.
 
 ## Immediate next work
 
-Fresh local checks on 16 November 2026: backend **239 passed, 18 skipped**
-(database integration proof remains outstanding in this run); frontend **76
-passed**, lint passed, and production build including TypeScript checking
-passed. Backend emitted a test-client deprecation and a serializer warning;
-triage these without treating them as demonstrated production failures.
+Fresh local checks on 16 November 2026 (B01, commit `1188df8`, no code changes):
+backend **239 passed, 18 skipped** without a database, and **257 passed, 0
+skipped** against a disposable PostgreSQL 18.6 database created for the run and
+dropped afterwards; frontend **76 passed**, with lint, typecheck and the
+production build including TypeScript checking all passing. The only warning was
+FastAPI/Starlette's httpx test-client deprecation; the serializer warning noted
+in an earlier run did not recur. The 18 skips are database-gated integration
+tests, listed in [the checkpoint](BUILD-CHECKPOINT.md), and are not counted as
+passing anywhere.
 
-Start B01, record exact results, then fix the smallest set of confirmed release
-blockers. Prepare B03 alongside that work. The next product milestone is a
-verified public MVP URL; the next operational milestone is one scheduled record
-with proven safe updates/holds. Neither is complete merely because code exists.
+B01 demonstrated no release-critical code defect, so B02 records that finding
+instead of inventing a fix and reconciles current status in the README, roadmap
+and S01 ledger without deleting their history. B03 then reviewed the deployment
+configuration: packaging paths, health-gated PostgreSQL startup, the private
+audit volume, production static serving and the report gate all held, and one
+real gap was fixed - the Compose worker could not receive the documented command
+adapters and the web service received no model configuration at all, so a live
+pipeline run through it was impossible. Docker is still absent, so the container
+build remains unexecuted while the native production route was rehearsed end to
+end against a disposable database. [The checkpoint](BUILD-CHECKPOINT.md) lists
+the external inputs still missing: hosting target, origin, contact address and
+provider access. The next product milestone is a verified public MVP URL; the
+next operational milestone is one scheduled record with proven safe
+updates/holds. Neither is complete merely because code exists.

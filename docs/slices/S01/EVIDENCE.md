@@ -1,9 +1,38 @@
 # Evidence — S01 foundation
 
-## Latest acceptance result — 5 November 2026
+## Baseline re-verification — 16 November 2026
 
-This section supersedes the implementation-status claims in the historical
-entries below. Those entries record what was proven under earlier policies.
+Task B01 re-ran the checks instead of restating earlier numbers. `git status`
+was clean at HEAD `1188df8`; no product code changed.
+
+| Check | Command | Actual result |
+|---|---|---|
+| Backend suite, no database | `cd backend && .venv/bin/python -m pytest` | **239 passed, 18 skipped**, 1 warning |
+| Backend, disposable PostgreSQL | `psql -h localhost -d postgres -c 'CREATE DATABASE scholarcheck_test_b01'`, then `SCHOLARCHECK_TEST_DATABASE_URL=postgresql://localhost/scholarcheck_test_b01 .venv/bin/python -m pytest -rs` | **257 passed, 0 skipped**, 1 warning |
+| Frontend tests | `cd frontend && npm run test` | **76 passed** in 11 files |
+| Typecheck, lint, build | `npm run typecheck`; `npm run lint`; `npm run build` | all passed, no diagnostics |
+
+The 18 tests skipped without a database are the integration tests listed in
+[the build checkpoint](../../BUILD-CHECKPOINT.md); with the disposable database
+configured all 18 ran and passed, so the earlier "database integration proof
+remains outstanding" note is closed as of this date. The disposable database was
+dropped afterwards and left no schemas behind. Environment: Python 3.14.2,
+Node 24.21.0, PostgreSQL 18.6.
+
+Only one warning reproduced: FastAPI/Starlette's `httpx` test-client
+deprecation, which affects test tooling only. The serializer warning recorded in
+the 5 November entry below did not reappear in any of three runs. Docker is
+still not installed here (`docker: command not found`), so the container build
+remains unexecuted. No failing test, lint, typecheck or build step was observed;
+the open items are external ones — deployed origin and contact, container
+build/start, a live model call and unattended monitoring.
+
+## Acceptance result — 5 November 2026 (historical)
+
+This section superseded the implementation-status claims in the entries below
+at the time it was written, and is itself superseded on execution dates by the
+16 November baseline above. Those entries record what was proven under earlier
+policies.
 
 | Requirement | Current proof |
 |---|---|
@@ -158,7 +187,11 @@ Limits of this pass:
   `nserc-crsng.canada.ca`. A citation that keeps the old address now holds,
   because the retained snapshot records the address that actually answered.
 
-## Current F-criterion ledger
+## F-criterion ledger as recorded 2026-11-02 (historical)
+
+These rows predate the published-only API, problem reports and launch reporting
+recorded above; read F-09 and F-12 there rather than here. The ledger is kept
+unchanged to preserve what was proven on that date.
 
 | Criterion | State | Evidence or gap |
 |---|---|---|

@@ -120,3 +120,11 @@ origin, contact address and deployed smoke test remain outstanding. The built-in
 model adapter needs runtime API credentials and explicit model IDs; its live
 provider call has not been executed. See [release instructions](docs/DEPLOYMENT.md)
 and the [evidence ledger](docs/slices/S01/EVIDENCE.md).
+
+Re-verified on 16 November 2026 (B01, commit `1188df8`, no code changes):
+backend **239 passed with 18 database-gated skips**, and **257 passed with no
+skips** against a disposable PostgreSQL 18.6 database created for the run and
+dropped afterwards; frontend **76 passed**, with lint, typecheck and the
+production build all passing. The only warning was FastAPI's httpx test-client
+deprecation. No failing check was found, so no release-critical code defect is
+open from this baseline; the remaining blockers are the external ones above.

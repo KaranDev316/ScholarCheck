@@ -13,6 +13,21 @@ HMACs client addresses for the report rate limit; raw addresses are not stored.
 Use a URL-safe database password or percent-encode it in the connection URL.
 ScholarCheck remains the product name. No contact address has been invented.
 
+| Input | Needed for | Notes |
+|---|---|---|
+| `PUBLIC_ORIGIN` | Compose and native | Real HTTPS origin, no trailing slash; must equal the address visitors use, because problem reports are refused from other origins |
+| `CONTACT_EMAIL` | Compose and native | Real, monitored mailbox; the deploy smoke check can assert it |
+| `POSTGRES_PASSWORD` | Compose | URL-safe, or percent-encoded in the connection URL |
+| `REPORT_HASH_KEY` | Compose and native | Random secret, for example `python3 -c 'import secrets;print(secrets.token_urlsafe(32))'`; rotating it only resets existing rate-limit hashes |
+| `DATABASE_URL` | Native only | Compose builds it from the password |
+| `FRONTEND_DIST` | Native only | Absolute path to the built `frontend/dist` |
+| `OPENAI_API_KEY`, `EXTRACT_MODEL`, `CHECK_MODEL` | Optional live model pass | Model IDs must exist for that account; without them a changed page is retained and held |
+| `EXTRACT_COMMAND`, `CHECK_COMMAND` | Alternative to model IDs | Executables reading JSON on stdin and writing JSON on stdout, run without a shell |
+
+Not supplied by this repository, and not to be invented: the hosting target and
+domain, the real contact address, provider credentials or model IDs, and an
+acceptable operating budget.
+
 Docker Compose deployment (Docker is not installed in the implementation
 workspace, so this container build has not been executed here):
 
@@ -24,12 +39,11 @@ docker compose run --rm web python -m app.manage publish-launch
 docker compose up -d web
 ```
 
-The web port binds to localhost. Configure the chosen hosting platform or a
-TLS reverse proxy for the real origin. The process does not trust forwarded
-client-address headers; behind a proxy the report limit is therefore shared
-by that proxy's address. Configure a trusted proxy boundary before enabling
-forwarded client addresses. The current limit is five reports per address hash
-per hour, with an 8 KiB request-body cap and bounded input fields.
+Both `web` and `monitor` receive the optional model variables and command
+adapters from `.env`, so `docker compose run --rm web python -m
+app.publication.pipeline ...` uses the same extraction/checking configuration as
+the worker. Empty values leave the adapters unconfigured, and a changed page is
+then retained and held rather than published.
 
 The launch command validates the recorded CGRS D proposal and separate
 adjudications, rebuilds the report with its actual recorded check time, runs
@@ -43,7 +57,73 @@ For a native deployment, run `npm ci && npm run build` in `frontend`, install
 `FRONTEND_DIST` to the absolute `frontend/dist` path, `CONTACT_EMAIL`,
 `REPORT_HASH_KEY` and `CORS_ALLOWED_ORIGINS` to the actual origin. Run
 `python -m app.manage init`, then `python -m app.manage publish-launch` from
-`backend`, and serve `app.main:app` with Uvicorn.
+`backend`, and serve `app.main:app` with Uvicorn. Pass `--no-proxy-headers` as
+the image does: without it Uvicorn trusts `X-Forwarded-For` from loopback
+proxies, which changes what the report rate limit keys on.
+
+The web port binds to localhost. Configure the chosen hosting platform or a
+TLS reverse proxy for the real origin. The process does not trust forwarded
+client-address headers; behind a proxy the report limit is therefore shared
+by that proxy's address. Configure a trusted proxy boundary before enabling
+forwarded client addresses. The current limit is five reports per address hash
+per hour, with an 8 KiB request-body cap and bounded input fields.
+
+## TLS, proxy and secret handling
+
+Terminate TLS at the hosting platform or a reverse proxy; the container serves
+plain HTTP on `127.0.0.1:8000` and Compose does not expose it publicly. Uvicorn
+runs with `--no-proxy-headers`, so forwarded client-address headers are ignored
+and the report limit keys on the TCP peer, which behind a proxy is the proxy's
+address. Trusting `X-Forwarded-For` needs a code change plus an explicit
+allowlist of proxies; neither exists today, so do not describe the limit as
+per-visitor when a proxy is in front.
+
+Secrets belong in an uncommitted `.env` (mode 600) or the platform's secret
+store, injected as runtime environment variables. Do not pass them as build
+arguments, copy them into the image, or write them under `content/`, `var/` or
+the audit volume. `.dockerignore` excludes `.env*`, and `.gitignore` excludes
+`.env`/`.env.*` while keeping `.env.example`. The image builds without secrets,
+so rotating one needs a restart, not a rebuild. `PUBLIC_ORIGIN` is also an
+authority, not just config: a problem report whose `Origin` is not in
+`CORS_ALLOWED_ORIGINS` is refused with 403, so it must match the address
+visitors actually use.
+
+## Backups and retention
+
+Persistent state lives in two places: the `postgres` volume (published
+revisions, problem reports, monitor state) and the `audits` volume (private
+extraction/checking artifacts and changed snapshots). `content/` is versioned in
+the repository, so it needs no backup of its own.
+
+- Database: nightly `pg_dump --format=custom`, or the platform's managed
+  backups, retained at least 30 days. The published catalogue must survive a
+  lost volume; restore into an empty database with `pg_restore`.
+- Audits: snapshot the volume on the same schedule. Losing audits does not
+  unpublish records, but it destroys the private evidence trail a revision cites.
+- Restore into a disposable database, run the deploy smoke check against it, and
+  record the date before calling backups proven.
+- Do not restore audits over `content/` or the reverse; they are separate
+  provenance stores and their hashes must keep matching.
+
+## Resource limits
+
+Size from observation rather than guesswork. The API is one Uvicorn worker
+serving mostly static content; the monitor adds a daily fetch plus at most two
+model calls per record. A starting point for a small deployment is 0.5 CPU and
+512 MiB each for `web` and `monitor`, and 1 CPU with 1 GiB for `database`, then
+adjust after real traffic. Compose (non-Swarm) accepts limits per service:
+
+```yaml
+services:
+  web:
+    mem_limit: 512m
+    cpus: 0.5
+```
+
+Disk grows with retained snapshots and monitor history, so watch the `postgres`
+and `audits` volumes. There is no built-in model-spend cap yet: cost is bounded
+by the daily monitoring cadence and by leaving the `monitoring` profile
+disabled, so treat any budget as an operator limit rather than an enforced one.
 
 ## Release proof
 

@@ -75,3 +75,31 @@ monitoring there. Configure model credentials and model IDs (or external
 commands) for unattended validation; the built-in provider adapter has tests but
 has not been called against a live model account. JavaScript-rendered capture
 and broader discovery remain outside this HTML-source launch proof.
+
+## Baseline verification — 16 November 2026
+
+B01 re-ran the checks at commit `1188df8` with no code changes. Backend: **239
+passed, 18 skipped** without a database, and **257 passed, 0 skipped** against a
+disposable PostgreSQL 18.6 database created for the run and dropped afterwards.
+Frontend: **76 passed**, with typecheck, lint and the production build all
+passing. The one warning was FastAPI's httpx test-client deprecation.
+
+The 5 November statement above still describes the implementation, but its
+"database integration proof outstanding" gap is closed by this run. No failing
+check was demonstrated, so no release-critical code defect is open. Outstanding
+release risks are external and ordered: (1) the container build/start, since
+Docker is still absent from this workspace; (2) a deployed HTTPS origin, real
+contact address and deployed smoke check; (3) a live model-provider call; then
+(4) scheduled monitoring on a deployed target.
+
+B03 prepared the deployment configuration without inventing any of those inputs.
+Packaging paths, health-gated PostgreSQL startup, the private audit volume,
+production static serving and the report gate were reviewed and held; the native
+production route was then rehearsed against a disposable database with
+`app.manage init`, `publish-launch` and `scripts/smoke.py --report` all passing.
+One real defect was fixed: the Compose worker could not receive the documented
+`EXTRACT_COMMAND`/`CHECK_COMMAND` adapters, and the web service received no model
+configuration, so a live pipeline run through Compose was impossible. The
+container image itself is still unbuilt, and
+[the deployment checklist](DEPLOYMENT.md) lists exactly which external inputs
+remain.
