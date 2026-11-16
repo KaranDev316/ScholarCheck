@@ -2,6 +2,8 @@
 
 Inputs: `CONTEXT.md`, `PRP.md`, `ARCHITECTURE.md`,
 `PUBLICATION-POLICY.md`. Owner decisions D-10..D-12 set the sequence below.
+The [build and release plan](BUILD-PLAN.md) adds the 16 November 2026 execution
+backlog, milestone acceptance gates, dependencies and planning allowances.
 The four current fixtures remain unpublished
 regression inputs until their material claims pass the publication policy.
 
