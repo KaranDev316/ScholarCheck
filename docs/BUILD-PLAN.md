@@ -3,6 +3,8 @@
 Prepared 16 November 2026. Scope follows `PRP.md`, `CONTEXT.md` decisions
 D-10–D-13, and `PUBLICATION-POLICY.md`. This is the execution companion to
 `ROADMAP.md`; it does not expand the agreed product boundary.
+Use [the local AI prompts](LOCAL-AI-PROMPTS.md) to execute this plan one bounded
+task at a time, with compact context and explicit verification.
 
 ## Outcome and delivery rules
 
