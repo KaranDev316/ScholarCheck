@@ -71,6 +71,7 @@ def test_checker_returns_ids_and_restores_bindings_without_changing_verdicts():
     wire, bindings = _checker_protocol(payload)
     assert wire['excerpts'] == {'0': 'Repeated quote'}
     assert 'excerpt' not in wire['candidate']['facts']['facts'][0]['readings'][0]
+    assert set(wire['schema']['$defs']['Adjudication']['properties']) == {'result', 'reason', 'appliesTo', 'reading_id'}
     assert payload['candidate']['opportunity']['evidence'][0]['passage'] == 'Repeated quote'
     def transport(request, timeout):
         output = [{'reading_id': '0', 'result': 'unsupported', 'reason': 'Wrong applicant category', 'applies_to': None}]

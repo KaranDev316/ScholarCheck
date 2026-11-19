@@ -110,11 +110,12 @@ def _checker_protocol(payload):
     payload['excerpts'] = excerpts
     schema = payload['schema']
     adjudication = schema['$defs']['Adjudication']
-    for name in ('fact', 'snapshot_id', 'evidence_id', 'excerpt'):
+    bound_fields = ('fact', 'snapshot_id', 'snapshotId', 'evidence_id', 'evidenceId', 'excerpt')
+    for name in bound_fields:
         adjudication['properties'].pop(name, None)
     adjudication['properties']['reading_id'] = {'type': 'string', 'enum': list(bindings)}
     adjudication['required'] = [k for k in adjudication.get('required', [])
-                                if k not in ('fact', 'snapshot_id', 'evidence_id', 'excerpt')]
+                                if k not in bound_fields]
     adjudication['required'].append('reading_id')
     # The complete snapshots and all claim values/context remain available.
     for evidence in payload['candidate']['opportunity'].get('evidence', []):
@@ -158,7 +159,7 @@ class ModelPass:
                 'Every opportunity.evidence[].passage and every reading.excerpt must be an exact, contiguous verbatim substring copied from snapshots[].body (never truncate or use "..."). '
                 'All identifiers (id, evidenceId, evidenceRefs, etc.) must be lowercase kebab-case of at least 3 characters (e.g. ev-source-1), '
                 'and fundingComponents[].amount must be a plain decimal number without currency symbols or commas (e.g. 40000). '
-                'Every reading must cite an evidence_id present in opportunity.evidence whose url and retrieved_at match snapshot_id.',
+                'Pre-declare every cited block in opportunity.evidence (including blocks used for record.summary, programmes, and rounds) so every reading.evidence_id already exists in opportunity.evidence with url and retrieved_at matching snapshot_id.',
                 'Never infer currency from bare "$", never infer a rate year or intake year, and never infer coverage unless explicitly designated. '
                 'When a field is not explicitly stated, set nullable opportunity fields to null and emit a fact with readings=[] and a non-empty reason.',
             ])
