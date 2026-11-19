@@ -1,8 +1,9 @@
 import react from '@vitejs/plugin-react'
+import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   server: {
     port: 5173,
@@ -10,7 +11,7 @@ export default defineConfig({
     // FastAPI dev server so no CORS negotiation is needed in day-to-day work.
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: loadEnv(mode, process.cwd(), 'VITE_').VITE_API_PROXY_TARGET || 'http://127.0.0.1:8000',
         changeOrigin: true,
       },
     },
@@ -22,4 +23,4 @@ export default defineConfig({
     restoreMocks: true,
     unstubGlobals: true,
   },
-})
+}))

@@ -132,3 +132,31 @@ dropped afterwards; frontend **76 passed**, with lint, typecheck and the
 production build all passing. The only warning was FastAPI's httpx test-client
 deprecation. No failing check was found, so no release-critical code defect is
 open from this baseline; the remaining blockers are the external ones above.
+
+
+### Local environment and occupied ports
+
+The backend reads process environment variables; to load the private root `.env`
+when starting Uvicorn, run from `backend`:
+
+```bash
+.venv/bin/python -m uvicorn app.main:app --env-file ../.env --host 127.0.0.1 --port 8017
+```
+
+For an alternate backend port, set `VITE_API_PROXY_TARGET=http://127.0.0.1:8017`
+in the private `frontend/.env.local`. Leave `VITE_PREVIEW_DATA=false` to load
+published database records. Restart Vite after changing environment files.
+Without this override the development proxy continues to use port 8000.
+Use `http://localhost:5173` for this project's running Vite server; a separate
+application can occupy the IPv4 `127.0.0.1:5173` address independently.
+
+The isolated local PostgreSQL setup created for this workspace stores data under
+ignored `var/postgres-local`, listens on loopback port 55432, and uses database
+`scholarcheck_local`. If stopped, restart it from the project root:
+
+```bash
+pg_ctl -D var/postgres-local -l var/postgres-local.log -o '-h 127.0.0.1 -p 55432 -k /tmp' start
+```
+
+This cluster uses trust authentication for local development only; do not expose
+it on a public interface or use that configuration for a production database.
