@@ -145,6 +145,8 @@ class ModelPass:
         if task == 'extract':
             parts.extend([
                 'Use the exact stable opportunity identity supplied in previous_record when monitoring.',
+                'Set programme.institution to null when the source names no specific programme institution; never use an empty string, Unknown, or the scholarship provider as a substitute. '
+                'Keep eligible-institution and location restrictions as evidence-backed eligibility rules, not institution names.',
                 'Extract the funded degree programme(s) into opportunity.programmes (at least one whenever the source names a degree level) '
                 'and all stated application routes/deadlines into opportunity.rounds.',
                 'Return both opportunity and a complete, non-empty facts array covering every required fact: '

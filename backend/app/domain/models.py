@@ -97,12 +97,16 @@ class Evidence(DomainModel):
 
 
 class Programme(DomainModel):
-    """A specific funded degree offered by an institution."""
+    """A funded degree; its institution may be unnamed or vary by applicant."""
 
     id: Identifier
     name: str = Field(min_length=1)
     degree_level: DegreeLevel
-    institution: str = Field(min_length=1)
+    institution: str | None = Field(
+        default=None,
+        min_length=1,
+        description="Named programme institution, or None when not specified. Institution eligibility restrictions belong in eligibility rules.",
+    )
     country: CountryCode
     duration_years: float | None = Field(
         default=None,

@@ -227,3 +227,11 @@ total input/output token usage, including completed calls whose outputs fail
 local validation. Missing provider usage is recorded as null, not measured zero.
 These changes have local regression coverage; actual token savings and model
 quality must be measured with a new live run.
+
+Programme institution is nullable when the source does not name a specific
+institution (for example, an award tenable at multiple eligible universities).
+The extractor must emit `null`, not an empty string or a provider name. Existing
+named institutions remain valid. Institution/location eligibility restrictions
+remain evidence-backed rules. Programme storage uses JSONB, so no SQL column
+migration is needed; the public catalogue derives study levels and does not
+expose an institution field.

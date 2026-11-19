@@ -1,5 +1,6 @@
 """T02: domain types enforce the rules the product depends on."""
 
+import json
 from datetime import UTC, datetime, timedelta
 
 import pytest
@@ -158,3 +159,31 @@ def test_t02_rule_assessment_carries_a_reason() -> None:
 
     with pytest.raises(ValidationError):
         RuleAssessment(rule_id="rule-degree", result="unresolved", reason="")
+
+
+@pytest.mark.parametrize('institution', [None, 'Example University'])
+def test_programme_institution_can_be_unspecified_or_named(institution):
+    from app.domain.models import Programme
+    payload = dict(id='doctoral-programme', name='Doctoral programme',
+                   degree_level='doctoral', country='CA', institution=institution)
+    programme = Programme.model_validate(payload)
+    assert Programme.model_validate_json(programme.model_dump_json()).institution == institution
+    payload.pop('institution')
+    assert Programme.model_validate(payload).institution is None
+
+
+def test_programme_still_rejects_empty_institution():
+    from app.domain.models import Programme
+    with pytest.raises(ValidationError, match='institution'):
+        Programme(id='doctoral-programme', name='Doctoral programme',
+                  degree_level='doctoral', country='CA', institution='')
+
+
+def test_extraction_schema_and_record_roundtrip_allow_unnamed_institution(opportunity):
+    from app.publication.candidate import ExtractionProposal
+    payload = opportunity.model_dump(mode='json')
+    payload['programmes'][0]['institution'] = None
+    record = Opportunity.model_validate_json(json.dumps(payload))
+    assert record.programmes[0].institution is None
+    schema = ExtractionProposal.model_json_schema()['$defs']['Programme']['properties']['institution']
+    assert {'type': 'null'} in schema['anyOf']
