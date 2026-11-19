@@ -483,6 +483,11 @@ section {
   font: 600 1.4rem var(--serif);
 }
 
+.award-note {
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
 .checkedline {
   margin-top: 4px;
 }

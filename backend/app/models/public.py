@@ -18,6 +18,7 @@ class Component(DomainModel):
     label: str
     state: Literal['stated', 'unspecified']
     amount: str | None = None
+    currency: str | None = None
     basis: str | None = None
     note: str | None = None
     conditions: tuple[str, ...] = ()
@@ -50,6 +51,7 @@ class SourceCheck(DomainModel):
 class Headline(DomainModel):
     component: str
     amount: str
+    currency: str | None = None
     basis: str
 
 class PublicOpportunity(DomainModel):
@@ -60,6 +62,7 @@ class PublicOpportunity(DomainModel):
     levels: tuple[str, ...]
     summary: str
     tags: tuple[str, ...] = ()
+    currency: str | None = None
     headline: Headline | None = None
     coverage: FundingCoverage
     funding_type: str | None = None
@@ -98,7 +101,8 @@ def public_record(record, report, checked_at):
         year = value(f'component:{c.id}.rate_year')
         components.append(Component(id=c.id, label='Award component' if c.kind.value == 'other' else c.kind.value.replace('_', ' ').title(),
             state='unspecified' if c.status.value == 'unspecified' else 'stated',
-            amount=(f'{c.currency + " " if c.currency else ""}{c.amount:,f}{" (currency not stated)" if not c.currency else ""}' if c.amount is not None else None),
+            amount=(f'{c.amount:,f}' if c.amount is not None else None),
+            currency=c.currency,
             basis='; '.join(x for x in [c.period, f'{year} rate' if year else None] if x) or None,
             note=c.description, conditions=c.conditions))
     rounds = []
@@ -111,11 +115,11 @@ def public_record(record, report, checked_at):
         rounds.append(PublicRound(id=r.id, round=r.label, date_as_published=deadline or 'Not stated',
             status='Deadline published' if dated else 'Confirm with provider',
             note='; '.join(x for x in [r.route, stage] if x)))
-    headline = next((Headline(component=c.label, amount=c.amount, basis=c.basis or '') for c in components if c.amount), None)
+    headline = next((Headline(component=c.label, amount=c.amount, currency=c.currency, basis=c.basis or '') for c in components if c.amount), None)
     return PublicOpportunity(id=record.id, title=record.scheme_name, provider=record.funder,
         country=', '.join(COUNTRIES.get(c,c) for c in record.destinations),
         levels=tuple(dict.fromkeys(LEVELS[p.degree_level.value] for p in record.programmes)),
-        summary=record.summary, headline=headline, coverage=cov, funding_type=funding_type,
+        summary=record.summary, currency=headline.currency if headline else None, headline=headline, coverage=cov, funding_type=funding_type,
         components=tuple(components), eligibility=tuple(Eligibility(id=r.id, statement=r.requirement) for r in record.eligibility_rules),
         rounds=tuple(rounds), application=Application(note='Confirm the route and deadlines for your circumstances with the official provider.'),
         links=Links(summary=str(record.links.summary_url),requirements=str(record.links.requirements_url),portal=str(record.links.portal_url)),

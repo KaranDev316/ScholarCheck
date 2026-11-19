@@ -39,9 +39,11 @@ export interface FundingComponentView {
   id: string
   label: string
   state: FactState
-  /** Amount exactly as published, e.g. 'CA$40,000'. Omitted when not stated. */
+  /** Numeric amount as published, e.g. '40,000' or 'Up to 1,540'. Omitted when not stated. */
   amount?: string
-  /** The published basis for the amount, e.g. 'per year for 36 months'. */
+  /** ISO 4217 currency code when explicitly stated by the source (e.g. 'CAD', 'AUD'), or null/omitted when not stated. */
+  currency?: string | null
+  /** The published basis/qualifiers for the amount, e.g. 'per year for 36 months'. */
   basis?: string
   note?: string
   conditions?: readonly string[]
@@ -91,6 +93,13 @@ export interface OfficialLinks {
   portal: string
 }
 
+export interface HeadlineAward {
+  component: string
+  amount: string
+  currency?: string | null
+  basis: string
+}
+
 export interface Scholarship {
   id: string
   title: string
@@ -100,8 +109,10 @@ export interface Scholarship {
   summary: string
   /** Extra descriptive tags; level, country and funding type are derived. */
   tags: readonly string[]
+  /** ISO 4217 currency code for the headline award when explicitly stated by the source, or null when not stated. */
+  currency?: string | null
   /** Headline amount and the component it belongs to. Never a sum. */
-  headline: { component: string; amount: string; basis: string } | null
+  headline: HeadlineAward | null
   coverage: FundingCoverage
   components: readonly FundingComponentView[]
   eligibility: readonly EligibilityStatement[]

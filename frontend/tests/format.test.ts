@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
-import { displayUrl, formatCheckedAgo, formatDate, formatDateTime } from '../src/data/format'
+import {
+  displayUrl,
+  formatAward,
+  formatCheckedAgo,
+  formatDate,
+  formatDateTime,
+  formatScholarshipSummary,
+} from '../src/data/format'
+import { makeRecord } from './fixtures'
 
 describe('date formatting', () => {
   it('formats dates in UTC so a saved copy never shifts a day', () => {
@@ -33,5 +41,62 @@ describe('checked-ago wording', () => {
 describe('displayUrl', () => {
   it('drops the scheme so the source reads as an address', () => {
     expect(displayUrl('https://example.edu/awards/doctoral')).toBe('example.edu/awards/doctoral')
+  })
+})
+
+describe('formatAward', () => {
+  it('formats known currency with separate amount and period qualifiers', () => {
+    const result = formatAward(40000, 'CAD', 'per year')
+    expect(result).toEqual({
+      amountText: 'CAD $40,000',
+      inlineText: 'CAD $40,000 / year',
+      qualifierText: 'per year',
+      currencyNote: null,
+    })
+  })
+
+  it('formats unknown currency without inline placeholder and adds a muted note', () => {
+    const result = formatAward('40,000 (currency not stated)', null, 'per year for 36 months')
+    expect(result).toEqual({
+      amountText: '$40,000',
+      inlineText: '$40,000 / year',
+      qualifierText: 'per year for 36 months',
+      currencyNote: 'Currency per source',
+    })
+  })
+
+  it('preserves prefixes like Up to and decimal precision', () => {
+    expect(formatAward('Up to 1,540', 'AUD', 'one-off payment')).toEqual({
+      amountText: 'Up to AUD $1,540',
+      inlineText: 'Up to AUD $1,540',
+      qualifierText: 'one-off payment',
+      currencyNote: null,
+    })
+    expect(formatAward('24,067.80', null, 'annual reduction')).toEqual({
+      amountText: '$24,067.80',
+      inlineText: '$24,067.80 / year',
+      qualifierText: 'annual reduction',
+      currencyNote: 'Currency per source',
+    })
+  })
+})
+
+describe('formatScholarshipSummary', () => {
+  it('keeps card descriptions aligned with headline currency and amount', () => {
+    const unknown = makeRecord({
+      currency: null,
+      summary: 'The source lists $40,000 per year for 36 months.',
+      headline: { component: 'Award component', amount: '40,000', currency: null, basis: 'per year' },
+    })
+    expect(formatScholarshipSummary(unknown)).toBe('The source lists $40,000 / year for 36 months.')
+
+    const known = makeRecord({
+      currency: 'CAD',
+      summary: 'The source lists $40,000 per year for 36 months.',
+      headline: { component: 'Award component', amount: '40,000', currency: 'CAD', basis: 'per year' },
+    })
+    expect(formatScholarshipSummary(known)).toBe(
+      'The source lists CAD $40,000 / year for 36 months.',
+    )
   })
 })

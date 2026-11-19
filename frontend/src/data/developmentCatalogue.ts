@@ -1,4 +1,23 @@
-import type { Scholarship } from './types'
+import { formatAward } from './format'
+import type { FundingComponentView, Scholarship } from './types'
+
+const cgsdLivingSupport: FundingComponentView = {
+  id: 'cgsd-living-support',
+  label: 'Living allowance',
+  state: 'stated',
+  amount: '40,000',
+  currency: null,
+  basis: 'per year for 36 months',
+  note: 'Paid to the award holder while the award is held.',
+  conditions: ['Paid for 36 months.'],
+  evidenceNumber: 1,
+}
+
+const cgsdHeadlineAward = formatAward(
+  cgsdLivingSupport.amount!,
+  cgsdLivingSupport.currency,
+  cgsdLivingSupport.basis,
+)
 
 /**
  * Development previews.
@@ -16,13 +35,14 @@ export const developmentCatalogue: readonly Scholarship[] = [
     provider: 'Government of Canada (CIHR, NSERC and SSHRC)',
     country: 'Canada',
     levels: ['PhD'],
-    summary:
-      'A federal doctoral award of CA$40,000 per year for 36 months, held while enrolled at an eligible Canadian institution. The programme description is a living-support award and does not mention tuition support.',
+    summary: `A federal doctoral award of ${cgsdHeadlineAward.inlineText} for 36 months, held while enrolled at an eligible Canadian institution. The programme description is a living-support award and does not mention tuition support.`,
     tags: [],
+    currency: cgsdLivingSupport.currency,
     headline: {
-      component: 'Living allowance',
-      amount: 'CA$40,000',
-      basis: 'per year for 36 months',
+      component: cgsdLivingSupport.label,
+      amount: cgsdLivingSupport.amount!,
+      currency: cgsdLivingSupport.currency,
+      basis: cgsdLivingSupport.basis!,
     },
     coverage: {
       tuition: {
@@ -33,16 +53,7 @@ export const developmentCatalogue: readonly Scholarship[] = [
       flights: { state: 'unspecified' },
     },
     components: [
-      {
-        id: 'cgsd-living-support',
-        label: 'Living allowance',
-        state: 'stated',
-        amount: 'CA$40,000',
-        basis: 'per year for 36 months',
-        note: 'Paid to the award holder while the award is held.',
-        conditions: ['Paid for 36 months.'],
-        evidenceNumber: 1,
-      },
+      cgsdLivingSupport,
       {
         id: 'cgsd-tuition',
         label: 'Tuition coverage',
@@ -136,9 +147,11 @@ export const developmentCatalogue: readonly Scholarship[] = [
     summary:
       'A tuition exemption for international students admitted to a doctoral research programme at the Université de Montréal. It exempts the supplemental fees charged to international students, so the holder pays the Quebec doctoral rate. It is not a stipend.',
     tags: ['Awarded on admission'],
+    currency: null,
     headline: {
       component: 'Tuition exemption',
-      amount: 'CA$24,067.80',
+      amount: '24,067.80',
+      currency: null,
       basis: 'annual reduction at the 2026–2027 45-credit rate',
     },
     coverage: {
@@ -157,7 +170,8 @@ export const developmentCatalogue: readonly Scholarship[] = [
         id: 'udem-tuition-exemption',
         label: 'Tuition exemption',
         state: 'stated',
-        amount: 'CA$24,067.80',
+        amount: '24,067.80',
+        currency: null,
         basis: 'per year, three full-time terms (45 credits), 2026–2027 rates',
         note: 'The holder pays the same tuition as Quebec doctoral students.',
         conditions: [
@@ -275,9 +289,11 @@ export const developmentCatalogue: readonly Scholarship[] = [
     summary:
       'Research stipend awards for doctoral candidates at RMIT, awarded through a competitive round. International recipients also receive an international tuition-fee offset. Applications run in two stages.',
     tags: ['Two-stage application'],
+    currency: null,
     headline: {
       component: 'Research stipend',
-      amount: 'A$36,245',
+      amount: '36,245',
+      currency: null,
       basis: 'per year, published 2026 rate',
     },
     coverage: {
@@ -293,7 +309,8 @@ export const developmentCatalogue: readonly Scholarship[] = [
         id: 'rmit-stipend',
         label: 'Research stipend',
         state: 'stated',
-        amount: 'A$36,245',
+        amount: '36,245',
+        currency: null,
         basis: 'per year, published 2026 rate',
         conditions: [
           'The published amount is the 2026 rate; 2027 rates were not yet released.',
@@ -315,7 +332,8 @@ export const developmentCatalogue: readonly Scholarship[] = [
         id: 'rmit-relocation-allowance',
         label: 'Relocation allowance',
         state: 'stated',
-        amount: 'Up to A$1,540',
+        amount: 'Up to 1,540',
+        currency: 'AUD',
         basis: 'one-off payment',
         conditions: ['Up to $515 per adult and $255 per child.', 'Maximum of $1,540.'],
         evidenceNumber: 3,
@@ -472,9 +490,11 @@ export const developmentCatalogue: readonly Scholarship[] = [
     summary:
       'A stipend for international and domestic higher-degree research students at the University of Sydney, awarded competitively. Holders are also awarded an RTP Fee Offset covering tuition for up to 14 research periods.',
     tags: ['Competitively awarded'],
+    currency: null,
     headline: {
       component: 'Annual stipend',
-      amount: 'A$44,293',
+      amount: '44,293',
+      currency: null,
       basis: 'per year, published 2027 rate',
     },
     coverage: {
@@ -487,7 +507,8 @@ export const developmentCatalogue: readonly Scholarship[] = [
         id: 'usyd-stipend',
         label: 'Annual stipend',
         state: 'stated',
-        amount: 'A$44,293',
+        amount: '44,293',
+        currency: null,
         basis: 'per year (2027 rate)',
         conditions: ['The 2026 rate was $42,754 per year.', 'Competitively awarded.'],
         evidenceNumber: 1,

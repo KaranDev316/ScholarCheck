@@ -66,7 +66,16 @@ describe('development catalogue', () => {
       )
       expect(headlineComponent, record.id).toBeDefined()
       expect(headlineComponent?.amount, record.id).toBe(headline.amount)
+      expect(headlineComponent?.currency, record.id).toBe(headline.currency)
     }
+  })
+
+  it('does not guess CAD for CGRS D when the official source uses a bare dollar sign', () => {
+    const cgrsd = developmentCatalogue.find((record) => record.id === 'cgsd-doctoral')
+    expect(cgrsd?.currency).toBeNull()
+    expect(cgrsd?.headline?.currency).toBeNull()
+    expect(cgrsd?.summary).toContain('$40,000 / year')
+    expect(cgrsd?.summary).not.toContain('CA$')
   })
 
   it('does not turn RMIT’s full-time stipend wording into a part-time claim', () => {

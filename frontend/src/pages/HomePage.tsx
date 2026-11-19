@@ -4,6 +4,7 @@ import type { FormEvent } from 'react'
 import { CoverageChip } from '../components/Chips'
 import { ScholarshipCard } from '../components/ScholarshipCard'
 import { availableCountries } from '../data/filters'
+import { formatAward } from '../data/format'
 import { COVERAGE_KEYS, COVERAGE_LABELS, FUNDING_TYPES, STUDY_LEVELS } from '../data/types'
 import type { Scholarship } from '../data/types'
 import { exploreHref } from '../routing/routes'
@@ -17,6 +18,13 @@ export function HomePage({ records, isDevelopment }: HomePageProps) {
   const [query, setQuery] = useState('')
   const countries = availableCountries(records)
   const sample = records[0]
+  const sampleAward = sample?.headline
+    ? formatAward(
+        sample.headline.amount,
+        sample.headline.currency !== undefined ? sample.headline.currency : sample.currency,
+        sample.headline.basis,
+      )
+    : null
 
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -57,10 +65,13 @@ export function HomePage({ records, isDevelopment }: HomePageProps) {
                   {sample.provider}, {sample.country}
                 </div>
                 <div className="st">{sample.title}</div>
-                {sample.headline ? (
+                {sampleAward ? (
                   <div>
-                    <div className="sa">{sample.headline.amount}</div>
-                    <div className="sm">{sample.headline.basis}</div>
+                    <div className="sa">{sampleAward.amountText}</div>
+                    {sampleAward.qualifierText ? <div className="sm">{sampleAward.qualifierText}</div> : null}
+                    {sampleAward.currencyNote ? (
+                      <div className="sm award-note">{sampleAward.currencyNote}</div>
+                    ) : null}
                   </div>
                 ) : null}
                 {sample.sourceCheck ? <p className="small">Source checked {new Date(sample.sourceCheck.checkedAt).toLocaleDateString('en-GB', { timeZone: 'UTC' })}</p> : null}

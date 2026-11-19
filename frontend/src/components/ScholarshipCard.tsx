@@ -1,6 +1,6 @@
 import { TagChip } from './Chips'
 import { fundingTypeFor } from '../data/funding'
-import { formatDate } from '../data/format'
+import { formatAward, formatDate, formatScholarshipSummary } from '../data/format'
 import type { Scholarship } from '../data/types'
 import { scholarshipHref } from '../routing/routes'
 
@@ -12,6 +12,14 @@ interface ScholarshipCardProps {
 export function ScholarshipCard({ record, isDevelopment }: ScholarshipCardProps) {
   const fundingType = fundingTypeFor(record.coverage)
   const href = scholarshipHref(record.id)
+  const award = record.headline
+    ? formatAward(
+        record.headline.amount,
+        record.headline.currency !== undefined ? record.headline.currency : record.currency,
+        record.headline.basis,
+      )
+    : null
+  const summary = formatScholarshipSummary(record)
 
   return (
     <article className="card">
@@ -28,7 +36,7 @@ export function ScholarshipCard({ record, isDevelopment }: ScholarshipCardProps)
       <h3>
         <a href={href}>{record.title}</a>
       </h3>
-      <p className="mute">{record.summary}</p>
+      <p className="mute">{summary}</p>
 
       <div className="tags">
         {record.levels.map((level) => (
@@ -44,12 +52,15 @@ export function ScholarshipCard({ record, isDevelopment }: ScholarshipCardProps)
 
       <div className="foot">
         <div>
-          {record.headline ? (
+          {award ? (
             <>
-              <div className="amt">{record.headline.amount}</div>
+              <div className="amt">{award.amountText}</div>
               <div className="mute small">
-                {record.headline.component} · {record.headline.basis}
+                {[record.headline?.component, award.qualifierText].filter(Boolean).join(' · ')}
               </div>
+              {award.currencyNote ? (
+                <div className="mute small award-note">{award.currencyNote}</div>
+              ) : null}
             </>
           ) : (
             <div className="ph">Amount not stated in the source</div>

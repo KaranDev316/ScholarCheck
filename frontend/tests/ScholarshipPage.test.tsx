@@ -32,6 +32,35 @@ describe('ScholarshipPage', () => {
     expect(screen.getByText(/we never add them together or call one a total/i)).toBeInTheDocument()
   })
 
+  it('uses the shared award format on the detail strip and component cards', () => {
+    const unknown = makeRecord({
+      currency: null,
+      headline: {
+        component: 'Living allowance',
+        amount: '40,000',
+        currency: null,
+        basis: 'per year for 36 months',
+      },
+      components: [
+        {
+          id: 'cgsd-living-support',
+          label: 'Living allowance',
+          state: 'stated',
+          amount: '40,000',
+          currency: null,
+          basis: 'per year for 36 months',
+          evidenceNumber: 1,
+        },
+      ],
+    })
+    render(<ScholarshipPage record={unknown} isDevelopment={false} />)
+
+    expect(screen.getAllByText('$40,000')).toHaveLength(2)
+    expect(screen.getAllByText('per year for 36 months')).toHaveLength(2)
+    expect(screen.getAllByText('Currency per source')).toHaveLength(2)
+    expect(screen.queryByText(/currency not stated/i)).toBeNull()
+  })
+
   it('marks a record as unpublished and says the dates passed', () => {
     render(
       <ScholarshipPage

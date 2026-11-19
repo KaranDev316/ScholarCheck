@@ -165,6 +165,29 @@ def test_currency_symbols_and_ambiguity(currency, text, expected):
     assert value_in_text('currency', currency, text) is expected
 
 
+def test_public_record_exposes_structured_currency_without_inline_placeholder():
+    from app.models.public import public_record
+
+    r, p, _ = launch()
+    cgrsd = public_record(r, p, p.checked_at)
+    assert cgrsd.currency is None
+    assert cgrsd.headline is not None
+    assert cgrsd.headline.amount == '40,000'
+    assert cgrsd.headline.currency is None
+    assert '(currency not stated)' not in cgrsd.headline.amount
+    assert cgrsd.components[0].amount == '40,000'
+    assert cgrsd.components[0].currency is None
+
+    known = sample_record()
+    known_snaps = build_snapshots(known)
+    known_report = build_report(known, known_snaps)
+    known_pub = public_record(known, known_report, known_report.checked_at)
+    assert known_pub.currency == 'CAD'
+    assert known_pub.headline is not None
+    assert known_pub.headline.amount == '40,000'
+    assert known_pub.headline.currency == 'CAD'
+
+
 def test_monitor_respects_the_publication_lock(test_dsn, tmp_path):
     r,p,a=launch()
     with psycopg.connect(test_dsn) as setup:

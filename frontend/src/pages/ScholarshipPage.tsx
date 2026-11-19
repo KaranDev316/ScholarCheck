@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { CoverageChip, FactChip, TagChip } from '../components/Chips'
 import { ReportDialog } from '../components/ReportDialog'
 import { applicationAction } from '../data/application'
+import { formatAward } from '../data/format'
 import { fundingTypeFor, isOpenRound, isPassedRound, passedRoundDates } from '../data/funding'
 import { COVERAGE_KEYS, COVERAGE_LABELS } from '../data/types'
 import type { Scholarship } from '../data/types'
@@ -21,6 +22,13 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
   const datesPassed = passed.length > 0
   const applyAction = applicationAction(record)
   const upcomingRound = record.rounds.find((round) => isOpenRound(round))
+  const headlineAward = record.headline
+    ? formatAward(
+        record.headline.amount,
+        record.headline.currency !== undefined ? record.headline.currency : record.currency,
+        record.headline.basis,
+      )
+    : null
 
   const dateNote = datesPassed
     ? upcomingRound
@@ -103,10 +111,15 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
           <div className="strip">
             <div>
               <span className="sl2">{record.headline?.component ?? 'Amount'}</span>
-              {record.headline ? (
+              {headlineAward ? (
                 <>
-                  <strong className="amt">{record.headline.amount}</strong>
-                  <span className="small mute">{record.headline.basis}</span>
+                  <strong className="amt">{headlineAward.amountText}</strong>
+                  {headlineAward.qualifierText ? (
+                    <span className="small mute">{headlineAward.qualifierText}</span>
+                  ) : null}
+                  {headlineAward.currencyNote ? (
+                    <span className="small mute award-note">{headlineAward.currencyNote}</span>
+                  ) : null}
                 </>
               ) : (
                 <span className="ph">Not stated in the source</span>
@@ -166,37 +179,51 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
               ))}
             </div>
 
-            {record.components.map((component) => (
-              <div className="rule" key={component.id}>
-                <div className="comphead">
-                  <strong>{component.label}</strong>
-                  <FactChip state={component.state} />
+            {record.components.map((component) => {
+              const componentAward = component.amount
+                ? formatAward(
+                    component.amount,
+                    component.currency !== undefined ? component.currency : record.currency,
+                    component.basis,
+                  )
+                : null
+              return (
+                <div className="rule" key={component.id}>
+                  <div className="comphead">
+                    <strong>{component.label}</strong>
+                    <FactChip state={component.state} />
+                  </div>
+                  {component.state === 'stated' ? (
+                    <>
+                      {componentAward ? (
+                        <div className="amt compamount">{componentAward.amountText}</div>
+                      ) : null}
+                      <div className="small mute">
+                        {componentAward?.qualifierText ??
+                          component.basis ??
+                          'Covered, amount not stated'}
+                      </div>
+                      {componentAward?.currencyNote ? (
+                        <div className="small mute award-note">{componentAward.currencyNote}</div>
+                      ) : null}
+                      {component.note ? <p className="small mute">{component.note}</p> : null}
+                    </>
+                  ) : (
+                    <>
+                      <div className="ph">{component.note ?? 'Not specified in the source'}</div>
+                      {component.basis ? <div className="small mute">{component.basis}</div> : null}
+                    </>
+                  )}
+                  {component.conditions?.length ? (
+                    <ul className="small mute conditions">
+                      {component.conditions.map((condition) => (
+                        <li key={condition}>{condition}</li>
+                      ))}
+                    </ul>
+                  ) : null}
                 </div>
-                {component.state === 'stated' ? (
-                  <>
-                    {component.amount ? (
-                      <div className="amt compamount">{component.amount}</div>
-                    ) : null}
-                    <div className="small mute">
-                      {component.basis ?? 'Covered, amount not stated'}
-                    </div>
-                    {component.note ? <p className="small mute">{component.note}</p> : null}
-                  </>
-                ) : (
-                  <>
-                    <div className="ph">{component.note ?? 'Not specified in the source'}</div>
-                    {component.basis ? <div className="small mute">{component.basis}</div> : null}
-                  </>
-                )}
-                {component.conditions?.length ? (
-                  <ul className="small mute conditions">
-                    {component.conditions.map((condition) => (
-                      <li key={condition}>{condition}</li>
-                    ))}
-                  </ul>
-                ) : null}
-              </div>
-            ))}
+              )
+            })}
           </div>
 
 

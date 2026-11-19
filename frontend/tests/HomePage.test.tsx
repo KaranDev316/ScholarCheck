@@ -38,9 +38,34 @@ describe('HomePage', () => {
 
     expect(screen.getByRole('heading', { level: 3, name: /example doctoral award/i })).toBeVisible()
     expect(screen.getAllByRole('link', { name: /see scholarship details/i })).toHaveLength(2)
-    expect(screen.getAllByText('CA$20,000').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('CAD $20,000').length).toBeGreaterThan(0)
     expect(screen.getAllByText(/not source checked yet/i)).toHaveLength(1)
     expect(screen.getByText(/source checked 27 October 2026/i)).toBeInTheDocument()
+  })
+
+  it('shows amount only in large type with a muted note when currency is unknown', () => {
+    const unknownCurrencyRecord = makeRecord({
+      id: 'cgsd-doctoral',
+      title: 'Canada Graduate Research Scholarship – Doctoral (CGRS D)',
+      currency: null,
+      summary: 'A competitive doctoral scholarship. The source lists $40,000 per year for 36 months.',
+      headline: {
+        component: 'Award component',
+        amount: '40,000',
+        currency: null,
+        basis: 'per year for 36 months',
+      },
+    })
+    render(<HomePage records={[unknownCurrencyRecord]} isDevelopment={false} />)
+
+    const hero = screen.getByLabelText('Example record from the catalogue')
+    expect(within(hero).getByText('$40,000')).toHaveClass('sa')
+    expect(within(hero).getByText('per year for 36 months')).toHaveClass('sm')
+    expect(within(hero).getByText('Currency per source')).toHaveClass('award-note')
+    expect(screen.queryByText(/currency not stated/i)).toBeNull()
+    expect(
+      screen.getByText(/the source lists \$40,000 \/ year for 36 months/i),
+    ).toBeInTheDocument()
   })
 
   it('shows the catalogue record without internal quotations', () => {
