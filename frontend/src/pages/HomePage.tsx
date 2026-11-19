@@ -2,9 +2,10 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 
 import { CoverageChip } from '../components/Chips'
+import { DeadlineRow } from '../components/DeadlineRow'
 import { ScholarshipCard } from '../components/ScholarshipCard'
 import { availableCountries } from '../data/filters'
-import { formatAward } from '../data/format'
+import { formatAward, formatDate } from '../data/format'
 import { COVERAGE_KEYS, COVERAGE_LABELS, FUNDING_TYPES, STUDY_LEVELS } from '../data/types'
 import type { Scholarship } from '../data/types'
 import { exploreHref } from '../routing/routes'
@@ -74,7 +75,10 @@ export function HomePage({ records, isDevelopment }: HomePageProps) {
                     ) : null}
                   </div>
                 ) : null}
-                {sample.sourceCheck ? <p className="small">Source checked {new Date(sample.sourceCheck.checkedAt).toLocaleDateString('en-GB', { timeZone: 'UTC' })}</p> : null}
+                <DeadlineRow deadline={sample.deadline} />
+                {sample.sourceCheck ? (
+                  <p className="small sm">Source checked {formatDate(sample.sourceCheck.checkedAt)}</p>
+                ) : null}
                 <ul className="slist list-plain">
                   {COVERAGE_KEYS.map((key) => (
                     <li key={key}>

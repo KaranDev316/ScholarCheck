@@ -3,18 +3,18 @@
  * a day depending on the visitor's time zone.
  */
 
-import type { Scholarship } from './types'
+import type { Scholarship, ScholarshipDeadline } from './types'
 
 const dateFormatter = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
-  month: 'long',
+  month: 'short',
   year: 'numeric',
   timeZone: 'UTC',
 })
 
 const dateTimeFormatter = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
-  month: 'long',
+  month: 'short',
   year: 'numeric',
   hour: '2-digit',
   minute: '2-digit',
@@ -172,6 +172,124 @@ export function formatScholarshipSummary(record: Scholarship): string {
     const hasPeriod = /(?:per\s+(?:year|month|term|week)|\/\s*(?:year|month|term|week))/i.test(match)
     return hasPeriod ? award.inlineText : award.amountText
   })
+}
+
+export type DeadlineBadgeTone = 'neutral' | 'closing-soon' | 'closed'
+
+export interface FormattedDeadline {
+  /** Primary date/value shown inline with the Deadline label (e.g. "18 Dec 2026", "Rolling"), or null when the note carries the copy. */
+  text: string | null
+  /** Supporting plain-language note displayed below the row. */
+  note: string | null
+  /** Accessible badge label (never empty; never colour-only). */
+  badgeLabel: string
+  badgeTone: DeadlineBadgeTone
+  sourceUrl: string | null
+}
+
+function parseIsoUtcDay(iso: string): number | null {
+  const dateOnly = iso.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (dateOnly) {
+    const year = Number(dateOnly[1])
+    const month = Number(dateOnly[2]) - 1
+    const day = Number(dateOnly[3])
+    const parsed = new Date(Date.UTC(year, month, day))
+    if (
+      parsed.getUTCFullYear() === year &&
+      parsed.getUTCMonth() === month &&
+      parsed.getUTCDate() === day
+    ) {
+      return parsed.getTime()
+    }
+    return null
+  }
+  const parsed = new Date(iso)
+  if (Number.isNaN(parsed.getTime())) return null
+  return Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate())
+}
+
+/**
+ * Formats a scholarship deadline and derives its accessible status badge
+ * relative to today's UTC calendar date.
+ */
+export function formatDeadline(
+  deadline?: ScholarshipDeadline | null,
+  now: Date = new Date(),
+): FormattedDeadline {
+  const note = deadline?.note?.trim() || null
+  const sourceUrl = deadline?.sourceUrl?.trim() || null
+
+  if (!deadline || deadline.type === 'unknown') {
+    return {
+      text: note ? null : 'Not stated',
+      note,
+      badgeLabel: 'Check with institution',
+      badgeTone: 'neutral',
+      sourceUrl,
+    }
+  }
+
+  if (deadline.type === 'varies') {
+    return {
+      text: note ? null : 'Varies by institution',
+      note,
+      badgeLabel: 'Check with institution',
+      badgeTone: 'neutral',
+      sourceUrl,
+    }
+  }
+
+  if (deadline.type === 'rolling') {
+    return {
+      text: 'Rolling',
+      note,
+      badgeLabel: 'Rolling',
+      badgeTone: 'neutral',
+      sourceUrl,
+    }
+  }
+
+  const deadlineDay = deadline.date ? parseIsoUtcDay(deadline.date) : null
+  if (deadlineDay === null || !deadline.date) {
+    return {
+      text: note ? null : 'Not stated',
+      note,
+      badgeLabel: 'Check with institution',
+      badgeTone: 'neutral',
+      sourceUrl,
+    }
+  }
+
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  const diffDays = Math.round((deadlineDay - todayUtc) / 86_400_000)
+
+  if (diffDays < 0) {
+    return {
+      text: formatDate(deadline.date),
+      note,
+      badgeLabel: 'Closed',
+      badgeTone: 'closed',
+      sourceUrl,
+    }
+  }
+
+  if (diffDays <= 30) {
+    return {
+      text: formatDate(deadline.date),
+      note,
+      badgeLabel: 'Closing soon',
+      badgeTone: 'closing-soon',
+      sourceUrl,
+    }
+  }
+
+  return {
+    text: formatDate(deadline.date),
+    note,
+    badgeLabel: 'Open',
+    badgeTone: 'neutral',
+    sourceUrl,
+  }
 }
 
 /** Host and path of an official page, without the scheme. */

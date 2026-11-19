@@ -44,6 +44,11 @@ export const developmentCatalogue: readonly Scholarship[] = [
       currency: cgsdLivingSupport.currency,
       basis: cgsdLivingSupport.basis!,
     },
+    deadline: {
+      type: 'varies',
+      note: "Set by your institution. Confirm with your university's graduate office.",
+      sourceUrl: 'https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp#eligibility',
+    },
     coverage: {
       tuition: {
         state: 'unspecified',
@@ -153,6 +158,11 @@ export const developmentCatalogue: readonly Scholarship[] = [
       amount: '24,067.80',
       currency: null,
       basis: 'annual reduction at the 2026–2027 45-credit rate',
+    },
+    deadline: {
+      type: 'varies',
+      note: 'Follows your programme admission deadline. No separate scholarship application.',
+      sourceUrl: 'https://esp.umontreal.ca/financement/',
     },
     coverage: {
       tuition: {
@@ -295,6 +305,12 @@ export const developmentCatalogue: readonly Scholarship[] = [
       amount: '36,245',
       currency: null,
       basis: 'per year, published 2026 rate',
+    },
+    deadline: {
+      type: 'fixed',
+      date: '2026-10-16',
+      note: '2026 main round (2027 intake).',
+      sourceUrl: 'https://www.rmit.edu.au/research/research-degrees/terms-and-conditions',
     },
     coverage: {
       tuition: {
@@ -496,6 +512,13 @@ export const developmentCatalogue: readonly Scholarship[] = [
       amount: '44,293',
       currency: null,
       basis: 'per year, published 2027 rate',
+    },
+    deadline: {
+      type: 'fixed',
+      date: '2026-12-18',
+      note: 'International round (Research Period 3/4, 2027).',
+      sourceUrl:
+        'https://www.sydney.edu.au/scholarships/australian-government-research-training-program/rtp-international.html',
     },
     coverage: {
       tuition: { state: 'stated', detail: '100% of tuition fees for up to 14 research periods' },

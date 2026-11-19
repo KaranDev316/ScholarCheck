@@ -1,4 +1,6 @@
 """Explicit public allowlist. No evidence, snapshots or revision metadata."""
+from datetime import datetime, timezone
+import re
 from typing import Literal
 from pydantic import Field
 from app.domain.models import DomainModel, OfficialLinks as InternalLinks
@@ -54,6 +56,12 @@ class Headline(DomainModel):
     currency: str | None = None
     basis: str
 
+class PublicDeadline(DomainModel):
+    type: Literal['fixed', 'varies', 'rolling', 'unknown']
+    date: str | None = None
+    note: str | None = None
+    source_url: str | None = None
+
 class PublicOpportunity(DomainModel):
     id: str
     title: str
@@ -64,6 +72,7 @@ class PublicOpportunity(DomainModel):
     tags: tuple[str, ...] = ()
     currency: str | None = None
     headline: Headline | None = None
+    deadline: PublicDeadline | None = None
     coverage: FundingCoverage
     funding_type: str | None = None
     components: tuple[Component, ...]
@@ -81,6 +90,44 @@ class CatalogueResponse(DomainModel):
 
 COUNTRIES = {'CA': 'Canada', 'AU': 'Australia', 'DE': 'Germany'}
 LEVELS = {'doctoral': 'PhD', 'bachelor': "Bachelor's", 'research_master': "Master's", 'taught_master': "Master's"}
+
+
+def _parse_iso_deadline(text: str | None) -> str | None:
+    if not text or not re.fullmatch(r'\d{1,2} [A-Za-z]+ \d{4}', text.strip()):
+        return None
+    for fmt in ('%d %B %Y', '%d %b %Y'):
+        try:
+            return datetime.strptime(text.strip(), fmt).date().isoformat()
+        except ValueError:
+            continue
+    return None
+
+
+def _derive_deadline(record, rounds: list[PublicRound]) -> PublicDeadline:
+    source_url = str(record.links.requirements_url)
+    fixed_dates = sorted(
+        iso for iso in (_parse_iso_deadline(r.date_as_published) for r in rounds) if iso
+    )
+    if fixed_dates:
+        today = datetime.now(timezone.utc).date().isoformat()
+        upcoming = [d for d in fixed_dates if d >= today]
+        chosen = upcoming[0] if upcoming else fixed_dates[-1]
+        return PublicDeadline(type='fixed', date=chosen, source_url=source_url)
+
+    combined = ' '.join(f'{r.round} {r.note}' for r in rounds).casefold()
+    if 'institution' in combined or 'university' in combined:
+        return PublicDeadline(
+            type='varies',
+            note="Set by your institution. Confirm with your university's graduate office.",
+            source_url=source_url,
+        )
+    if 'rolling' in combined or 'ongoing' in combined:
+        return PublicDeadline(type='rolling', note='Rolling intake.', source_url=source_url)
+    return PublicDeadline(
+        type='unknown',
+        note='Confirm the deadline with the official provider.',
+        source_url=source_url,
+    )
 
 
 def public_record(record, report, checked_at):
@@ -110,16 +157,16 @@ def public_record(record, report, checked_at):
         deadline = value(f'round:{r.id}.deadline')
         stage = value(f'round:{r.id}.stage')
         # No year -> no inference of an open round. Client only ages complete dates.
-        import re
         dated = bool(deadline and re.fullmatch(r'\d{1,2} [A-Za-z]+ \d{4}', deadline))
         rounds.append(PublicRound(id=r.id, round=r.label, date_as_published=deadline or 'Not stated',
             status='Deadline published' if dated else 'Confirm with provider',
             note='; '.join(x for x in [r.route, stage] if x)))
     headline = next((Headline(component=c.label, amount=c.amount, currency=c.currency, basis=c.basis or '') for c in components if c.amount), None)
+    deadline_info = _derive_deadline(record, rounds)
     return PublicOpportunity(id=record.id, title=record.scheme_name, provider=record.funder,
         country=', '.join(COUNTRIES.get(c,c) for c in record.destinations),
         levels=tuple(dict.fromkeys(LEVELS[p.degree_level.value] for p in record.programmes)),
-        summary=record.summary, currency=headline.currency if headline else None, headline=headline, coverage=cov, funding_type=funding_type,
+        summary=record.summary, currency=headline.currency if headline else None, headline=headline, deadline=deadline_info, coverage=cov, funding_type=funding_type,
         components=tuple(components), eligibility=tuple(Eligibility(id=r.id, statement=r.requirement) for r in record.eligibility_rules),
         rounds=tuple(rounds), application=Application(note='Confirm the route and deadlines for your circumstances with the official provider.'),
         links=Links(summary=str(record.links.summary_url),requirements=str(record.links.requirements_url),portal=str(record.links.portal_url)),

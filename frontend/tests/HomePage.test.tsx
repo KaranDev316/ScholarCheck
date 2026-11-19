@@ -40,10 +40,10 @@ describe('HomePage', () => {
     expect(screen.getAllByRole('link', { name: /see scholarship details/i })).toHaveLength(2)
     expect(screen.getAllByText('CAD $20,000').length).toBeGreaterThan(0)
     expect(screen.getAllByText(/not source checked yet/i)).toHaveLength(1)
-    expect(screen.getByText(/source checked 27 October 2026/i)).toBeInTheDocument()
+    expect(screen.getByText(/source checked 27 Oct 2026/i)).toBeInTheDocument()
   })
 
-  it('shows amount only in large type with a muted note when currency is unknown', () => {
+  it('shows amount only in large type with a muted note and deadline row when currency is unknown', () => {
     const unknownCurrencyRecord = makeRecord({
       id: 'cgsd-doctoral',
       title: 'Canada Graduate Research Scholarship – Doctoral (CGRS D)',
@@ -55,6 +55,11 @@ describe('HomePage', () => {
         currency: null,
         basis: 'per year for 36 months',
       },
+      deadline: {
+        type: 'varies',
+        note: "Set by your institution. Confirm with your university's graduate office.",
+      },
+      sourceCheck: { checkedAt: '2026-11-03T18:40:32Z', result: 'matches' },
     })
     render(<HomePage records={[unknownCurrencyRecord]} isDevelopment={false} />)
 
@@ -62,7 +67,17 @@ describe('HomePage', () => {
     expect(within(hero).getByText('$40,000')).toHaveClass('sa')
     expect(within(hero).getByText('per year for 36 months')).toHaveClass('sm')
     expect(within(hero).getByText('Currency per source')).toHaveClass('award-note')
+    expect(within(hero).getByText('Deadline')).toBeInTheDocument()
+    expect(within(hero).getByText('Check with institution')).toBeInTheDocument()
+    expect(
+      within(hero).getByText(
+        "Set by your institution. Confirm with your university's graduate office.",
+      ),
+    ).toBeInTheDocument()
+    expect(within(hero).getByText('Source checked 3 Nov 2026')).toBeInTheDocument()
+    expect(screen.queryByText(/03\/11\/2026/)).toBeNull()
     expect(screen.queryByText(/currency not stated/i)).toBeNull()
+    expect(screen.getAllByText('Check with institution')).toHaveLength(2)
     expect(
       screen.getByText(/the source lists \$40,000 \/ year for 36 months/i),
     ).toBeInTheDocument()

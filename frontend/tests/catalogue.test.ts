@@ -74,6 +74,11 @@ describe('development catalogue', () => {
     const cgrsd = developmentCatalogue.find((record) => record.id === 'cgsd-doctoral')
     expect(cgrsd?.currency).toBeNull()
     expect(cgrsd?.headline?.currency).toBeNull()
+    expect(cgrsd?.deadline).toEqual({
+      type: 'varies',
+      note: "Set by your institution. Confirm with your university's graduate office.",
+      sourceUrl: 'https://www.nserc-crsng.gc.ca/students-etudiants/pg-cs/cgsd-bescd_eng.asp#eligibility',
+    })
     expect(cgrsd?.summary).toContain('$40,000 / year')
     expect(cgrsd?.summary).not.toContain('CA$')
   })

@@ -100,6 +100,16 @@ export interface HeadlineAward {
   basis: string
 }
 
+export type DeadlineType = 'fixed' | 'varies' | 'rolling' | 'unknown'
+
+export interface ScholarshipDeadline {
+  type: DeadlineType
+  /** ISO 8601 date string (e.g. '2026-12-18') when type is 'fixed'. */
+  date?: string | null
+  note?: string | null
+  sourceUrl?: string | null
+}
+
 export interface Scholarship {
   id: string
   title: string
@@ -113,6 +123,8 @@ export interface Scholarship {
   currency?: string | null
   /** Headline amount and the component it belongs to. Never a sum. */
   headline: HeadlineAward | null
+  /** Primary deadline summary shown on hero and list cards. */
+  deadline?: ScholarshipDeadline | null
   coverage: FundingCoverage
   components: readonly FundingComponentView[]
   eligibility: readonly EligibilityStatement[]

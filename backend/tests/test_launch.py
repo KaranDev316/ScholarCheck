@@ -177,6 +177,10 @@ def test_public_record_exposes_structured_currency_without_inline_placeholder():
     assert '(currency not stated)' not in cgrsd.headline.amount
     assert cgrsd.components[0].amount == '40,000'
     assert cgrsd.components[0].currency is None
+    assert cgrsd.deadline is not None
+    assert cgrsd.deadline.type == 'varies'
+    assert cgrsd.deadline.note == "Set by your institution. Confirm with your university's graduate office."
+    assert cgrsd.deadline.source_url == str(r.links.requirements_url)
 
     known = sample_record()
     known_snaps = build_snapshots(known)

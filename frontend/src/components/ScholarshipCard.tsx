@@ -1,4 +1,5 @@
 import { TagChip } from './Chips'
+import { DeadlineRow } from './DeadlineRow'
 import { fundingTypeFor } from '../data/funding'
 import { formatAward, formatDate, formatScholarshipSummary } from '../data/format'
 import type { Scholarship } from '../data/types'
@@ -65,6 +66,7 @@ export function ScholarshipCard({ record, isDevelopment }: ScholarshipCardProps)
           ) : (
             <div className="ph">Amount not stated in the source</div>
           )}
+          <DeadlineRow deadline={record.deadline} />
           <div className="small mute checkedline">
             {record.sourceCheck
               ? `Source checked ${formatDate(record.sourceCheck.checkedAt)}`

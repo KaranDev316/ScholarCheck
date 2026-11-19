@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { CoverageChip, FactChip, TagChip } from '../components/Chips'
 import { ReportDialog } from '../components/ReportDialog'
 import { applicationAction } from '../data/application'
-import { formatAward } from '../data/format'
+import { formatAward, formatDate } from '../data/format'
 import { fundingTypeFor, isOpenRound, isPassedRound, passedRoundDates } from '../data/funding'
 import { COVERAGE_KEYS, COVERAGE_LABELS } from '../data/types'
 import type { Scholarship } from '../data/types'
@@ -308,7 +308,11 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
         <aside className="side" aria-label="Scholarship details">
           <div className="panel">
             <h3>At a glance</h3>
-            {record.sourceCheck ? <p className="small">Source checked {new Date(record.sourceCheck.checkedAt).toLocaleDateString('en-GB', { timeZone: 'UTC' })}. Matches the official source.</p> : null}
+            {record.sourceCheck ? (
+              <p className="small">
+                Source checked {formatDate(record.sourceCheck.checkedAt)}. Matches the official source.
+              </p>
+            ) : null}
             <dl>
               <div>
                 <dt>Provider</dt>

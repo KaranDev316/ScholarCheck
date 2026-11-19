@@ -61,6 +61,20 @@ describe('ScholarshipPage', () => {
     expect(screen.queryByText(/currency not stated/i)).toBeNull()
   })
 
+  it('formats the detail-page source-checked date unambiguously as 3 Nov 2026', () => {
+    render(
+      <ScholarshipPage
+        record={makeRecord({
+          sourceCheck: { checkedAt: '2026-11-03T18:40:32Z', result: 'matches' },
+        })}
+        isDevelopment={false}
+      />,
+    )
+
+    expect(screen.getByText(/source checked 3 Nov 2026/i)).toBeInTheDocument()
+    expect(screen.queryByText(/03\/11\/2026/)).toBeNull()
+  })
+
   it('marks a record as unpublished and says the dates passed', () => {
     render(
       <ScholarshipPage

@@ -11,6 +11,11 @@ export const baseRecord: Scholarship = {
   tags: [],
   currency: 'CAD',
   headline: { component: 'Living allowance', amount: '20,000', currency: 'CAD', basis: 'per year' },
+  deadline: {
+    type: 'fixed',
+    date: '2099-12-18',
+    sourceUrl: 'https://example.edu/requirements',
+  },
   coverage: {
     tuition: { state: 'unspecified' },
     livingCosts: { state: 'stated' },

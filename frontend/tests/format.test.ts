@@ -6,15 +6,18 @@ import {
   formatCheckedAgo,
   formatDate,
   formatDateTime,
+  formatDeadline,
   formatScholarshipSummary,
 } from '../src/data/format'
 import { makeRecord } from './fixtures'
 
 describe('date formatting', () => {
-  it('formats dates in UTC so a saved copy never shifts a day', () => {
-    expect(formatDate('2026-10-23T23:30:00Z')).toBe('23 October 2026')
+  it('formats dates unambiguously in UTC so a saved copy never shifts a day', () => {
+    expect(formatDate('2026-10-23T23:30:00Z')).toBe('23 Oct 2026')
+    expect(formatDate('2026-11-03T18:40:32Z')).toBe('3 Nov 2026')
+    expect(formatDate('2026-11-03T18:40:32Z')).not.toMatch(/^\d{2}\/\d{2}\/\d{4}$/)
     const timestamp = formatDateTime('2026-10-23T07:00:00Z')
-    expect(timestamp).toContain('23 October 2026')
+    expect(timestamp).toContain('23 Oct 2026')
     expect(timestamp).toContain('07:00 UTC')
   })
 
@@ -98,5 +101,65 @@ describe('formatScholarshipSummary', () => {
     expect(formatScholarshipSummary(known)).toBe(
       'The source lists CAD $40,000 / year for 36 months.',
     )
+  })
+})
+
+describe('formatDeadline', () => {
+  const now = new Date('2026-11-19T12:00:00Z')
+
+  it('marks fixed dates more than 30 days away as neutral', () => {
+    expect(formatDeadline({ type: 'fixed', date: '2027-01-15' }, now)).toEqual({
+      text: '15 Jan 2027',
+      note: null,
+      badgeLabel: 'Open',
+      badgeTone: 'neutral',
+      sourceUrl: null,
+    })
+  })
+
+  it('marks fixed dates within 30 days as amber Closing soon', () => {
+    expect(formatDeadline({ type: 'fixed', date: '2026-12-18' }, now)).toEqual({
+      text: '18 Dec 2026',
+      note: null,
+      badgeLabel: 'Closing soon',
+      badgeTone: 'closing-soon',
+      sourceUrl: null,
+    })
+  })
+
+  it('marks past fixed dates as grey Closed', () => {
+    expect(formatDeadline({ type: 'fixed', date: '2026-10-16' }, now)).toEqual({
+      text: '16 Oct 2026',
+      note: null,
+      badgeLabel: 'Closed',
+      badgeTone: 'closed',
+      sourceUrl: null,
+    })
+  })
+
+  it('marks varies and unknown deadlines as neutral Check with institution', () => {
+    expect(
+      formatDeadline(
+        {
+          type: 'varies',
+          note: "Set by your institution. Confirm with your university's graduate office.",
+        },
+        now,
+      ),
+    ).toEqual({
+      text: null,
+      note: "Set by your institution. Confirm with your university's graduate office.",
+      badgeLabel: 'Check with institution',
+      badgeTone: 'neutral',
+      sourceUrl: null,
+    })
+
+    expect(formatDeadline({ type: 'unknown' }, now)).toEqual({
+      text: 'Not stated',
+      note: null,
+      badgeLabel: 'Check with institution',
+      badgeTone: 'neutral',
+      sourceUrl: null,
+    })
   })
 })
