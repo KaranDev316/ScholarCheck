@@ -2,8 +2,8 @@ export type HeaderSection = 'home' | 'explore'
 
 export function SiteHeader({ current }: { current: HeaderSection }) {
   return (
-    <header className="top">
-      <div className="wrap">
+    <header className="top band site-header">
+      <div className="container wrap">
         <a className="brand" href="#home">
           ScholarCheck
         </a>

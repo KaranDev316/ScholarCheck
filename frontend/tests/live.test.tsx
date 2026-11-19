@@ -17,10 +17,12 @@ describe('Public journeys', () => {
   beforeEach(() => { window.history.replaceState(null, '', '#explore') })
   afterEach(() => { vi.unstubAllGlobals() })
 
-  it('loads the public catalogue, shows a real check date and hides evidence', async () => {
+  it('loads the public catalogue, shows skeleton cards while loading, and renders a real check date', async () => {
     vi.stubGlobal('fetch', vi.fn((url: string) => url === '/api/site' ? reply({ contactEmail: 'owner@scholarcheck.test' }) : reply({ records: [record], total: 1 })))
     render(<App />)
-    expect(screen.getByText('Loading scholarships…')).toBeInTheDocument()
+    const loadingStatus = screen.getByRole('status')
+    expect(loadingStatus).toHaveTextContent('Loading scholarships…')
+    expect(loadingStatus.querySelectorAll('.skeleton')).toHaveLength(3)
     expect(await screen.findByText(record.title)).toBeInTheDocument()
     expect(screen.queryByText(/development preview/i)).toBeNull()
     expect(await screen.findByRole('link', { name: 'Contact ScholarCheck' })).toHaveAttribute('href', 'mailto:owner@scholarcheck.test')

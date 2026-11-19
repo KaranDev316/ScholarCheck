@@ -125,7 +125,7 @@ export function formatAward(
     currencyNote = null
   } else {
     amountText = `${prefix}$${numeric}`
-    currencyNote = 'Currency per source'
+    currencyNote = 'Currency not stated'
   }
 
   const qualifierText = period?.trim() ? period.trim() : null
@@ -138,6 +138,21 @@ export function formatAward(
     qualifierText,
     currencyNote,
   }
+}
+
+/**
+ * Replaces the generic "Award component" label with a period-specific name
+ * (e.g. "Annual award") only when the published basis supports that wording.
+ */
+export function formatComponentLabel(label: string, basis?: string | null): string {
+  const trimmed = label.trim()
+  if (trimmed.toLowerCase() !== 'award component') return trimmed
+  if (!basis) return trimmed
+  if (/\bper\s+year\b|\/\s*year\b|\bannual(?:ly)?\b/i.test(basis)) return 'Annual award'
+  if (/\bper\s+month\b|\/\s*month\b|\bmonthly\b/i.test(basis)) return 'Monthly award'
+  if (/\bper\s+term\b|\/\s*term\b/i.test(basis)) return 'Term award'
+  if (/\bone[- ]off\b/i.test(basis)) return 'One-off award'
+  return trimmed
 }
 
 function escapeRegExp(value: string): string {

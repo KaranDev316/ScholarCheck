@@ -10,17 +10,18 @@ describe('HomePage', () => {
     window.history.replaceState(null, '', '#home')
   })
 
-  it('states the ScholarCheck promise and admits there is nothing published', () => {
+  it('states the ScholarCheck promise in three lines and admits there is nothing published', () => {
     render(<HomePage records={[]} isDevelopment={false} />)
 
-    expect(
-      screen.getByRole('heading', {
-        level: 1,
-        name: /find funding. check the evidence. decide for yourself/i,
-      }),
-    ).toBeInTheDocument()
+    const heading = screen.getByRole('heading', {
+      level: 1,
+      name: /find funding\. check the evidence\. decide for yourself/i,
+    })
+    expect(heading).toBeInTheDocument()
+    expect(heading.querySelectorAll('.line')).toHaveLength(3)
     expect(screen.getAllByText(/no published scholarships yet/i)).not.toHaveLength(0)
     expect(screen.queryByText(/development preview/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/browse all/i)).not.toBeInTheDocument()
   })
 
   it('marks preview records instead of presenting them as published', () => {
@@ -33,7 +34,7 @@ describe('HomePage', () => {
     expect(screen.queryByText(/^published scholarships$/i)).not.toBeInTheDocument()
   })
 
-  it('lists one card per record with its amount and source-check status', () => {
+  it('lists one card per record with its amount and source-check status, without description or deadline rows', () => {
     render(<HomePage records={[makeRecord(), fullyFundedRecord]} isDevelopment />)
 
     expect(screen.getByRole('heading', { level: 3, name: /example doctoral award/i })).toBeVisible()
@@ -41,9 +42,11 @@ describe('HomePage', () => {
     expect(screen.getAllByText('CAD $20,000').length).toBeGreaterThan(0)
     expect(screen.getAllByText(/not source checked yet/i)).toHaveLength(1)
     expect(screen.getByText(/source checked 27 Oct 2026/i)).toBeInTheDocument()
+    expect(screen.queryByText(/a doctoral award used by the tests/i)).toBeNull()
+    expect(screen.queryByText('Deadline')).toBeNull()
   })
 
-  it('shows amount only in large type with a muted note and deadline row when currency is unknown', () => {
+  it('shows a single compact row when only one record is published, and omits deadlines from the hero', () => {
     const unknownCurrencyRecord = makeRecord({
       id: 'cgsd-doctoral',
       title: 'Canada Graduate Research Scholarship – Doctoral (CGRS D)',
@@ -64,23 +67,22 @@ describe('HomePage', () => {
     render(<HomePage records={[unknownCurrencyRecord]} isDevelopment={false} />)
 
     const hero = screen.getByLabelText('Example record from the catalogue')
+    expect(within(hero).getByText('Annual award')).toHaveClass('amount-label')
     expect(within(hero).getByText('$40,000')).toHaveClass('sa')
     expect(within(hero).getByText('per year for 36 months')).toHaveClass('sm')
-    expect(within(hero).getByText('Currency per source')).toHaveClass('award-note')
-    expect(within(hero).getByText('Deadline')).toBeInTheDocument()
-    expect(within(hero).getByText('Check with institution')).toBeInTheDocument()
-    expect(
-      within(hero).getByText(
-        "Set by your institution. Confirm with your university's graduate office.",
-      ),
-    ).toBeInTheDocument()
+    expect(within(hero).getByText('Currency not stated')).toHaveClass('award-note')
+    expect(within(hero).queryByText('Deadline')).toBeNull()
+    expect(within(hero).queryByText('Check with institution')).toBeNull()
     expect(within(hero).getByText('Source checked 3 Nov 2026')).toBeInTheDocument()
-    expect(screen.queryByText(/03\/11\/2026/)).toBeNull()
-    expect(screen.queryByText(/currency not stated/i)).toBeNull()
-    expect(screen.getAllByText('Check with institution')).toHaveLength(2)
     expect(
-      screen.getByText(/the source lists \$40,000 \/ year for 36 months/i),
+      within(hero).getByText('Not stated by provider: tuition, flights'),
     ).toBeInTheDocument()
+    expect(screen.queryByText(/03\/11\/2026/)).toBeNull()
+    expect(screen.getByRole('link', { name: 'See details' })).toHaveAttribute(
+      'href',
+      '#cgsd-doctoral',
+    )
+    expect(screen.queryByRole('link', { name: /see scholarship details/i })).toBeNull()
   })
 
   it('shows the catalogue record without internal quotations', () => {

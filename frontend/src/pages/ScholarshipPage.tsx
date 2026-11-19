@@ -1,11 +1,20 @@
 import { useState } from 'react'
 
-import { CoverageChip, FactChip, TagChip } from '../components/Chips'
+import { ActionBar } from '../components/ActionBar'
+import { FactChip, TagChip } from '../components/Chips'
+import { CoverageChecklist } from '../components/CoverageChecklist'
+import { DateRoundTable } from '../components/DateRoundTable'
+import { EvidenceBlock } from '../components/EvidenceBlock'
 import { ReportDialog } from '../components/ReportDialog'
-import { applicationAction } from '../data/application'
-import { formatAward, formatDate } from '../data/format'
-import { fundingTypeFor, isOpenRound, isPassedRound, passedRoundDates } from '../data/funding'
-import { COVERAGE_KEYS, COVERAGE_LABELS } from '../data/types'
+import { UnknownBadge } from '../components/UnknownBadge'
+import {
+  displayUrl,
+  formatAward,
+  formatComponentLabel,
+  formatDate,
+  formatScholarshipSummary,
+} from '../data/format'
+import { fundingTypeFor, isOpenRound } from '../data/funding'
 import type { Scholarship } from '../data/types'
 
 interface ScholarshipPageProps {
@@ -18,9 +27,6 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
   const [toast, setToast] = useState('')
 
   const fundingType = fundingTypeFor(record.coverage)
-  const passed = passedRoundDates(record)
-  const datesPassed = passed.length > 0
-  const applyAction = applicationAction(record)
   const upcomingRound = record.rounds.find((round) => isOpenRound(round))
   const headlineAward = record.headline
     ? formatAward(
@@ -29,12 +35,6 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
         record.headline.basis,
       )
     : null
-
-  const dateNote = datesPassed
-    ? upcomingRound
-      ? `The ${passed.join('; ')} deadline has passed. Another round has a published deadline; confirm it with the provider before applying.`
-      : `The published dates (${passed.join('; ')}) have passed, and the next round isn’t published yet.`
-    : record.application.note
 
   function announce(message: string) {
     setToast(message)
@@ -66,118 +66,125 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
   async function sendReport(reason: string, details: string) {
     if (isDevelopment) throw new Error('Development previews cannot receive reports.')
     const response = await fetch(`/api/v1/opportunities/${encodeURIComponent(record.id)}/reports`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason, details }),
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason, details }),
     })
-    if (!response.ok) throw new Error(response.status === 429 ? 'Too many reports. Please try again later.' : 'Could not send your report. Please try again.')
+    if (!response.ok) {
+      throw new Error(
+        response.status === 429
+          ? 'Too many reports. Please try again later.'
+          : 'Could not send your report. Please try again.',
+      )
+    }
     setReportOpen(false)
     announce('Report received. Thank you.')
   }
 
   return (
     <>
-      <div className="crumbs wrap">
-        <a href="#explore">All scholarships</a> / <span>{record.title}</span>
-      </div>
-      <div className="detail wrap">
+      <nav className="crumbs container wrap" aria-label="Breadcrumb">
+        <a href="#explore">Find scholarships</a> <span aria-hidden="true">›</span>{' '}
+        <span>{record.title}</span>
+      </nav>
+
+      <div className="detail container wrap">
         <div>
           <div className="titlerow">
             <h1>{record.title}</h1>
             <div className="share">
-              <button className="sharebtn" type="button" onClick={copyLink}>
+              <button className="btn btn-secondary sharebtn" type="button" onClick={copyLink}>
                 Copy link
               </button>
-              <button className="sharebtn" type="button" onClick={share}>
+              <button className="btn btn-secondary sharebtn" type="button" onClick={share}>
                 Share
               </button>
             </div>
           </div>
 
-          <p className="mute providerline">
+          <p className="muted providerline">
             {record.provider}, {record.country}
           </p>
+
+          {record.summary ? (
+            <p className="muted reading summary-lead">{formatScholarshipSummary(record)}</p>
+          ) : null}
 
           <div className="tags">
             {record.levels.map((level) => (
               <TagChip key={level}>{level}</TagChip>
             ))}
-            <TagChip>{fundingType ?? 'Funding type not established'}</TagChip>
-            <TagChip>{record.country}</TagChip>
+            {fundingType === 'Fully funded' ? (
+              <span className="tag tag-fully-funded">Fully funded</span>
+            ) : fundingType ? (
+              <TagChip>{fundingType}</TagChip>
+            ) : null}
             {record.tags.map((tag) => (
               <TagChip key={tag}>{tag}</TagChip>
             ))}
-            {isDevelopment ? <span className="chip unspec">Development preview</span> : null}
+            {isDevelopment ? <UnknownBadge label="Development preview" /> : null}
           </div>
 
           <div className="strip">
             <div>
-              <span className="sl2">{record.headline?.component ?? 'Amount'}</span>
+              <span className="sl2 amount-label">
+                {record.headline
+                  ? formatComponentLabel(record.headline.component, record.headline.basis)
+                  : 'Amount'}
+              </span>
               {headlineAward ? (
                 <>
-                  <strong className="amt">{headlineAward.amountText}</strong>
+                  <strong
+                    className={`amt amount-value${headlineAward.currencyNote ? ' amount-value-unconfirmed' : ''}`}
+                  >
+                    {headlineAward.amountText}
+                  </strong>
                   {headlineAward.qualifierText ? (
-                    <span className="small mute">{headlineAward.qualifierText}</span>
+                    <span className="small muted amount-basis">{headlineAward.qualifierText}</span>
                   ) : null}
                   {headlineAward.currencyNote ? (
-                    <span className="small mute award-note">{headlineAward.currencyNote}</span>
+                    <span className="small muted award-note">{headlineAward.currencyNote}</span>
                   ) : null}
                 </>
               ) : (
-                <span className="ph">Not stated in the source</span>
+                <UnknownBadge label="Not specified" />
               )}
             </div>
             <div>
-              <span className="sl2">Study level</span>
-              <strong>{record.levels.join(', ')}</strong>
+              <span className="sl2">Source check</span>
+              <strong>
+                {record.sourceCheck
+                  ? `Source checked ${formatDate(record.sourceCheck.checkedAt)}`
+                  : 'Not source checked yet'}
+              </strong>
+              <span className="small muted">{record.levels.join(', ')}</span>
             </div>
             <div>
-              <span className="sl2">Application round</span>
-              <strong>{upcomingRound?.status ?? record.rounds[0]?.status ?? 'Not published'}</strong>
+              <span className="sl2">Funding & round</span>
+              <div>
+                {fundingType === 'Fully funded' ? (
+                  <span className="tag tag-fully-funded">Fully funded</span>
+                ) : fundingType ? (
+                  <TagChip>{fundingType}</TagChip>
+                ) : (
+                  <UnknownBadge label="Not specified" />
+                )}
+              </div>
+              <span className="small muted">
+                {upcomingRound?.status ?? record.rounds[0]?.status ?? 'Not published'}
+              </span>
             </div>
           </div>
 
-          {isDevelopment || dateNote ? (
-            <div className="actions">
-              {isDevelopment ? (
-                <p className="small note warn">
-                  Development preview. This record is not published and has not passed the automated
-                  source check.
-                </p>
-              ) : null}
-              {dateNote ? <p className="small note warn">{dateNote}</p> : null}
-            </div>
-          ) : null}
+          <ActionBar record={record} isDevelopment={isDevelopment} />
 
           <div className="dsec">
             <h2>Funding components</h2>
-            <p className="mute small">
+            <p className="muted small">
               Each component is listed on its own. We never add them together or call one a total.
             </p>
 
-            <div className="rule">
-              <strong>
-                {fundingType === 'Fully funded' ? (
-                  <>
-                    <span className="chip ff">Fully funded</span>{' '}
-                  </>
-                ) : null}
-                What the official page says it covers
-              </strong>
-              <div className="small mute">
-                “Fully funded” is shown only when tuition, living costs and flights are all stated
-                as covered.
-              </div>
-              {COVERAGE_KEYS.map((key) => (
-                <div className="covrow" key={key}>
-                  <span>
-                    {COVERAGE_LABELS[key]}
-                    {record.coverage[key].detail ? (
-                      <span className="small mute covdetail"> — {record.coverage[key].detail}</span>
-                    ) : null}
-                  </span>
-                  <CoverageChip state={record.coverage[key].state} />
-                </div>
-              ))}
-            </div>
+            <CoverageChecklist coverage={record.coverage} />
 
             {record.components.map((component) => {
               const componentAward = component.amount
@@ -190,32 +197,36 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
               return (
                 <div className="rule" key={component.id}>
                   <div className="comphead">
-                    <strong>{component.label}</strong>
+                    <strong>{formatComponentLabel(component.label, component.basis)}</strong>
                     <FactChip state={component.state} />
                   </div>
                   {component.state === 'stated' ? (
                     <>
                       {componentAward ? (
-                        <div className="amt compamount">{componentAward.amountText}</div>
+                        <div
+                          className={`amt compamount amount-value${componentAward.currencyNote ? ' amount-value-unconfirmed' : ''}`}
+                        >
+                          {componentAward.amountText}
+                        </div>
                       ) : null}
-                      <div className="small mute">
+                      <div className="small muted amount-basis">
                         {componentAward?.qualifierText ??
                           component.basis ??
                           'Covered, amount not stated'}
                       </div>
                       {componentAward?.currencyNote ? (
-                        <div className="small mute award-note">{componentAward.currencyNote}</div>
+                        <div className="small muted award-note">{componentAward.currencyNote}</div>
                       ) : null}
-                      {component.note ? <p className="small mute">{component.note}</p> : null}
+                      {component.note ? <p className="small muted">{component.note}</p> : null}
                     </>
                   ) : (
                     <>
                       <div className="ph">{component.note ?? 'Not specified in the source'}</div>
-                      {component.basis ? <div className="small mute">{component.basis}</div> : null}
+                      {component.basis ? <div className="small muted">{component.basis}</div> : null}
                     </>
                   )}
                   {component.conditions?.length ? (
-                    <ul className="small mute conditions">
+                    <ul className="small muted conditions">
                       {component.conditions.map((condition) => (
                         <li key={condition}>{condition}</li>
                       ))}
@@ -226,18 +237,20 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
             })}
           </div>
 
-
           <div className="dsec">
             <h2>Eligibility</h2>
-            <p className="mute small">
-              What the official source says. This isn’t a decision about you or a chance of award.
+            <p className="muted small">
+              These are the provider’s stated requirements, not a decision about you.
             </p>
             <ol className="elig">
               {record.eligibility.map((item) => (
                 <li key={item.id}>
                   {item.statement}
                   {item.state === 'stated' ? null : (
-                    <span className="small mute"> (not stated in the source)</span>
+                    <>
+                      {' '}
+                      <UnknownBadge label="Not specified" />
+                    </>
                   )}
                 </li>
               ))}
@@ -246,73 +259,58 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
 
           <div className="dsec">
             <h2>Rounds and deadlines</h2>
-            <div className="tblwrap">
-              <table className="tbl">
-                <thead>
-                  <tr>
-                    <th scope="col">Round</th>
-                    <th scope="col">Date as published</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Note</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {record.rounds.map((round) => (
-                    <tr key={round.id}>
-                      <td>{round.round}</td>
-                      <td>{round.dateAsPublished}</td>
-                      <td>
-                        <span className="chip neutral">
-                          {isPassedRound(round) && round.status === 'Deadline published'
-                            ? 'Date passed'
-                            : round.status}
-                        </span>
-                      </td>
-                      <td className="mute small">{round.note}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p className="small mute">
-              A passed date marks that round only. Other rounds stay as they are until a source says
-              otherwise.
-            </p>
+            <DateRoundTable rounds={record.rounds} />
+          </div>
 
-            <div className="actionpair">
-              <div className="act">
-                <a className="btn" href={record.links.requirements} target="_blank" rel="noreferrer">
-                  Official page
-                </a>
-                <p className="small mute">
-                  What the official page says about eligibility and funding.
-                </p>
-              </div>
-              {applyAction ? (
-                <div className="act">
-                  <a
-                    className={applyAction.emphasised ? 'btn alt' : 'btn'}
-                    href={applyAction.href}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {applyAction.label}
-                  </a>
-                  <p className="small mute">{applyAction.note}</p>
-                </div>
-              ) : null}
-            </div>
+          <div className="dsec">
+            <h2>Official evidence</h2>
+            <p className="muted small">
+              Exact wording retained from the official provider page.
+            </p>
+            <EvidenceBlock
+              recordId={record.id}
+              evidence={record.evidence}
+              sourceCheck={record.sourceCheck}
+              fallbackUrl={record.links.requirements}
+            />
           </div>
         </div>
 
         <aside className="side" aria-label="Scholarship details">
+          <div className="panel band source-check-panel">
+            <h3>Source check</h3>
+            <dl>
+              <div>
+                <dt>Official source</dt>
+                <dd>
+                  <a href={record.links.summary} target="_blank" rel="noreferrer">
+                    {displayUrl(record.links.summary)}
+                  </a>
+                </dd>
+              </div>
+              <div>
+                <dt>Checked date</dt>
+                <dd>
+                  {record.sourceCheck
+                    ? formatDate(record.sourceCheck.checkedAt)
+                    : 'Not source checked yet'}
+                </dd>
+              </div>
+              <div>
+                <dt>Result</dt>
+                <dd>
+                  {record.sourceCheck ? (
+                    'Matches the official page'
+                  ) : (
+                    <UnknownBadge label="Development preview" />
+                  )}
+                </dd>
+              </div>
+            </dl>
+          </div>
+
           <div className="panel">
             <h3>At a glance</h3>
-            {record.sourceCheck ? (
-              <p className="small">
-                Source checked {formatDate(record.sourceCheck.checkedAt)}. Matches the official source.
-              </p>
-            ) : null}
             <dl>
               <div>
                 <dt>Provider</dt>
@@ -328,15 +326,21 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
               </div>
               <div>
                 <dt>Funding type</dt>
-                <dd>{fundingType ?? 'Not established'}</dd>
+                <dd>{fundingType ?? <UnknownBadge label="Not specified" />}</dd>
               </div>
             </dl>
           </div>
 
           <div className="panel">
             <h3>See something wrong?</h3>
-            <p className="small mute">Tell us about an incorrect amount, deadline, requirement or link.</p>
-            <button className="btn alt sm" type="button" onClick={() => setReportOpen(true)}>
+            <p className="small muted">
+              Tell us about an incorrect amount, deadline, requirement or link.
+            </p>
+            <button
+              className="btn btn-secondary sm"
+              type="button"
+              onClick={() => setReportOpen(true)}
+            >
               Report a problem
             </button>
           </div>
@@ -356,4 +360,3 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
     </>
   )
 }
-

@@ -21,9 +21,16 @@ function App() {
   useEffect(() => {
     if (preview.isDevelopment) return
     const controller = new AbortController()
-    loadCatalogue(controller.signal).then(setCatalogue).catch((err: unknown) => {
-      if (!controller.signal.aborted) setError(err instanceof Error ? err.message : 'Could not load scholarships.')
-    }).finally(() => { if (!controller.signal.aborted) setLoading(false) })
+    loadCatalogue(controller.signal)
+      .then(setCatalogue)
+      .catch((err: unknown) => {
+        if (!controller.signal.aborted) {
+          setError(err instanceof Error ? err.message : 'Could not load scholarships.')
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false)
+      })
     return () => controller.abort()
   }, [attempt])
   const mainRef = useRef<HTMLElement>(null)
@@ -78,9 +85,35 @@ function App() {
       </button>
       <SiteHeader current={section} />
       <main id="main" ref={mainRef} tabIndex={-1}>
-        {loading ? <div className="wrap" role="status">Loading scholarships…</div> : error ? (
-          <div className="wrap" role="alert"><p>{error}</p><button className="btn" onClick={() => { setLoading(true); setError(''); setAttempt(attempt + 1) }}>Try again</button></div>
-        ) : view}
+        {loading ? (
+          <div className="container wrap loading-state" role="status">
+            <p className="small muted">Loading scholarships…</p>
+            <div className="card-grid" aria-hidden="true">
+              <div className="skeleton" />
+              <div className="skeleton" />
+              <div className="skeleton" />
+            </div>
+          </div>
+        ) : error ? (
+          <div className="container wrap">
+            <div className="state-error" role="alert">
+              <p>{error}</p>
+              <button
+                className="btn btn-primary"
+                type="button"
+                onClick={() => {
+                  setLoading(true)
+                  setError('')
+                  setAttempt(attempt + 1)
+                }}
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        ) : (
+          view
+        )}
       </main>
       <SiteFooter />
     </>

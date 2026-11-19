@@ -4,6 +4,7 @@ import {
   displayUrl,
   formatAward,
   formatCheckedAgo,
+  formatComponentLabel,
   formatDate,
   formatDateTime,
   formatDeadline,
@@ -64,7 +65,7 @@ describe('formatAward', () => {
       amountText: '$40,000',
       inlineText: '$40,000 / year',
       qualifierText: 'per year for 36 months',
-      currencyNote: 'Currency per source',
+      currencyNote: 'Currency not stated',
     })
   })
 
@@ -79,8 +80,18 @@ describe('formatAward', () => {
       amountText: '$24,067.80',
       inlineText: '$24,067.80 / year',
       qualifierText: 'annual reduction',
-      currencyNote: 'Currency per source',
+      currencyNote: 'Currency not stated',
     })
+  })
+})
+
+describe('formatComponentLabel', () => {
+  it('replaces generic Award component only when the basis supports a specific name', () => {
+    expect(formatComponentLabel('Award component', 'per year for 36 months')).toBe('Annual award')
+    expect(formatComponentLabel('Award component', 'per month')).toBe('Monthly award')
+    expect(formatComponentLabel('Award component', 'one-off payment')).toBe('One-off award')
+    expect(formatComponentLabel('Award component', '36 months')).toBe('Award component')
+    expect(formatComponentLabel('Living allowance', 'per year')).toBe('Living allowance')
   })
 })
 

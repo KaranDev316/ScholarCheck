@@ -23,7 +23,7 @@ describe('App routing', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: /find funding. check the evidence. decide for yourself/i,
+        name: /find funding\. check the evidence\. decide for yourself/i,
       }),
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /skip to content/i })).toBeInTheDocument()
@@ -57,7 +57,7 @@ describe('App routing', () => {
     render(<App />)
 
     expect(screen.getByRole('heading', { level: 1, name: /find scholarships/i })).toBeInTheDocument()
-    expect(screen.getByLabelText('Destination country')).toHaveValue('Canada')
+    expect(screen.getByRole('button', { name: 'Canada' })).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('follows a hash link without a full page reload', async () => {
@@ -69,7 +69,7 @@ describe('App routing', () => {
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 1, name: /find scholarships/i })).toBeInTheDocument()
     })
-    expect(screen.getByLabelText('Destination country')).toHaveValue('Canada')
+    expect(screen.getByRole('button', { name: 'Canada' })).toHaveAttribute('aria-pressed', 'true')
     expect(window.location.hash).toBe('#explore?c=Canada')
   })
 })

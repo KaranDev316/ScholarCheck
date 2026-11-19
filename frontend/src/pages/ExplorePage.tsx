@@ -1,7 +1,8 @@
-import { useId, useState } from 'react'
+import { useState } from 'react'
 import type { FormEvent } from 'react'
 
-import { ScholarshipCard } from '../components/ScholarshipCard'
+import { Card } from '../components/Card'
+import { FilterChip } from '../components/FilterChip'
 import {
   EMPTY_FILTERS,
   availableCountries,
@@ -9,8 +10,7 @@ import {
   hasActiveFilters,
   type ScholarshipFilters,
 } from '../data/filters'
-import { FUNDING_TYPES, STUDY_LEVELS } from '../data/types'
-import type { Scholarship } from '../data/types'
+import { FUNDING_TYPES, type Scholarship, type StudyLevel } from '../data/types'
 
 interface ExplorePageProps {
   records: readonly Scholarship[]
@@ -18,6 +18,8 @@ interface ExplorePageProps {
   filters: ScholarshipFilters
   onFiltersChange: (filters: ScholarshipFilters) => void
 }
+
+const PRIMARY_LEVELS: readonly StudyLevel[] = ["Bachelor's", "Master's", 'PhD']
 
 export function ExplorePage({
   records,
@@ -27,13 +29,17 @@ export function ExplorePage({
 }: ExplorePageProps) {
   const [query, setQuery] = useState(filters.q)
   const [syncedQuery, setSyncedQuery] = useState(filters.q)
-  const idPrefix = useId()
   const countries = availableCountries(records)
+  const hasResearchFallback =
+    records.some((record) => record.levels.includes('Research degree')) ||
+    filters.level === 'Research degree'
+  const levels: readonly StudyLevel[] = hasResearchFallback
+    ? [...PRIMARY_LEVELS, 'Research degree']
+    : PRIMARY_LEVELS
+
   const results = filterScholarships(records, filters)
   const filtering = hasActiveFilters(filters)
 
-  // The URL is the source of truth. When it changes — a chip removed, "Clear
-  // all", a shared link — the search box follows before the next paint.
   if (syncedQuery !== filters.q) {
     setSyncedQuery(filters.q)
     setQuery(filters.q)
@@ -56,153 +62,145 @@ export function ExplorePage({
   }
 
   return (
-    <section className="wrap explorepage">
+    <section className="container wrap explorepage">
       <h1 className="h-section">Find scholarships</h1>
-      <p className="mute intro">
-        Filter by destination, study level and funding. Open any record for funding details, stated requirements and official links.
+      <p className="muted intro">
+        Filter by destination, study level and funding. Open any record for funding details, stated
+        requirements and official links.
       </p>
 
-      <div className="explore">
-        <details className="filters" open>
-          <summary>Filters</summary>
-          <div className="filterfields">
-            <label htmlFor={`${idPrefix}-country`}>
-              Destination country
-              <select
-                id={`${idPrefix}-country`}
-                value={filters.country}
-                onChange={(event) => onFiltersChange({ ...filters, country: event.target.value })}
-              >
-                <option value="">All countries</option>
-                {countries.map((country) => (
-                  <option key={country} value={country}>
-                    {country}
-                  </option>
-                ))}
-              </select>
-            </label>
+      <form className="bar search" role="search" onSubmit={submitSearch}>
+        <input
+          name="q"
+          aria-label="Search scholarships"
+          placeholder="Try 'doctoral scholarships in Canada'"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+        <button className="btn btn-primary" type="submit">
+          Search
+        </button>
+      </form>
 
-            <label htmlFor={`${idPrefix}-level`}>
-              Study level
-              <select
-                id={`${idPrefix}-level`}
-                value={filters.level}
-                onChange={(event) =>
-                  onFiltersChange({
-                    ...filters,
-                    level: event.target.value as ScholarshipFilters['level'],
-                  })
-                }
-              >
-                <option value="">All levels</option>
-                {STUDY_LEVELS.map((level) => (
-                  <option key={level} value={level}>
-                    {level}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label htmlFor={`${idPrefix}-funding`}>
-              Funding type
-              <select
-                id={`${idPrefix}-funding`}
-                value={filters.funding}
-                onChange={(event) =>
-                  onFiltersChange({
-                    ...filters,
-                    funding: event.target.value as ScholarshipFilters['funding'],
-                  })
-                }
-              >
-                <option value="">All funding types</option>
-                {FUNDING_TYPES.map((funding) => (
-                  <option key={funding} value={funding}>
-                    {funding}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <button
-              className="btn alt sm"
-              type="button"
-              onClick={() => onFiltersChange(EMPTY_FILTERS)}
-              disabled={!filtering}
-            >
-              Clear all
-            </button>
-          </div>
-        </details>
-
-        <div>
-          <form className="bar" role="search" onSubmit={submitSearch}>
-            <input
-              name="q"
-              aria-label="Search scholarships"
-              placeholder="Scholarship, university or country"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-            <button className="btn" type="submit">
-              Search
-            </button>
-          </form>
-
-          <div className="active">
-            {filters.q ? (
-              <button
-                type="button"
-                aria-label={`Remove filter ${filters.q}`}
-                onClick={() => onFiltersChange({ ...filters, q: '' })}
-              >
-                Search: “{filters.q}” ×
-              </button>
-            ) : null}
-            {[filters.country, filters.level, filters.funding]
-              .filter(Boolean)
-              .map((label) => (
-                <button
-                  key={label}
-                  type="button"
-                  aria-label={`Remove filter ${label}`}
-                  onClick={() => clearFilter(label)}
-                >
-                  {label} ×
-                </button>
-              ))}
-          </div>
-
-          <p className="mute small count">
-            Showing {results.length} of {records.length}{' '}
-            {isDevelopment ? 'development preview' : 'published'} scholarships
-          </p>
-
-          {results.length === 0 ? (
-            <div className="state">
-              <h3>
-                No {isDevelopment ? 'development preview' : 'published'} scholarship matches these
-                filters
-              </h3>
-              <p className="mute">
-                {isDevelopment
-                  ? 'These preview records have not passed source checks.'
-                  : 'Only scholarships that passed our evidence checks are listed.'}{' '}
-                Remove a filter to widen the search.
-              </p>
-              <button className="btn" type="button" onClick={() => onFiltersChange(EMPTY_FILTERS)}>
-                Clear all filters
-              </button>
-            </div>
-          ) : (
-            <div className="cards">
-              {results.map((record) => (
-                <ScholarshipCard key={record.id} record={record} isDevelopment={isDevelopment} />
+      <div className="filter-bar" aria-label="Filters">
+        {countries.length > 0 ? (
+          <div className="filter-group" role="group" aria-label="Destination country">
+            <span className="filter-group-label small muted">Country</span>
+            <div className="filter-chips">
+              {countries.map((country) => (
+                <FilterChip
+                  key={country}
+                  label={country}
+                  selected={filters.country === country}
+                  onToggle={() =>
+                    onFiltersChange({
+                      ...filters,
+                      country: filters.country === country ? '' : country,
+                    })
+                  }
+                />
               ))}
             </div>
-          )}
+          </div>
+        ) : null}
+
+        <div className="filter-group" role="group" aria-label="Study level">
+          <span className="filter-group-label small muted">Level</span>
+          <div className="filter-chips">
+            {levels.map((level) => (
+              <FilterChip
+                key={level}
+                label={level}
+                selected={filters.level === level}
+                onToggle={() =>
+                  onFiltersChange({
+                    ...filters,
+                    level: filters.level === level ? '' : level,
+                  })
+                }
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="filter-group" role="group" aria-label="Funding type">
+          <span className="filter-group-label small muted">Funding type</span>
+          <div className="filter-chips">
+            {FUNDING_TYPES.map((funding) => (
+              <FilterChip
+                key={funding}
+                label={funding}
+                selected={filters.funding === funding}
+                onToggle={() =>
+                  onFiltersChange({
+                    ...filters,
+                    funding: filters.funding === funding ? '' : funding,
+                  })
+                }
+              />
+            ))}
+          </div>
         </div>
       </div>
+
+      {filtering ? (
+        <div className="active" aria-label="Active filters">
+          {filters.q ? (
+            <FilterChip
+              label={`Search: “${filters.q}”`}
+              removeLabel={filters.q}
+              onRemove={() => onFiltersChange({ ...filters, q: '' })}
+            />
+          ) : null}
+          {[filters.country, filters.level, filters.funding]
+            .filter(Boolean)
+            .map((label) => (
+              <FilterChip
+                key={label}
+                label={label}
+                onRemove={() => clearFilter(label)}
+              />
+            ))}
+          <button
+            className="btn btn-secondary sm"
+            type="button"
+            onClick={() => onFiltersChange(EMPTY_FILTERS)}
+          >
+            Clear filters
+          </button>
+        </div>
+      ) : null}
+
+      <h2 className="count">
+        {results.length} {results.length === 1 ? 'scholarship' : 'scholarships'}
+      </h2>
+
+      {results.length === 0 ? (
+        <div className="state state-empty">
+          <h3>No published scholarships match these filters.</h3>
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={() => onFiltersChange(EMPTY_FILTERS)}
+          >
+            Clear filters
+          </button>
+        </div>
+      ) : (
+        <div
+          className={
+            results.length === 1
+              ? 'card-grid card-grid--single cards'
+              : results.length === 2
+                ? 'card-grid card-grid--two cards'
+                : 'card-grid cards'
+          }
+        >
+          {results.map((record) => (
+            <Card key={record.id} record={record} isDevelopment={isDevelopment} />
+          ))}
+        </div>
+      )}
     </section>
   )
 }

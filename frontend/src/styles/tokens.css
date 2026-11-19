@@ -1,0 +1,240 @@
+/* ScholarCheck design tokens. Source of truth: docs/UI-SPEC.md and docs/PRP.md.
+   Light/dark follow the visitor's system setting. There is no theme switch. */
+
+:root {
+  color-scheme: light dark;
+
+  /* Brand (fixed in both themes) */
+  --navy: #0D173B;
+  --gold: #D4AF37;
+  --on-gold: #0D173B;           /* navy on gold ~7:1 */
+
+  /* Type */
+  --font-heading: "Iowan Old Style", Charter, Georgia, serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --text-sm: 0.875rem;   /* 14 */
+  --text-base: 1rem;     /* 16 */
+  --text-md: 1.125rem;   /* 18 */
+  --text-lg: 1.375rem;   /* 22 */
+  --text-xl: 1.75rem;    /* 28 */
+  --text-2xl: 2.5rem;    /* 40 */
+  --text-hero: clamp(2.5rem, 2rem + 2vw, 3.25rem); /* 40 -> 52 */
+  --leading-body: 1.5;
+  --leading-heading: 1.15;
+
+  /* Spacing (4px base) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-6: 24px; --space-8: 32px; --space-12: 48px; --space-16: 64px;
+
+  /* Shape */
+  --radius-card: 12px;
+  --radius-button: 8px;
+  --radius-chip: 999px;
+  --tap-target: 44px;
+  --content-max: 1120px;
+  --reading-max: 720px;
+
+  /* Surfaces: light theme */
+  --bg: #F8F9FA;
+  --surface: #FFFFFF;           /* cards */
+  --surface-border: #D9DDE8;    /* >=3:1 against bg for UI edges is met by the card shadow + border pairing */
+  --text: #0D173B;
+  --text-muted: #4A5372;        /* ~7:1 on white */
+  --link: #0D173B;
+  --focus-ring: #0D173B;        /* navy outline per PRP */
+
+  /* Bands that stay navy in both themes (header, hero, footer, source-check) */
+  --band-bg: #0D173B;
+  --band-text: #F8F9FA;
+  --band-muted: #C3CAE3;        /* ~9:1 on navy */
+  --band-focus-ring: #F8F9FA;   /* navy ring would vanish on navy */
+
+  /* Unknown / "Not specified" (amber hatch, readable text) */
+  --unknown-bg: #FFF3D1;
+  --unknown-stripe: #F2D98A;
+  --unknown-text: #5A3A00;      /* ~9:1 on --unknown-bg */
+  --unknown-border: #C99A1B;
+
+  /* Status (always paired with text/icon) */
+  --covered-bg: #E3F4E8;
+  --covered-text: #0F4D25;
+  --danger-bg: #FDE7E7;
+  --danger-text: #8A1C1C;
+  --notice-bg: #E6EBF8;
+  --notice-text: #0D173B;
+
+  --shadow-card: 0 1px 2px rgba(13, 23, 59, 0.08), 0 4px 12px rgba(13, 23, 59, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Page is visibly lighter than the navy hero so the three zones read clearly */
+    --bg: #162252;
+    --surface: #202F6E;
+    --surface-border: #6C7BB8;  /* >=3:1 against both --surface and --bg */
+    --text: #F8F9FA;
+    --text-muted: #C7CFE8;      /* ~8:1 on --surface */
+    --link: #E8C95F;
+    --focus-ring: #F8F9FA;      /* light ring on dark surfaces */
+
+    --band-bg: #0D173B;
+
+    --unknown-bg: #3A2F10;
+    --unknown-stripe: #4A3C14;
+    --unknown-text: #FFE7A3;    /* ~10:1 on --unknown-bg */
+    --unknown-border: #B8902A;
+
+    --covered-bg: #143A26;
+    --covered-text: #B7EACB;
+    --danger-bg: #4A1A22;
+    --danger-text: #FFC9CF;
+    --notice-bg: #243073;
+    --notice-text: #F8F9FA;
+
+    --shadow-card: none;
+  }
+}
+
+/* ---------- Base ---------- */
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+}
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  line-height: var(--leading-heading);
+  margin: 0 0 var(--space-3);
+  text-wrap: balance;
+}
+a { color: var(--link); }
+
+/* Focus: visible on every interactive element */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.band :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline-color: var(--band-focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- Layout ---------- */
+.container { max-width: var(--content-max); margin-inline: auto; padding-inline: var(--space-4); }
+.reading { max-width: var(--reading-max); }
+.band { background: var(--band-bg); color: var(--band-text); }
+.band .muted { color: var(--band-muted); }
+.muted { color: var(--text-muted); }
+
+.site-header { border-bottom: 2px solid var(--gold); }
+.site-footer { border-top: 2px solid var(--gold); }
+
+/* Hero */
+.hero h1 { font-size: var(--text-hero); }
+.hero h1 .line { display: block; }   /* one sentence per line on desktop */
+@media (max-width: 640px) { .hero h1 .line { display: inline; } }
+
+/* Card grid: left-aligned, never stretched when few records */
+.card-grid { display: grid; gap: var(--space-6); grid-template-columns: 1fr; justify-content: start; }
+@media (min-width: 640px)  { .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* ---------- Components ---------- */
+.card {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+}
+.card .title { font-family: var(--font-heading); font-size: var(--text-lg); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Headline amount: label first, amount second, basis smaller */
+.amount-label { font-size: var(--text-sm); color: var(--text-muted); }
+.amount-value { font-family: var(--font-heading); font-size: var(--text-xl); line-height: 1.2; }
+.amount-basis { font-size: var(--text-sm); color: var(--text-muted); }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: var(--tap-target); padding: 0 var(--space-4);
+  border-radius: var(--radius-button); font: inherit; font-weight: 600; cursor: pointer;
+  border: 2px solid transparent; text-decoration: none;
+}
+.btn-primary { background: var(--gold); color: var(--on-gold); }
+.btn-primary:hover { filter: brightness(1.06); }
+.btn-secondary { background: transparent; color: var(--text); border-color: var(--surface-border); }
+.band .btn-secondary { color: var(--band-text); border-color: var(--band-muted); }
+
+/* Chips (filters): selected state is fill + check, not colour alone */
+.chip {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  min-height: var(--tap-target); padding: 0 var(--space-4);
+  border-radius: var(--radius-chip); font: inherit; cursor: pointer;
+  background: transparent; color: var(--text); border: 1px solid var(--surface-border);
+}
+.band .chip { color: var(--band-text); border-color: var(--band-muted); }
+.chip[aria-pressed="true"] { background: var(--gold); color: var(--on-gold); border-color: var(--gold); font-weight: 600; }
+.chip[aria-pressed="true"]::before { content: "✓"; }  /* swap for an icon component */
+
+/* Static tags (non-interactive) */
+.tag {
+  display: inline-block; padding: 2px var(--space-3); border-radius: var(--radius-chip);
+  font-size: var(--text-sm); border: 1px solid var(--surface-border); color: var(--text);
+}
+/* Gold is reserved for the computed "Fully funded" chip */
+.tag-fully-funded { background: var(--gold); color: var(--on-gold); border-color: var(--gold); font-weight: 600; }
+
+/* Coverage checklist items */
+.coverage-row { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); min-height: var(--tap-target); }
+.status-covered {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  background: var(--covered-bg); color: var(--covered-text);
+  padding: 2px var(--space-3); border-radius: var(--radius-chip); font-size: var(--text-sm); font-weight: 600;
+}
+.status-covered::before { content: "✓"; }
+
+/* Unknown / Not specified: amber hatch, dark text, icon + text always present */
+.status-unknown {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  color: var(--unknown-text);
+  background:
+    repeating-linear-gradient(135deg, var(--unknown-stripe) 0 4px, transparent 4px 8px),
+    var(--unknown-bg);
+  border: 1px solid var(--unknown-border);
+  padding: 2px var(--space-3); border-radius: var(--radius-chip); font-size: var(--text-sm); font-weight: 600;
+}
+.status-unknown::before { content: "ⓘ"; }  /* swap for an icon component; add title="The official source doesn't say" */
+
+/* Evidence block */
+.evidence { border-left: 4px solid var(--gold); padding: var(--space-3) var(--space-4); background: var(--surface); }
+.evidence blockquote { margin: 0; font-family: var(--font-heading); max-width: var(--reading-max); }
+.evidence .result { font-weight: 600; }
+
+/* Date / round table: wide tables scroll inside their own container */
+.table-wrap { overflow-x: auto; max-width: 100%; }
+.round-table { width: 100%; border-collapse: collapse; }
+.round-table th, .round-table td { text-align: left; padding: var(--space-3); border-bottom: 1px solid var(--surface-border); }
+
+/* States */
+.skeleton { background: linear-gradient(90deg, var(--surface-border), var(--surface), var(--surface-border)); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: var(--radius-card); min-height: 220px; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+.state-error { background: var(--danger-bg); color: var(--danger-text); padding: var(--space-4); border-radius: var(--radius-card); }
+.state-empty { text-align: center; padding: var(--space-12) var(--space-4); }
+
+/* Phone: keep the primary official action reachable */
+@media (max-width: 640px) {
+  .action-bar-sticky {
+    position: sticky; bottom: 0; z-index: 10;
+    padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+    background: var(--surface); border-top: 1px solid var(--surface-border);
+  }
+}

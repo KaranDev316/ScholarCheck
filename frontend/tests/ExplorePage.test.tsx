@@ -44,20 +44,23 @@ function Harness({ initial = EMPTY_FILTERS }: { initial?: ScholarshipFilters }) 
 }
 
 describe('ExplorePage', () => {
-  it('counts the results against the whole catalogue', () => {
+  it('counts the results with singular and plural headings', () => {
     render(<Harness />)
 
-    expect(screen.getByText(/showing 2 of 2 published scholarships/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: '2 scholarships' })).toBeInTheDocument()
     expect(screen.getAllByRole('article')).toHaveLength(2)
   })
 
-  it('narrows the list when a country is chosen', async () => {
+  it('narrows the list when a country filter chip is toggled', async () => {
     const user = userEvent.setup()
     render(<Harness />)
 
-    await user.selectOptions(screen.getByLabelText('Destination country'), 'Australia')
+    const australiaChip = screen.getByRole('button', { name: 'Australia' })
+    expect(australiaChip).toHaveAttribute('aria-pressed', 'false')
+    await user.click(australiaChip)
 
-    expect(screen.getByText(/showing 1 of 2 published scholarships/i)).toBeInTheDocument()
+    expect(australiaChip).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('heading', { level: 2, name: '1 scholarship' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: /australian research stipend/i })).toBeVisible()
     expect(screen.queryByRole('heading', { level: 3, name: /canada doctoral award/i })).toBeNull()
   })
@@ -69,7 +72,7 @@ describe('ExplorePage', () => {
     const chip = screen.getByRole('button', { name: 'Remove filter Canada' })
     await user.click(chip)
 
-    expect(screen.getByText(/showing 2 of 2 published scholarships/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: '2 scholarships' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Remove filter Canada' })).toBeNull()
   })
 
@@ -77,9 +80,11 @@ describe('ExplorePage', () => {
     const user = userEvent.setup()
     render(<Harness />)
 
-    await user.selectOptions(screen.getByLabelText('Funding type'), 'Tuition + stipend')
+    const fundingChip = screen.getByRole('button', { name: 'Tuition + stipend' })
+    await user.click(fundingChip)
 
-    expect(screen.getByText(/showing 1 of 2 published scholarships/i)).toBeInTheDocument()
+    expect(fundingChip).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('heading', { level: 2, name: '1 scholarship' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: /canada doctoral award/i })).toBeVisible()
   })
 
@@ -90,7 +95,7 @@ describe('ExplorePage', () => {
     await user.type(screen.getByLabelText('Search scholarships'), 'australia')
     await user.click(screen.getByRole('button', { name: 'Search' }))
 
-    expect(screen.getByText(/showing 1 of 2 published scholarships/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: '1 scholarship' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Remove filter australia' })).toBeInTheDocument()
   })
 
@@ -99,11 +104,14 @@ describe('ExplorePage', () => {
     render(<Harness initial={{ ...EMPTY_FILTERS, q: 'zzz' }} />)
 
     expect(
-      screen.getByRole('heading', { level: 3, name: /no published scholarship matches these filters/i }),
+      screen.getByRole('heading', {
+        level: 3,
+        name: /no published scholarships match these filters\./i,
+      }),
     ).toBeInTheDocument()
-    expect(screen.getByText(/only scholarships that passed our evidence checks are listed/i)).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: 'Clear all filters' }))
+    const clearButtons = screen.getAllByRole('button', { name: 'Clear filters' })
+    await user.click(clearButtons[clearButtons.length - 1])
 
     expect(screen.getAllByRole('article')).toHaveLength(2)
     expect(screen.getByLabelText('Search scholarships')).toHaveValue('')
