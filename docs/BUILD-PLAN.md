@@ -156,3 +156,14 @@ the external inputs still missing: hosting target, origin, contact address and
 provider access. The next product milestone is a verified public MVP URL; the
 next operational milestone is one scheduled record with proven safe
 updates/holds. Neither is complete merely because code exists.
+
+B04 then found no provider credential here, so it recorded that instead of
+simulating a model call. It still ran its credential-free half on the live
+source: a 19 November collection returned the same page text as the 2 November
+reading, the retained artifact refused to be overwritten, the documented command
+adapters received the promised payloads, a replay reproduced the published
+report's content hash and decision, a forced-unsupported verdict held with stated
+reasons, and unconfigured or altered-text runs refused. Those outputs sit in the
+gitignored `var/b04/` and are a rehearsal, not new evidence; the live provider
+call, and with it B04's completion, is still blocked on access supplied from
+outside this repository.

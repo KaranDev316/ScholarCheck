@@ -118,8 +118,12 @@ metadata. Source-check dates and official links are public.
 The production frontend build and local HTTP smoke test pass. A real hosting
 origin, contact address and deployed smoke test remain outstanding. The built-in
 model adapter needs runtime API credentials and explicit model IDs; its live
-provider call has not been executed. See [release instructions](docs/DEPLOYMENT.md)
-and the [evidence ledger](docs/slices/S01/EVIDENCE.md).
+provider call has not been executed, and no credential exists in this workspace.
+The documented command adapters, the publish/hold decision and the refusal guards
+have been exercised without one (B04 rehearsal, recorded in the
+[checkpoint](docs/BUILD-CHECKPOINT.md)). See
+[release instructions](docs/DEPLOYMENT.md) and the
+[evidence ledger](docs/slices/S01/EVIDENCE.md).
 
 Re-verified on 16 November 2026 (B01, commit `1188df8`, no code changes):
 backend **239 passed with 18 database-gated skips**, and **257 passed with no

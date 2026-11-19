@@ -103,3 +103,16 @@ configuration, so a live pipeline run through Compose was impossible. The
 container image itself is still unbuilt, and
 [the deployment checklist](DEPLOYMENT.md) lists exactly which external inputs
 remain.
+
+B04 could not run its live half: no provider credential exists here, so no model
+call was made or imitated, and the published report keeps its 3 November check
+time. The credential-free half was done on the real page through the real code
+paths. A fresh collection on 19 November returned the same text as the 2 November
+reading - identical content-addressed id and body hash, though the raw HTML bytes
+differed - so revision 1 still describes what the page says. The retained
+artifact could not be overwritten, the documented command adapters received the
+payloads they are promised, a replay produced a `publish` decision matching the
+published report's content hash, a forced-unsupported verdict produced a `hold`
+with stated reasons, and an unconfigured or text-altered run refused instead of
+reporting. All of that stayed in the gitignored `var/b04/` as a rehearsal, not as
+new evidence.

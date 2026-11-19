@@ -1,5 +1,27 @@
 # Evidence — S01 foundation
 
+## B04 rehearsal — 19 November 2026 (credential-free half only)
+
+No `OPENAI_API_KEY` exists in this workspace, so no model was called and no live
+extraction or checking pass ran. The published report keeps its
+`2026-11-03T18:40:32Z` check time and nothing below is new evidence. Timestamps
+are the collector's own records.
+
+| Check | Actual result |
+|---|---|
+| Fresh collection | `app.collect.snapshot.collect` on the registered CGRS D URL: 200, 24,287 characters, robots "no matching rule", `retrievedAt 2026-11-19T11:14:55Z` |
+| Text unchanged | Body sha256 `dcfbf661b0e980cc7a7425bfe9d5177e385f9b4073c90f1ed3fc4c533e26e90b` in both readings, same snapshot id; raw bytes 55,734 → 55,703 with raw hash `cda51a41…` → `86dd11e3…` |
+| Re-retention | `write_artifact` into `content/snapshots` raised `SnapshotExists(same_text=True)`; the tracked file's sha256 `3f276bae…` was identical before and after |
+| Command adapters | Stub adapters logged their stdin: extraction `{task, instructions, snapshots: 1, previous_record: null, schema: ExtractionProposal}`; checking `{task, instructions, candidate: 24 facts, snapshots: 1, schema: present, no top-level title}` |
+| Replay | Decision `publish`, `assurance: source_checked`, 18 checks, content hash `92a21dafd0bf40e5b18ce7d7476bfebeec4e1dd0020fbbcacc60fc1d9b41de71` equal to the published report, `checked_at 2026-11-19T11:15:24Z` — a rehearsal over recorded outputs, never published |
+| Hold | One verdict forced to `unsupported`: decision `hold`, `assurance: insufficient_evidence`, reasons naming the fact and the snapshot without a supported quote |
+| Refusals | No adapter configured: exit 1, `Configure EXTRACT_COMMAND or its model and OPENAI_API_KEY`, no audit directory. Text altered under the same id (`$40,000 per year` → `$30,000 per year`): `component:cgsd-living-support.amount: the quoted span is not in the retained snapshot` |
+
+Artifacts live under the gitignored `var/b04/`; `var/b04/negative-fixtures/`
+holds the altered snapshot and verdict with a README saying they are not
+evidence. No database was used: `DATABASE_URL` was unset and `--publish` was not
+passed.
+
 ## Baseline re-verification — 16 November 2026
 
 Task B01 re-ran the checks instead of restating earlier numbers. `git status`

@@ -84,23 +84,60 @@ hosting target, domain, contact address or credential was created or invented.
 Changed files: `compose.yaml`, `docs/DEPLOYMENT.md`, `docs/BUILD-CHECKPOINT.md`,
 `docs/BUILD-PLAN.md`.
 
+## B04 - adapter contract and hold path exercised; live model call blocked (PARTIAL)
+
+No provider credential exists in this workspace: `OPENAI_API_KEY` is absent from
+the shell and there is no `.env`. No live extraction or checking pass was run and
+no model call was simulated. The credential-free half of B04 was done against the
+real source page and the real code paths. Every artifact stayed in `var/b04/`
+(gitignored): no tracked evidence file changed, and no database was touched
+(`DATABASE_URL` was unset and `--publish` was not used, so nothing connected).
+
+| Check | Finding |
+|---|---|
+| Fresh retention | `app.collect.snapshot.collect` fetched the registered CGRS D page through the robots and approved-host rules: 200, 24,287 characters, robots "no matching rule", retained under `var/b04/snapshots/`. The machine clock recorded `2026-11-19T11:14:55Z`; the published reading is `2026-11-02T14:32:25Z` |
+| Source unchanged | The page text is identical to the published reading: same content-addressed id (`...dcfbf661`) and identical body sha256 `dcfbf661b0e9...`, so revision 1 still describes what the page says. Raw HTML shrank 55,734 → 55,703 bytes with a different raw hash: markup moved, wording did not, so the raw hash is not the change signal and the text hash is |
+| Binding semantics | `Snapshot.fingerprint`, which a report records, hashes the whole reading including `retrieved_at`, so today's fingerprint `7c0f201a...` differs from the published `5b799c3d...` although the text matches. `content_hash` is the text hash and is what the worker compares for "unchanged". Both are confirmed on the two artifacts, so a matching text hash - not a matching report hash - is the evidence that the page did not change |
+| Retention guard | Writing today's artifact back into `content/snapshots` raised `SnapshotExists(same_text=True)` and left the tracked file byte-identical (`3f276bae...`): a later fetch cannot overwrite the provenance a report was checked against |
+| Adapter contract | With `EXTRACT_COMMAND`/`CHECK_COMMAND` set to a stub that logged its stdin and replayed recorded outputs (receipts in `var/b04/receipts/`), extraction received `{task: extract, snapshots: 1, schema: ExtractionProposal, previous_record: null}` and no candidate; checking received `{task: check, snapshots: 1, candidate: 24 facts, schema: list schema, no title}` and no previous record. Exit 0, and the audit directory held the nine expected artifacts |
+| Rehearsal report | Decision `publish`, `assurance: source_checked`, content hash `92a21daf...` equal to the published `complete-run` report, 18 checks, checked_at `2026-11-19T11:15:24Z`. This is a rehearsal over recorded pass outputs, not a new model reading and not new evidence; it was not published and must not be cited as validation |
+| Hold path | Replaying the same extraction with one verdict altered to `unsupported` produced decision `hold`, `assurance: insufficient_evidence` and two stated reasons: one naming the fact and saying the check returned unsupported, one naming the snapshot with no supported quote |
+| Refusal guards | With no adapter configured the pipeline exits 1 with `Configure EXTRACT_COMMAND or its model and OPENAI_API_KEY` and creates no audit directory. A copy of the snapshot with `$40,000 per year` changed to `$30,000 per year` under the same id made extraction refuse: `component:cgsd-living-support.amount: the quoted span is not in the retained snapshot` |
+
+`var/b04/negative-fixtures/` holds the altered snapshot and the altered verdict
+file with a README saying they are not evidence; they exist only to show the
+guards fire.
+
+**Not proven:** the live provider call. Extraction and checking ran over recorded
+outputs, so today's page has not been read by a model and the published report
+keeps its `2026-11-03T18:40:32Z` check time. No tracked artifact received a new
+check time.
+
+Changed files: `README.md`, `docs/BUILD-CHECKPOINT.md`, `docs/ROADMAP.md`,
+`docs/BUILD-PLAN.md`, `docs/slices/S01/EVIDENCE.md`.
+
 ## Unresolved blockers (priority order, all external)
 
 1. Container build/start unexecuted: Docker is not installed in this workspace;
    packaging was reviewed statically and the native route rehearsed instead.
 2. No deployed HTTPS origin, real contact address or deployed smoke check; the
    deploy checklist is written but every external input is still missing.
-3. No live model-provider call; the adapter is tested with injected transport.
+3. No live model-provider call: no `OPENAI_API_KEY` exists in this workspace. The
+   command-adapter contract, the hold path and the refusal guards are exercised
+   (B04), so what remains outstanding is the provider call itself.
 4. Scheduled monitoring not exercised on a deployed target, and no backup or
    restore has been run against a real deployment.
 
 ## Next smallest task
 
-B04: exercise live extraction and separate evidence checking on a freshly
-retained official source, with runtime credentials and models supplied outside
-this repository. Retain raw and validated outputs, exact snapshot bindings, the
-report and the publish/hold decision; do not invent a new check time on old
-artifacts, and do not print credentials. If no provider access exists, record
-that as the blocker rather than simulating a model call. Unblocked preparation
-that does not need credentials: confirm the adapter contract and the hold path
-with the documented command adapters, and keep the B03 deploy checklist current.
+B04 stays open on its live half only: run real extraction and separate evidence
+checking over the retained page with runtime credentials and model IDs supplied
+outside this repository, then keep the raw and validated outputs, snapshot
+bindings, report and publish/hold decision, without printing credentials or
+inventing a check time.
+
+The next step that needs no credentials is B05, which depends on B04: finalize
+the initial catalogue through the gate and retain every regression fixture and
+unresolved hold with its reason. Only `cgsd-doctoral` has a publication record so
+far. The B03 deploy checklist stays current; nothing in it can be filled in from
+inside this repository.
