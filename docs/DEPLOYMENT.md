@@ -205,3 +205,25 @@ record outcomes and due times; audit files are on the persistent `audits` volume
 The worker's unchanged, unsupported-change, supported-change, duplicate,
 failed-fetch and retry paths have PostgreSQL tests. Production scheduling and
 live model-provider behavior still need validation in the chosen deployment.
+
+## Model quotation protocol and usage
+
+The built-in model adapter supplies indexed source blocks to extraction. The
+model selects quote IDs; Python restores the original blocks before validating
+the proposal. It cannot stitch excerpts together with invented ellipses. Multiple
+passages require separate evidence entries. Supplement restrictions, funding
+availability and documentation requirements must remain explicit conditions.
+
+For checking, repeated excerpts are deduplicated and each stated reading has an
+ID. The checker returns that ID plus its independently decided verdict, reason
+and applicability. Python restores the original fact/snapshot/evidence/quote
+bindings; unknown, duplicate or missing IDs fail closed. Full source snapshots
+remain available to the checker, and deterministic publication gates are unchanged.
+Command adapters continue using the original full JSON contracts.
+
+Schemas and instructions are no longer duplicated in the model input payload.
+Each audit directory includes `usage.json` with provider-reported per-pass and
+total input/output token usage, including completed calls whose outputs fail
+local validation. Missing provider usage is recorded as null, not measured zero.
+These changes have local regression coverage; actual token savings and model
+quality must be measured with a new live run.
