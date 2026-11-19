@@ -1,6 +1,6 @@
 # Build checkpoint
 
-## Status: B01, B02 and B03 complete (16 November 2026). Next: B04.
+## Status: B01–B04 complete (B04: 19 November 2026). Next: B05.
 
 Base commit `1188df8`; `git status` was clean before work. No application code
 changed: edits are documentation plus deployment environment pass-through in
@@ -141,3 +141,46 @@ the initial catalogue through the gate and retain every regression fixture and
 unresolved hold with its reason. Only `cgsd-doctoral` has a publication record so
 far. The B03 deploy checklist stays current; nothing in it can be filled in from
 inside this repository.
+
+
+## B04 closure — 19 November 2026: COMPLETE, live outcome HOLD
+
+This section supersedes earlier credential-blocker and B04-partial notes above.
+API credentials and explicit models are configured privately; no secrets were
+printed or committed. Both passes used `gpt-4.1-2025-04-14` via separate,
+stateless Responses API calls. No database or publication command was used.
+
+Fresh collection fetched the permitted CGRS D official page through collector
+robots/approved-host checks: HTTP 200, retrieved `2026-11-19T14:01:06Z`.
+The source artifact and provenance were retained under
+`backend/var/audits/b04-fresh-live-20261119T140103787700Z/source/`.
+The content-addressed snapshot still ends `dcfbf661`; a new retrieval time was
+retained separately without overwriting the older source artifact.
+
+Both live passes consumed that exact fresh snapshot. In the same run's
+`pipeline/`, retained artifacts include snapshots, extraction output/call
+metadata, validated proposal, checking output/call metadata, validated
+adjudications, validation report, gate decision and usage. Model responses
+completed; schema and candidate evidence validation ran, followed by separate
+checking and policy `s01.publication.3`. The final decision was **hold**, with
+22 recorded reasons. No output was hand-edited to create a passing result.
+
+| Pass | Input tokens | Output tokens | Total tokens |
+|---|---:|---:|---:|
+| Extraction | 9,509 | 5,607 | 15,116 |
+| Checking | 11,550 | 1,751 | 13,301 |
+| Total | 21,059 | 7,358 | 28,417 |
+
+Both calls reported zero cached input tokens. B04 proves runtime execution and
+an auditable gate outcome, not publication readiness or model completeness.
+B05 must address missing obliged material facts, unsupported funding/route/
+period wording, uncovered evidence, missing supported deadline stage and the
+programme JSON numeric representation mismatch (`3` versus `3.0`). Preserve the
+hold while investigating; do not relax evidence gates to close B05.
+
+The separate earlier live checker also has retained report/hold evidence under
+`backend/var/audits/live-check-20261119T135912808644Z/`, but used the older
+snapshot. It is not the evidence for fresh-source closure.
+
+All runtime artifacts remain gitignored/private. Local retention was checked;
+they are not distributed by a fresh clone. Next: B05 catalogue correctness.

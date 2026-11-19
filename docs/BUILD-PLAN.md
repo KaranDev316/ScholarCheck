@@ -167,3 +167,14 @@ reasons, and unconfigured or altered-text runs refused. Those outputs sit in the
 gitignored `var/b04/` and are a rehearsal, not new evidence; the live provider
 call, and with it B04's completion, is still blocked on access supplied from
 outside this repository.
+
+
+### B04 completion update — 19 November 2026
+
+The credential blocker above is historical. A fresh permitted CGRS D source was
+collected and consumed by separate live GPT-4.1 extraction/checking passes.
+Validated outputs, report, a policy `.3` **hold** decision and per-pass usage
+are retained in the private audit directory identified in
+[the checkpoint](BUILD-CHECKPOINT.md). B04 is complete; B05 must resolve candidate
+coverage and unsupported-value issues before claiming launch readiness. The
+live two-pass run used 28,417 tokens and did not publish or write to a database.
