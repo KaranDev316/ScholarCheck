@@ -76,7 +76,7 @@ describe('ScholarshipPage', () => {
       />,
     )
 
-    expect(screen.getByText(/source checked 3 Nov 2026/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/source checked 3 Nov 2026/i).length).toBeGreaterThan(0)
     expect(screen.queryByText(/03\/11\/2026/)).toBeNull()
   })
 
@@ -136,17 +136,64 @@ describe('ScholarshipPage', () => {
     expect(screen.queryByRole('link', { name: /read the requirements/i })).toBeNull()
   })
 
-  it('lists stated eligibility with the required disclaimer', () => {
+  it('groups eligibility into expandable category cards with counts and disclaimer', async () => {
+    const user = userEvent.setup()
     render(<ScholarshipPage record={makeRecord()} isDevelopment />)
 
     expect(screen.getByRole('heading', { level: 2, name: 'Eligibility' })).toBeVisible()
+    expect(screen.getByText('1 stated')).toBeInTheDocument()
+    expect(screen.getByText('7 not specified')).toBeInTheDocument()
     expect(
       screen.getByText(/these are the provider’s stated requirements, not a decision about you\./i),
     ).toBeInTheDocument()
 
-    const items = screen.getAllByRole('listitem')
-    expect(items).toHaveLength(1)
-    expect(items[0]).toHaveTextContent('Be enrolled in a doctoral programme.')
+    const expandAll = screen.getByRole('button', { name: 'Expand all' })
+    await user.click(expandAll)
+    expect(screen.getByRole('button', { name: 'Collapse all' })).toBeInTheDocument()
+    expect(screen.getByText('Be enrolled in a doctoral programme.')).toBeVisible()
+  })
+
+  it('highlights Application route and extracts study-stage and cap pills for multi-rule records', () => {
+    render(
+      <ScholarshipPage
+        record={makeRecord({
+          sourceCheck: { checkedAt: '2026-11-03T18:40:32Z', result: 'matches' },
+          eligibility: [
+            {
+              id: 'cgsd-route-rule',
+              statement:
+                'Apply through the channel determined by your registration status and the institution’s quota for the chosen agency; the wrong channel causes rejection.',
+              state: 'stated',
+            },
+            {
+              id: 'cgsd-doctoral-enrolment',
+              statement:
+                'Applicants who are not Canadian citizens, permanent residents or protected persons must be registered in a doctoral programme at an eligible Canadian institution by the application deadline.',
+              state: 'stated',
+            },
+            {
+              id: 'cgsd-study-months',
+              statement:
+                'No more than 36 months of full-time equivalent doctoral study completed by 31 December of the calendar year of application.',
+              state: 'stated',
+            },
+            {
+              id: 'cgsd-other-restrictions',
+              statement:
+                'Only one CRTAS application per academic year and at most three CGRS D applications are permitted. Previous recipients of a CIHR, NSERC or SSHRC doctoral scholarship are not eligible.',
+              state: 'stated',
+            },
+          ],
+        })}
+        isDevelopment={false}
+      />,
+    )
+
+    expect(screen.getByText('5 stated')).toBeInTheDocument()
+    expect(screen.getByText('3 not specified')).toBeInTheDocument()
+    expect(screen.getByText('! Read first')).toBeInTheDocument()
+    expect(screen.getByText('≤ 36 months')).toBeInTheDocument()
+    expect(screen.getByText('Max 3 applications')).toBeInTheDocument()
   })
 
   it('shows exact retained evidence passages, source links, saved dates and match result', () => {

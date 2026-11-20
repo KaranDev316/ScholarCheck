@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { FactChip, TagChip } from '../components/Chips'
 import { CoverageChecklist } from '../components/CoverageChecklist'
 import { DateRoundTable } from '../components/DateRoundTable'
+import { EligibilitySection } from '../components/EligibilitySection'
 import { EvidenceBlock } from '../components/EvidenceBlock'
 import { ReportDialog } from '../components/ReportDialog'
 import { UnknownBadge } from '../components/UnknownBadge'
@@ -233,25 +234,10 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
             })}
           </div>
 
-          <div className="dsec">
-            <h2>Eligibility</h2>
-            <p className="muted small">
-              These are the provider’s stated requirements, not a decision about you.
-            </p>
-            <ol className="elig">
-              {record.eligibility.map((item) => (
-                <li key={item.id}>
-                  {item.statement}
-                  {item.state === 'stated' ? null : (
-                    <>
-                      {' '}
-                      <UnknownBadge label="Not specified" />
-                    </>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </div>
+          <EligibilitySection
+            eligibility={record.eligibility}
+            sourceCheck={record.sourceCheck}
+          />
 
           <div className="dsec">
             <h2>Rounds and deadlines</h2>
