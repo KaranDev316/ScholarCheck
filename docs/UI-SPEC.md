@@ -31,7 +31,7 @@ The UI never decides eligibility, ranks scholarships or shows a score. It shows 
 ## 3. Tokens (summary — full values in `tokens.css`)
 
 - **Colours:** navy `#0D173B`, off-white `#F8F9FA`, gold `#D4AF37`, white cards. Dark theme follows `prefers-color-scheme`; no toggle.
-- **Type:** headings Iowan Old Style / Charter / Georgia; body system sans. Scale 14/16/18/22/28/40; hero 40→52px with `text-wrap: balance`.
+- **Type:** **Inter** (variable, self-hosted) for headings, body and UI; headings 700 with -0.015em tracking, card titles 600, amounts 700 with tabular numerals. **Source Serif 4** only for the wordmark and quoted official wording, so evidence reads like a document. Scale 14/16/18/22/28/40; hero 40→52px with `text-wrap: balance`. Owner decision: replaces the Iowan Old Style/Charter/Georgia heading stack in PRP.md Visual direction (update PRP).
 - **Spacing:** 4px base (4, 8, 12, 16, 24, 32, 48, 64). Radius: card 12, button 8, chip pill.
 - **Targets:** min tap 44×44px. Content max 1120px, reading width 720px.
 - **Contrast:** text ≥4.5:1, UI borders ≥3:1, checked in both themes.

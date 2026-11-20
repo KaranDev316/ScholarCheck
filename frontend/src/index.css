@@ -37,8 +37,8 @@ h3 {
   font-family: var(--font-heading);
   line-height: var(--leading-heading);
   margin: 0;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  letter-spacing: -0.015em;
 }
 
 h1 {
@@ -123,7 +123,7 @@ header.top .wrap {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-family: var(--font-heading);
+  font-family: var(--font-quote);
   font-size: var(--text-lg);
   font-weight: 600;
   color: var(--band-text);
@@ -359,7 +359,8 @@ section {
 .schcard .sa {
   font-family: var(--font-heading);
   font-size: var(--text-xl);
-  font-weight: 600;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .schcard .sq {
@@ -369,7 +370,7 @@ section {
   border-radius: 0 var(--radius-button) var(--radius-button) 0;
   display: grid;
   gap: var(--space-1);
-  font-family: var(--font-heading);
+  font-family: var(--font-quote);
   color: var(--text-muted);
 }
 
@@ -520,6 +521,7 @@ section {
 }
 
 .card .title {
+  font-weight: 600;
   -webkit-line-clamp: 3;
 }
 
@@ -559,7 +561,8 @@ section {
 .amt {
   font-family: var(--font-heading);
   font-size: var(--text-xl);
-  font-weight: 600;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .amount-value-unconfirmed {
@@ -916,6 +919,8 @@ section {
 
 .compamount {
   font-size: var(--text-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .conditions {

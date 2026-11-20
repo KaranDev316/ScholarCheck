@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-import { ActionBar } from '../components/ActionBar'
 import { FactChip, TagChip } from '../components/Chips'
 import { CoverageChecklist } from '../components/CoverageChecklist'
 import { DateRoundTable } from '../components/DateRoundTable'
@@ -8,7 +7,6 @@ import { EvidenceBlock } from '../components/EvidenceBlock'
 import { ReportDialog } from '../components/ReportDialog'
 import { UnknownBadge } from '../components/UnknownBadge'
 import {
-  displayUrl,
   formatAward,
   formatComponentLabel,
   formatDate,
@@ -176,8 +174,6 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
             </div>
           </div>
 
-          <ActionBar record={record} isDevelopment={isDevelopment} />
-
           <div className="dsec">
             <h2>Funding components</h2>
             <p className="muted small">
@@ -283,8 +279,13 @@ export function ScholarshipPage({ record, isDevelopment }: ScholarshipPageProps)
               <div>
                 <dt>Official source</dt>
                 <dd>
-                  <a href={record.links.summary} target="_blank" rel="noreferrer">
-                    {displayUrl(record.links.summary)}
+                  <a
+                    className="btn btn-secondary sm"
+                    href={record.links.summary}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View official source
                   </a>
                 </dd>
               </div>

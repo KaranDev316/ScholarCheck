@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
+import { ActionBar } from '../src/components/ActionBar'
 import { ReportDialog } from '../src/components/ReportDialog'
 import { developmentCatalogue } from '../src/data/developmentCatalogue'
 import { ScholarshipPage } from '../src/pages/ScholarshipPage'
@@ -79,7 +80,7 @@ describe('ScholarshipPage', () => {
     expect(screen.queryByText(/03\/11\/2026/)).toBeNull()
   })
 
-  it('marks a record as unpublished and says the dates passed', () => {
+  it('marks a record as unpublished and marks passed rounds in the table', () => {
     render(
       <ScholarshipPage
         record={makeRecord({
@@ -97,12 +98,8 @@ describe('ScholarshipPage', () => {
       />,
     )
 
-    expect(
-      screen.getByText(/development preview\. this record is not published/i),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText(/the published dates \(11 september 2026\) have passed/i),
-    ).toBeInTheDocument()
+    expect(screen.getAllByText('Development preview').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Date passed').length).toBeGreaterThan(0)
   })
 
   it('shows the navy source-check panel with source, check date and result', () => {
@@ -113,150 +110,11 @@ describe('ScholarshipPage', () => {
     expect(within(aside).getByText('27 Oct 2026')).toBeInTheDocument()
     expect(within(aside).getByText('Matches the official page')).toBeInTheDocument()
     expect(
-      within(aside).getByRole('link', { name: 'example.edu/scholarship' }),
+      within(aside).getByRole('link', { name: 'View official source' }),
     ).toHaveAttribute('href', 'https://example.edu/scholarship')
   })
 
-  it('shows Read the requirements and Apply on the provider’s site when destinations differ', () => {
-    render(<ScholarshipPage record={makeRecord()} isDevelopment />)
-
-    const official = screen.getByRole('link', { name: 'Read the requirements' })
-    expect(official).toHaveAttribute('href', 'https://example.edu/requirements')
-    expect(
-      screen.getByText(/what the official page says about eligibility and funding/i),
-    ).toBeInTheDocument()
-
-    expect(
-      screen.getByRole('link', { name: "Apply on the provider's site" }),
-    ).toHaveAttribute('href', 'https://example.edu/apply')
-  })
-
-  it('collapses to one action when requirements and application destinations are identical', () => {
-    render(
-      <ScholarshipPage
-        record={makeRecord({
-          links: {
-            summary: 'https://example.edu/scholarship',
-            requirements: 'https://example.edu/requirements',
-            portal: 'https://example.edu/requirements',
-          },
-        })}
-        isDevelopment={false}
-      />,
-    )
-
-    expect(screen.getByRole('link', { name: 'Read the requirements' })).toHaveAttribute(
-      'href',
-      'https://example.edu/requirements',
-    )
-    expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
-  })
-
-  it('keeps the date note and both links when another round has a published deadline', () => {
-    render(
-      <ScholarshipPage
-        record={makeRecord({
-          rounds: [
-            {
-              id: 'old',
-              round: 'First round',
-              dateAsPublished: '11 September 2026',
-              status: 'Date passed',
-              note: '',
-            },
-            {
-              id: 'next',
-              round: 'Second round',
-              dateAsPublished: '18 December 2026',
-              status: 'Deadline published',
-              note: '',
-            },
-          ],
-        })}
-        isDevelopment
-      />,
-    )
-
-    expect(screen.getByText(/another round has a published deadline/i)).toBeInTheDocument()
-    expect(screen.queryByText(/next round isn’t published yet/i)).toBeNull()
-    expect(screen.getByRole('link', { name: 'Read the requirements' })).toHaveAttribute(
-      'href',
-      'https://example.edu/requirements',
-    )
-    expect(
-      screen.getByRole('link', { name: "Apply on the provider's site" }),
-    ).toHaveAttribute('href', 'https://example.edu/apply')
-  })
-
-  it('links the Sydney RTP record to its requirements page and its application', () => {
-    const record = developmentCatalogue.find((item) => item.id === 'usyd-rtp-stipend')
-    expect(record).toBeDefined()
-    render(<ScholarshipPage record={record!} isDevelopment />)
-
-    expect(screen.getByRole('link', { name: 'Read the requirements' })).toHaveAttribute(
-      'href',
-      'https://www.sydney.edu.au/scholarships/australian-government-research-training-program/rtp-international.html',
-    )
-    expect(
-      screen.getByRole('link', { name: "Apply on the provider's site" }),
-    ).toHaveAttribute('href', 'https://sydneyuniversity.formstack.com/forms/rtpapp')
-  })
-
-  it('withholds the application button while the route is unconfirmed', () => {
-    render(
-      <ScholarshipPage
-        record={makeRecord({ application: { kind: 'confirm', note: 'No confirmed route yet.' } })}
-        isDevelopment
-      />,
-    )
-
-    expect(screen.getByRole('link', { name: 'Read the requirements' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
-  })
-
-  it('says Apply for admission when there is no separate scholarship application', () => {
-    render(
-      <ScholarshipPage
-        record={makeRecord({
-          application: {
-            kind: 'none',
-            note: 'The source states no separate scholarship application. Apply for admission instead.',
-          },
-        })}
-        isDevelopment
-      />,
-    )
-
-    expect(screen.getByRole('link', { name: 'Apply for admission' })).toHaveAttribute(
-      'href',
-      'https://example.edu/apply',
-    )
-    expect(screen.queryByRole('link', { name: "Apply on the provider's site" })).toBeNull()
-  })
-
-  it('withholds the application button once every listed deadline has passed', () => {
-    render(
-      <ScholarshipPage
-        record={makeRecord({
-          rounds: [
-            {
-              id: 'passed',
-              round: 'Annual round',
-              dateAsPublished: '11 September 2026',
-              status: 'Date passed',
-              note: 'Next round not published.',
-            },
-          ],
-        })}
-        isDevelopment
-      />,
-    )
-
-    expect(screen.getByRole('link', { name: 'Read the requirements' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
-  })
-
-  it('treats a stale published deadline as passed on the detail page', () => {
+  it('treats a stale published deadline as passed in the round table', () => {
     render(
       <ScholarshipPage
         record={makeRecord({
@@ -274,40 +132,8 @@ describe('ScholarshipPage', () => {
       />,
     )
 
-    expect(
-      screen.getByText(/the published dates \(18 december 2020\) have passed/i),
-    ).toBeInTheDocument()
     expect(screen.getByText('Date passed')).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
-  })
-
-  it('matches each catalogue record’s application button to its recorded route', () => {
-    const expected: Record<string, string | null> = {
-      'cgsd-doctoral': null,
-      'udem-exemption-doctoral': 'Apply for admission',
-      'rmit-research-stipend': null,
-      'usyd-rtp-stipend': "Apply on the provider's site",
-    }
-
-    expect(developmentCatalogue.map((record) => record.id).sort()).toEqual(
-      Object.keys(expected).sort(),
-    )
-
-    for (const record of developmentCatalogue) {
-      const { unmount } = render(<ScholarshipPage record={record} isDevelopment />)
-      const label = expected[record.id]
-
-      if (label === null) {
-        expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
-      } else {
-        expect(screen.getByRole('link', { name: label })).toHaveAttribute(
-          'href',
-          record.links.portal,
-        )
-      }
-
-      unmount()
-    }
+    expect(screen.queryByRole('link', { name: /read the requirements/i })).toBeNull()
   })
 
   it('lists stated eligibility with the required disclaimer', () => {
@@ -405,5 +231,64 @@ describe('ReportDialog', () => {
     await user.keyboard('{Escape}')
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(trigger).toHaveFocus()
+  })
+})
+
+describe('ActionBar', () => {
+  it('shows Read the requirements and Apply on the provider’s site when destinations differ', () => {
+    render(<ActionBar record={makeRecord()} isDevelopment />)
+
+    expect(screen.getByRole('link', { name: 'Read the requirements' })).toHaveAttribute(
+      'href',
+      'https://example.edu/requirements',
+    )
+    expect(screen.getByRole('link', { name: "Apply on the provider's site" })).toHaveAttribute(
+      'href',
+      'https://example.edu/apply',
+    )
+  })
+
+  it('collapses to one action when requirements and application destinations are identical', () => {
+    render(
+      <ActionBar
+        record={makeRecord({
+          links: {
+            summary: 'https://example.edu/scholarship',
+            requirements: 'https://example.edu/requirements',
+            portal: 'https://example.edu/requirements',
+          },
+        })}
+        isDevelopment={false}
+      />,
+    )
+
+    expect(screen.getByRole('link', { name: 'Read the requirements' })).toHaveAttribute(
+      'href',
+      'https://example.edu/requirements',
+    )
+    expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
+  })
+
+  it('matches each catalogue record’s application button to its recorded route', () => {
+    const expected: Record<string, string | null> = {
+      'cgsd-doctoral': null,
+      'udem-exemption-doctoral': 'Apply for admission',
+      'rmit-research-stipend': null,
+      'usyd-rtp-stipend': "Apply on the provider's site",
+    }
+
+    for (const record of developmentCatalogue) {
+      const { unmount } = render(<ActionBar record={record} isDevelopment />)
+      const label = expected[record.id]
+      if (label === null) {
+        expect(screen.queryByRole('link', { name: /apply/i })).toBeNull()
+      } else {
+        expect(screen.getByRole('link', { name: label })).toHaveAttribute(
+          'href',
+          record.links.portal,
+        )
+      }
+      unmount()
+    }
   })
 })

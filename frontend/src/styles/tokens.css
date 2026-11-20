@@ -1,3 +1,9 @@
+/* Self-hosted fonts: put the .woff2 files in frontend/public/fonts/ (no new npm packages).
+   Download Inter (variable) and Source Serif 4 (variable, roman + italic) from their official OFL releases. */
+@font-face { font-family: "Inter"; src: url("/fonts/Inter-Variable.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Source Serif 4"; src: url("/fonts/SourceSerif4-Variable.woff2") format("woff2"); font-weight: 200 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Source Serif 4"; src: url("/fonts/SourceSerif4-Italic-Variable.woff2") format("woff2"); font-weight: 200 900; font-style: italic; font-display: swap; }
+
 /* ScholarCheck design tokens. Source of truth: docs/UI-SPEC.md and docs/PRP.md.
    Light/dark follow the visitor's system setting. There is no theme switch. */
 
@@ -10,8 +16,9 @@
   --on-gold: #0D173B;           /* navy on gold ~7:1 */
 
   /* Type */
-  --font-heading: "Iowan Old Style", Charter, Georgia, serif;
-  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-quote: "Source Serif 4", Georgia, "Times New Roman", serif; /* official wording + wordmark only */
   --text-sm: 0.875rem;   /* 14 */
   --text-base: 1rem;     /* 16 */
   --text-md: 1.125rem;   /* 18 */
@@ -20,7 +27,7 @@
   --text-2xl: 2.5rem;    /* 40 */
   --text-hero: clamp(2.5rem, 2rem + 2vw, 3.25rem); /* 40 -> 52 */
   --leading-body: 1.5;
-  --leading-heading: 1.15;
+  --leading-heading: 1.2;
 
   /* Spacing (4px base) */
   --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
@@ -68,12 +75,12 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Page is visibly lighter than the navy hero so the three zones read clearly */
-    --bg: #162252;
-    --surface: #202F6E;
-    --surface-border: #6C7BB8;  /* >=3:1 against both --surface and --bg */
+    /* Page is slightly lighter than the navy hero so the hero still reads as a band */
+    --bg: #131D47;
+    --surface: #1B2760;
+    --surface-border: #3A4784;  /* >=3:1 against surface/bg */
     --text: #F8F9FA;
-    --text-muted: #C7CFE8;      /* ~8:1 on --surface */
+    --text-muted: #BAC2DE;      /* ~7:1 on --surface */
     --link: #E8C95F;
     --focus-ring: #F8F9FA;      /* light ring on dark surfaces */
 
@@ -99,6 +106,8 @@
 html { background: var(--bg); }
 body {
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv11", "ss01";
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
@@ -107,6 +116,8 @@ body {
 }
 h1, h2, h3 {
   font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.015em;
   line-height: var(--leading-heading);
   margin: 0 0 var(--space-3);
   text-wrap: balance;
@@ -155,11 +166,11 @@ a { color: var(--link); }
   box-shadow: var(--shadow-card);
   padding: var(--space-6);
 }
-.card .title { font-family: var(--font-heading); font-size: var(--text-lg); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card .title { font-family: var(--font-heading); font-weight: 600; font-size: var(--text-lg); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* Headline amount: label first, amount second, basis smaller */
 .amount-label { font-size: var(--text-sm); color: var(--text-muted); }
-.amount-value { font-family: var(--font-heading); font-size: var(--text-xl); line-height: 1.2; }
+.amount-value { font-family: var(--font-heading); font-weight: 700; font-variant-numeric: tabular-nums; font-size: var(--text-xl); line-height: 1.2; }
 .amount-basis { font-size: var(--text-sm); color: var(--text-muted); }
 
 /* Buttons */
@@ -216,7 +227,7 @@ a { color: var(--link); }
 
 /* Evidence block */
 .evidence { border-left: 4px solid var(--gold); padding: var(--space-3) var(--space-4); background: var(--surface); }
-.evidence blockquote { margin: 0; font-family: var(--font-heading); max-width: var(--reading-max); }
+.evidence blockquote { margin: 0; font-family: var(--font-quote); line-height: 1.6; max-width: var(--reading-max); }
 .evidence .result { font-weight: 600; }
 
 /* Date / round table: wide tables scroll inside their own container */
